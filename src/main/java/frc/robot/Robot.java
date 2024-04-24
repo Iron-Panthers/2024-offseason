@@ -58,7 +58,7 @@ public class Robot extends LoggedRobot {
         break;
     }
 
-    if(isReal()) {
+    if (isReal()) {
       // Running on a real robot, log to a USB stick ("/U/logs")
       Logger.addDataReceiver(new WPILOGWriter());
       Logger.addDataReceiver(new NT4Publisher());
