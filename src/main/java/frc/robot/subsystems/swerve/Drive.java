@@ -22,7 +22,7 @@ public class Drive extends SubsystemBase {
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private Module[] modules = new Module[4];
 
-  @AutoLogOutput(key = "Swerve")
+  @AutoLogOutput(key = "Swerve/ArbitraryYaw")
   private Rotation2d arbitraryYaw = new Rotation2d();
 
   private ChassisSpeeds teleopTargetSpeeds = new ChassisSpeeds();
