@@ -8,7 +8,6 @@ public interface GyroIO {
   class GyroIOInputs {
     public boolean connected = false;
     public Rotation2d yawPosition = new Rotation2d();
-    public Rotation2d arbitraryYaw = new Rotation2d();
     public double yawVelocityRadPerSec = 0;
   }
 

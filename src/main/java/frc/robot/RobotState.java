@@ -11,9 +11,7 @@ public class RobotState {
     return instance;
   }
 
-  public RobotState() {
-
-  }
+  public RobotState() {}
 
   public Pose2d getEstimatedPose() {
     return estimatedPose;

@@ -16,6 +16,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -26,9 +28,16 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
+  public static RobotType ROBOT_TYPE = RobotType.COMP;
 
-  public static enum Mode {
+  public static Mode getRobotMode() {
+    return switch (ROBOT_TYPE) {
+      case COMP, DEV -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+      case SIM -> Mode.SIM;
+    };
+  }
+
+  public enum Mode {
     /** Running on a real robot. */
     REAL,
 
@@ -39,24 +48,36 @@ public final class Constants {
     REPLAY
   }
 
+  public enum RobotType {
+    COMP,
+    DEV,
+    SIM;
+  }
+
+  // measured in meters (per sec) & radians (per sec)
   public static final class Swerve {
-    public static final class Measurements {
-      public static final double TRACKWIDTH_METERS = 0.5207; // square drivebase
 
-      public static final Translation2d[] MODULE_TRANSLATIONS =
-          new Translation2d[] {
-            new Translation2d(TRACKWIDTH_METERS / 2, TRACKWIDTH_METERS / 2),
-            new Translation2d(TRACKWIDTH_METERS / 2, -TRACKWIDTH_METERS / 2),
-            new Translation2d(-TRACKWIDTH_METERS / 2, TRACKWIDTH_METERS / 2),
-            new Translation2d(-TRACKWIDTH_METERS / 2, -TRACKWIDTH_METERS / 2)
-          }; // meters relative to center, NWU convention; fl, fr, bl, br
+    public static final DrivebaseConfig DRIVE_CONFIG =
+        new DrivebaseConfig(
+            Units.inchesToMeters(2),
+            Units.inchesToMeters(22.5),
+            Units.inchesToMeters(38.5),
+            Units.inchesToMeters(33),
+            5.4764, // FIXME
+            6.7759);
 
-      public static final double MAX_VELOCITY_MPS = 6380.0 / 60.0 * 0.10033 * (1 / 6.12) * Math.PI;
-    }
+    public static final Translation2d[] MODULE_TRANSLATIONS =
+        new Translation2d[] {
+          new Translation2d(DRIVE_CONFIG.trackWidth() / 2, DRIVE_CONFIG.trackWidth() / 2),
+          new Translation2d(DRIVE_CONFIG.trackWidth() / 2, -DRIVE_CONFIG.trackWidth() / 2),
+          new Translation2d(-DRIVE_CONFIG.trackWidth() / 2, DRIVE_CONFIG.trackWidth() / 2),
+          new Translation2d(-DRIVE_CONFIG.trackWidth() / 2, -DRIVE_CONFIG.trackWidth() / 2)
+        }; // meters relative to center, NWU convention; fl, fr, bl, br
 
     public static final SwerveDriveKinematics KINEMATICS =
-        new SwerveDriveKinematics(Measurements.MODULE_TRANSLATIONS);
+        new SwerveDriveKinematics(MODULE_TRANSLATIONS);
 
+    public static final int GYRO_ID = 0;
     // fl, fr, bl, br
     public static final ModuleConfig[] MODULE_CONFIGS =
         new ModuleConfig[] {
@@ -66,9 +87,46 @@ public final class Constants {
           new ModuleConfig(11, 10, 25, new Rotation2d(2 * Math.PI * -0.39990234375))
         };
 
+    public static final ModuleConstants MODULE_CONSTANTS =
+        new ModuleConstants(
+            0.4, 0.6, 0, 11, 0, 0.32, 0.11, 0, 3, 0, 5.357142857142857, 21.428571428571427);
+
+    public record DrivebaseConfig(
+        double wheelRadius,
+        double trackWidth,
+        double bumperWidthX,
+        double bumperWidthY,
+        double maxLinearVelocity,
+        double maxAngularVelocity) {}
+
     public record ModuleConfig(
         int driveID, int steerID, int encoderID, Rotation2d absoluteEncoderOffset) {}
 
-    public record ModuleConstants() {}
+    public record ModuleConstants(
+        double steerkS,
+        double steerkV,
+        double steerkT,
+        double steerkP,
+        double steerkD,
+        double drivekS,
+        double drivekV,
+        double drivekT,
+        double drivekP,
+        double drivekD,
+        double driveReduction,
+        double steerReduction) {}
+
+    public record TrajectoryFollowerConstants() {}
+
+    private enum Mk4iReductions {
+      MK4I_L3((50 / 14) * (16 / 28) * (45 / 15)),
+      STEER(150 / 7);
+
+      double reduction;
+
+      Mk4iReductions(double reduction) {
+        this.reduction = reduction;
+      }
+    }
   }
 }

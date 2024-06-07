@@ -6,16 +6,15 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.Swerve;
 
 public class GyroIOPigeon2 implements GyroIO {
-  private static final int id = 0;
-
   private final Pigeon2 pigeon;
   private final StatusSignal<Double> yaw;
   private final StatusSignal<Double> yawVelocity;
 
   public GyroIOPigeon2() {
-    pigeon = new Pigeon2(id);
+    pigeon = new Pigeon2(Swerve.GYRO_ID);
     pigeon.optimizeBusUtilization();
 
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
