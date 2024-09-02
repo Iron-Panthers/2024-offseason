@@ -54,6 +54,10 @@ public final class Constants {
     SIM;
   }
 
+  public static final class State {
+    public static final double POSE_BUFFER_SIZE_SECONDS = 1.5;
+  }
+
   // measured in meters (per sec) & radians (per sec)
   public static final class Swerve {
 

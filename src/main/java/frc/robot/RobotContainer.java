@@ -34,6 +34,8 @@ public class RobotContainer {
                   new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[2]),
                   new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[3]));
         }
+        case DEV -> {}
+        case SIM -> {}
       }
     }
 
