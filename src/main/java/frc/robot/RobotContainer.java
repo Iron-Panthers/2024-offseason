@@ -47,6 +47,8 @@ public class RobotContainer {
                   new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[3]));
         }
+        case DEV -> {}
+        case SIM -> {}
       }
     }
 
