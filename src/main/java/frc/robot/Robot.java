@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -28,6 +29,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
+  private RobotContainer robotContainer;
+
   private static final String defaultAuto = "Default";
   private static final String customAuto = "My Auto";
   private String autoSelected;
@@ -76,11 +79,15 @@ public class Robot extends LoggedRobot {
     // Initialize auto chooser
     chooser.addDefaultOption("Default Auto", defaultAuto);
     chooser.addOption("My Auto", customAuto);
+
+    robotContainer = new RobotContainer();
   }
 
   /** This function is called periodically during all modes. */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 
   /** This function is called once when autonomous is enabled. */
   @Override
