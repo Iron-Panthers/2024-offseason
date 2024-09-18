@@ -68,9 +68,12 @@ public class Drive extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         moduleTargetStates, Swerve.DRIVE_CONFIG.maxLinearVelocity());
 
+    SwerveModuleState[] optimizedTargetStates = new SwerveModuleState[4];
+
     for (int i = 0; i < modules.length; i++) {
-      SwerveModuleState.optimize(moduleTargetStates[i], modules[i].getSteerHeading());
-      modules[i].runToSetpoint(moduleTargetStates[i]);
+      optimizedTargetStates[i] =
+          SwerveModuleState.optimize(moduleTargetStates[i], modules[i].getSteerHeading());
+      modules[i].runToSetpoint(optimizedTargetStates[i]);
     }
 
     Logger.recordOutput("Swerve/TargetSpeeds", targetSpeeds);
