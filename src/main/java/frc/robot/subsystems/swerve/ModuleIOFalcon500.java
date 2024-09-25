@@ -71,10 +71,6 @@ public class ModuleIOFalcon500 implements ModuleIO {
     encoder.getConfigurator().apply(encoderConfig);
 
     // canbus optimization
-    driveTalon.optimizeBusUtilization();
-    steerTalon.optimizeBusUtilization();
-    encoder.optimizeBusUtilization();
-
     drivePosition = driveTalon.getPosition();
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
@@ -95,14 +91,22 @@ public class ModuleIOFalcon500 implements ModuleIO {
         steerPosition,
         steerVelocity,
         steerAppliedVolts);
+
+    driveTalon.optimizeBusUtilization();
+    steerTalon.optimizeBusUtilization();
+    encoder.optimizeBusUtilization();
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
+    inputs.driveMotorConnected =
+        BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts).isOK();
     inputs.drivePositionRads = Units.rotationsToRadians(drivePosition.getValueAsDouble());
     inputs.driveVelocityRadsPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
 
+    inputs.steerMotorConnected =
+        BaseStatusSignal.refreshAll(steerPosition, steerVelocity, steerAppliedVolts).isOK();
     inputs.steerAbsolutePostion = steerAbsolutePosition.get();
     inputs.steerPosition = Rotation2d.fromRotations(steerPosition.getValueAsDouble());
     inputs.steerVelocityRadsPerSec = Units.rotationsToRadians(steerVelocity.getValueAsDouble());
