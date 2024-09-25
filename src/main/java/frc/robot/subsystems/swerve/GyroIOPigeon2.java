@@ -15,7 +15,6 @@ public class GyroIOPigeon2 implements GyroIO {
 
   public GyroIOPigeon2() {
     pigeon = new Pigeon2(Swerve.GYRO_ID);
-    pigeon.optimizeBusUtilization();
 
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.setYaw(0);
@@ -23,6 +22,8 @@ public class GyroIOPigeon2 implements GyroIO {
     yaw = pigeon.getYaw();
     yawVelocity = pigeon.getAngularVelocityZWorld();
     BaseStatusSignal.setUpdateFrequencyForAll(100, yaw, yawVelocity);
+
+    pigeon.optimizeBusUtilization();
   }
 
   @Override
