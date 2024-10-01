@@ -53,13 +53,22 @@ public final class Constants {
   public static final class Swerve {
 
     public static final DrivebaseConfig DRIVE_CONFIG =
-        new DrivebaseConfig(
-            Units.inchesToMeters(2),
-            Units.inchesToMeters(22.5),
-            Units.inchesToMeters(38.5),
-            Units.inchesToMeters(33),
-            5.4764, // FIXME
-            6.7759);
+        switch (ROBOT_TYPE) {
+          case COMP, SIM -> new DrivebaseConfig(
+              Units.inchesToMeters(2),
+              Units.inchesToMeters(22.5),
+              Units.inchesToMeters(38.5),
+              Units.inchesToMeters(33),
+              5.4764, // FIXME
+              6.7759);
+          case DEV -> new DrivebaseConfig(
+              Units.inchesToMeters(2),
+              Units.inchesToMeters(22.5),
+              Units.inchesToMeters(38.5),
+              Units.inchesToMeters(33),
+              5.4764, // FIXME
+              6.7759);
+        };
 
     public static final Translation2d[] MODULE_TRANSLATIONS =
         new Translation2d[] {
@@ -73,18 +82,31 @@ public final class Constants {
         new SwerveDriveKinematics(MODULE_TRANSLATIONS);
 
     public static final int GYRO_ID = 0;
+
     // fl, fr, bl, br
     public static final ModuleConfig[] MODULE_CONFIGS =
-        new ModuleConfig[] {
-          new ModuleConfig(2, 1, 27, new Rotation2d(2 * Math.PI * 0.316650390625)),
-          new ModuleConfig(13, 12, 26, new Rotation2d(2 * Math.PI * 0.225341796875)),
-          new ModuleConfig(4, 3, 24, new Rotation2d(2 * Math.PI * 0.41943359375)),
-          new ModuleConfig(11, 10, 25, new Rotation2d(2 * Math.PI * -0.39990234375))
+        switch (ROBOT_TYPE) {
+          case COMP, SIM -> new ModuleConfig[] {
+            new ModuleConfig(5, 6, 1, new Rotation2d(2 * Math.PI * 0)),
+            new ModuleConfig(7, 8, 2, new Rotation2d(2 * Math.PI * 0)),
+            new ModuleConfig(9, 10, 3, new Rotation2d(2 * Math.PI * 0)),
+            new ModuleConfig(11, 12, 4, new Rotation2d(2 * Math.PI * 0))
+          };
+          case DEV -> new ModuleConfig[] {
+            new ModuleConfig(2, 1, 27, new Rotation2d(2 * Math.PI * 0.316650390625)),
+            new ModuleConfig(13, 12, 26, new Rotation2d(2 * Math.PI * 0.225341796875)),
+            new ModuleConfig(4, 3, 24, new Rotation2d(2 * Math.PI * 0.41943359375)),
+            new ModuleConfig(11, 10, 25, new Rotation2d(2 * Math.PI * -0.39990234375))
+          };
         };
 
     public static final ModuleConstants MODULE_CONSTANTS =
-        new ModuleConstants(
-            0.4, 0.6, 0, 11, 0, 0.32, 0.11, 0, 3, 0, 5.357142857142857, 21.428571428571427);
+        switch (ROBOT_TYPE) {
+          case COMP, SIM -> new ModuleConstants(
+              0.4, 0.6, 0, 11, 0, 0.32, 0.11, 0, 3, 0, 5.357142857142857, 21.428571428571427);
+          case DEV -> new ModuleConstants(
+              0.4, 0.6, 0, 11, 0, 0.32, 0.11, 0, 3, 0, 5.357142857142857, 21.428571428571427);
+        };
 
     public record DrivebaseConfig(
         double wheelRadius,
