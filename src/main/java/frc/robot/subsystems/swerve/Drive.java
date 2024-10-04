@@ -97,6 +97,10 @@ public class Drive extends SubsystemBase {
 
     this.teleopTargetSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, radianVelocity, arbitraryYaw);
+
+    Logger.recordOutput("Swerve/Teleop/xVelocity", xVelocity);
+    Logger.recordOutput("Swerve/Teleop/yVelocity", yVelocity);
+    Logger.recordOutput("Swerve/Teleop/radianVelocity", radianVelocity);
   }
 
   public void setTrajectoryFollower(ChassisSpeeds trajectorySpeeds) {

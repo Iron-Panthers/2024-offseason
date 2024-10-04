@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -45,7 +46,16 @@ public class ModuleIOFalcon500 implements ModuleIO {
     encoderConfig.MagnetSensor.MagnetOffset = config.absoluteEncoderOffset().getRotations();
 
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    driveConfig.MotorOutput.Inverted =
+        config.driveInverted()
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
+
     steerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    steerConfig.MotorOutput.Inverted =
+        config.steerInverted()
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
 
     driveConfig.Feedback.SensorToMechanismRatio = MODULE_CONSTANTS.driveReduction();
     steerConfig.Feedback.SensorToMechanismRatio = MODULE_CONSTANTS.steerReduction();
@@ -76,9 +86,8 @@ public class ModuleIOFalcon500 implements ModuleIO {
     driveAppliedVolts = driveTalon.getMotorVoltage();
 
     steerAbsolutePosition =
-        () ->
-            Rotation2d.fromRotations(encoder.getAbsolutePosition().getValueAsDouble())
-                .minus(config.absoluteEncoderOffset());
+        () -> Rotation2d.fromRotations(encoder.getAbsolutePosition().getValueAsDouble());
+    //                .minus(config.absoluteEncoderOffset());
     steerPosition = steerTalon.getPosition();
     steerVelocity = steerTalon.getVelocity();
     steerAppliedVolts = steerTalon.getMotorVoltage();
@@ -95,6 +104,8 @@ public class ModuleIOFalcon500 implements ModuleIO {
     driveTalon.optimizeBusUtilization();
     steerTalon.optimizeBusUtilization();
     encoder.optimizeBusUtilization();
+
+    steerTalon.setPosition(steerAbsolutePosition.get().getRotations(), 1.0);
   }
 
   @Override

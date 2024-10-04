@@ -28,8 +28,17 @@ public class RobotContainer {
 
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
-      switch (Constants.ROBOT_TYPE) {
+      switch (Constants.getRobotType()) {
         case COMP -> {
+          swerve =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[0]),
+                  new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[1]),
+                  new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[2]),
+                  new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[3]));
+        }
+        case DEV -> {
           swerve =
               new Drive(
                   new GyroIOPigeon2(),
