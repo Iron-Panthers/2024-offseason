@@ -3,7 +3,6 @@ package frc.robot.subsystems.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.Swerve;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -38,9 +37,13 @@ public class Module {
     /* Azimuth turn rate multiplied by coupling ratio provides back-out rps */
     double driveRateBackOut = azimuthTurnRps * Swerve.MODULE_CONSTANTS.couplingGearReduction();
 
-    moduleIO.runDriveVelocitySetpoint(
+    double driveVelocityRads =
         ((targetState.speedMetersPerSecond * cosineScalar) / Swerve.DRIVE_CONFIG.wheelRadius())
-            + driveRateBackOut);
+            + driveRateBackOut;
+
+    moduleIO.runDriveVelocitySetpoint(driveVelocityRads);
+
+    Logger.recordOutput("Swerve/Module" + index + "/DriveVelRadsScalar", driveVelocityRads);
   }
 
   public Rotation2d getSteerHeading() {
