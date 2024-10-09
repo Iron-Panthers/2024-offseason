@@ -76,9 +76,9 @@ public class Drive extends SubsystemBase {
       modules[i].runToSetpoint(optimizedTargetStates[i]);
     }
 
+    Logger.recordOutput("Swerve/ModuleStates/Optimized", optimizedTargetStates);
     Logger.recordOutput("Swerve/TargetSpeeds", targetSpeeds);
     Logger.recordOutput("Swerve/DriveMode", driveMode);
-    // also swerve states?
   }
 
   public void driveTeleopController(double xAxis, double yAxis, double omega) {
