@@ -16,7 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import java.util.function.Supplier;
 
-public class ModuleIOFalcon500 implements ModuleIO {
+public class ModuleIOTalonFX implements ModuleIO {
   private final TalonFX driveTalon;
   private final TalonFX steerTalon;
   private final CANcoder encoder;
@@ -37,7 +37,7 @@ public class ModuleIOFalcon500 implements ModuleIO {
   private VelocityVoltage driveVelocityControl = new VelocityVoltage(0).withUpdateFreqHz(0);
   private PositionVoltage steerPositionControl = new PositionVoltage(0).withUpdateFreqHz(0);
 
-  public ModuleIOFalcon500(ModuleConfig config) {
+  public ModuleIOTalonFX(ModuleConfig config) {
     driveTalon = new TalonFX(config.driveID());
     steerTalon = new TalonFX(config.steerID());
     encoder = new CANcoder(config.encoderID());
