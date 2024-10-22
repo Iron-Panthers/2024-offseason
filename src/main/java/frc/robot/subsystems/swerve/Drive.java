@@ -67,14 +67,17 @@ public class Drive extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         moduleTargetStates, Swerve.DRIVE_CONFIG.maxLinearVelocity());
 
+    SwerveModuleState[] optimizedTargetStates = new SwerveModuleState[4];
+
     for (int i = 0; i < modules.length; i++) {
-      SwerveModuleState.optimize(moduleTargetStates[i], modules[i].getSteerHeading());
-      modules[i].runToSetpoint(moduleTargetStates[i]);
+      optimizedTargetStates[i] =
+          SwerveModuleState.optimize(moduleTargetStates[i], modules[i].getSteerHeading());
+      modules[i].runToSetpoint(optimizedTargetStates[i]);
     }
 
+    Logger.recordOutput("Swerve/ModuleStates/Optimized", optimizedTargetStates);
     Logger.recordOutput("Swerve/TargetSpeeds", targetSpeeds);
     Logger.recordOutput("Swerve/DriveMode", driveMode);
-    // also swerve states?
   }
 
   public void driveTeleopController(double xAxis, double yAxis, double omega) {
@@ -82,18 +85,31 @@ public class Drive extends SubsystemBase {
       driveMode = DriveModes.TELEOP;
     }
 
-    double xVelocity =
+    // NWU convention
+    double theta = Math.atan2(xAxis, yAxis);
+    double radiusDeadband =
+        MathUtil.applyDeadband(Math.sqrt((xAxis * xAxis) + (yAxis + yAxis)), 0.07);
+    double radiusExp = Math.copySign(Math.pow(radiusDeadband, 1.5), radiusDeadband);
+
+    double xVelocity = radiusExp * Math.sin(theta) * Swerve.DRIVE_CONFIG.maxLinearVelocity();
+    double yVelocity = radiusExp * Math.cos(theta) * Swerve.DRIVE_CONFIG.maxLinearVelocity();
+
+    /*double xVelocity =
         MathUtil.applyDeadband(Math.copySign(xAxis * xAxis, xAxis), 0.07)
             * Swerve.DRIVE_CONFIG.maxLinearVelocity();
     double yVelocity =
         MathUtil.applyDeadband(Math.copySign(yAxis * yAxis, yAxis), 0.07)
-            * Swerve.DRIVE_CONFIG.maxLinearVelocity();
+            * Swerve.DRIVE_CONFIG.maxLinearVelocity();*/
     double radianVelocity =
         MathUtil.applyDeadband(Math.copySign(omega * omega, omega), 0.07)
             * Swerve.DRIVE_CONFIG.maxAngularVelocity();
 
     this.teleopTargetSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, radianVelocity, arbitraryYaw);
+
+    Logger.recordOutput("Swerve/Teleop/xVelocity", xVelocity);
+    Logger.recordOutput("Swerve/Teleop/yVelocity", yVelocity);
+    Logger.recordOutput("Swerve/Teleop/radianVelocity", radianVelocity);
   }
 
   public void setTrajectoryFollower(ChassisSpeeds trajectorySpeeds) {

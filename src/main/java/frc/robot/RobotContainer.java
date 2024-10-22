@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -7,7 +11,7 @@ import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.ModuleIO;
-import frc.robot.subsystems.swerve.ModuleIOFalcon500;
+import frc.robot.subsystems.swerve.ModuleIOTalonFX;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,15 +28,24 @@ public class RobotContainer {
 
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
-      switch (Constants.ROBOT_TYPE) {
+      switch (Constants.getRobotType()) {
         case COMP -> {
           swerve =
               new Drive(
                   new GyroIOPigeon2(),
-                  new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[0]),
-                  new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[1]),
-                  new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[2]),
-                  new ModuleIOFalcon500(Swerve.MODULE_CONFIGS[3]));
+                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[3]));
+        }
+        case DEV -> {
+          swerve =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[3]));
         }
       }
     }

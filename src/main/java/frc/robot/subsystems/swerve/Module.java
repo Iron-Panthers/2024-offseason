@@ -31,8 +31,19 @@ public class Module {
       cosineScalar = 0;
     }
 
-    moduleIO.runDriveVelocitySetpoint(
-        (targetState.speedMetersPerSecond * cosineScalar) / Swerve.DRIVE_CONFIG.wheelRadius());
+    /* Back out the expected shimmy the drive motor will see */
+    /* Find the angular rate to determine what to back out */
+    double azimuthTurnRps = inputs.steerVelocityRadsPerSec;
+    /* Azimuth turn rate multiplied by coupling ratio provides back-out rps */
+    double driveRateBackOut = azimuthTurnRps * Swerve.MODULE_CONSTANTS.couplingGearReduction();
+
+    double driveVelocityRads =
+        ((targetState.speedMetersPerSecond * cosineScalar) / Swerve.DRIVE_CONFIG.wheelRadius())
+            + driveRateBackOut;
+
+    moduleIO.runDriveVelocitySetpoint(driveVelocityRads);
+
+    Logger.recordOutput("Swerve/Module" + index + "/DriveVelRadsScalar", driveVelocityRads);
   }
 
   public Rotation2d getSteerHeading() {

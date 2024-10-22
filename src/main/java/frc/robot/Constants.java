@@ -1,15 +1,6 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
 
@@ -37,6 +28,10 @@ public final class Constants {
     };
   }
 
+  public static RobotType getRobotType() {
+    return ROBOT_TYPE;
+  }
+
   public enum Mode {
     /** Running on a real robot. */
     REAL,
@@ -58,38 +53,92 @@ public final class Constants {
   public static final class Swerve {
 
     public static final DrivebaseConfig DRIVE_CONFIG =
-        new DrivebaseConfig(
-            Units.inchesToMeters(2),
-            Units.inchesToMeters(22.5),
-            Units.inchesToMeters(38.5),
-            Units.inchesToMeters(33),
-            5.4764, // FIXME
-            6.7759);
+        switch (getRobotType()) {
+          case COMP, SIM -> new DrivebaseConfig(
+              Units.inchesToMeters(2),
+              Units.inchesToMeters(22.5),
+              Units.inchesToMeters(38.5),
+              Units.inchesToMeters(33),
+              5, // FIXME
+              5);
+          case DEV -> new DrivebaseConfig(
+              Units.inchesToMeters(2),
+              Units.inchesToMeters(22.5),
+              Units.inchesToMeters(38.5),
+              Units.inchesToMeters(33),
+              // 5.4764, // FIXME
+              // 6.7759);
+              4,
+              4);
+        };
 
     public static final Translation2d[] MODULE_TRANSLATIONS =
         new Translation2d[] {
-          new Translation2d(DRIVE_CONFIG.trackWidth() / 2, DRIVE_CONFIG.trackWidth() / 2),
-          new Translation2d(DRIVE_CONFIG.trackWidth() / 2, -DRIVE_CONFIG.trackWidth() / 2),
-          new Translation2d(-DRIVE_CONFIG.trackWidth() / 2, DRIVE_CONFIG.trackWidth() / 2),
-          new Translation2d(-DRIVE_CONFIG.trackWidth() / 2, -DRIVE_CONFIG.trackWidth() / 2)
+          new Translation2d(DRIVE_CONFIG.trackWidth() / 2.0, DRIVE_CONFIG.trackWidth() / 2.0),
+          new Translation2d(DRIVE_CONFIG.trackWidth() / 2.0, -DRIVE_CONFIG.trackWidth() / 2.0),
+          new Translation2d(-DRIVE_CONFIG.trackWidth() / 2.0, DRIVE_CONFIG.trackWidth() / 2.0),
+          new Translation2d(-DRIVE_CONFIG.trackWidth() / 2.0, -DRIVE_CONFIG.trackWidth() / 2.0)
         }; // meters relative to center, NWU convention; fl, fr, bl, br
 
     public static final SwerveDriveKinematics KINEMATICS =
         new SwerveDriveKinematics(MODULE_TRANSLATIONS);
 
     public static final int GYRO_ID = 0;
+
     // fl, fr, bl, br
     public static final ModuleConfig[] MODULE_CONFIGS =
-        new ModuleConfig[] {
-          new ModuleConfig(2, 1, 27, new Rotation2d(2 * Math.PI * 0.316650390625)),
-          new ModuleConfig(13, 12, 26, new Rotation2d(2 * Math.PI * 0.225341796875)),
-          new ModuleConfig(4, 3, 24, new Rotation2d(2 * Math.PI * 0.41943359375)),
-          new ModuleConfig(11, 10, 25, new Rotation2d(2 * Math.PI * -0.39990234375))
+        switch (getRobotType()) {
+          case COMP -> new ModuleConfig[] {
+            new ModuleConfig(5, 6, 1, new Rotation2d(0), true, false),
+            new ModuleConfig(7, 8, 2, new Rotation2d(0), true, true),
+            new ModuleConfig(9, 10, 3, new Rotation2d(0), true, false),
+            new ModuleConfig(11, 12, 4, new Rotation2d(0), true, true)
+          };
+          case DEV -> new ModuleConfig[] {
+            new ModuleConfig(2, 1, 27, new Rotation2d(1.954), true, false),
+            new ModuleConfig(13, 12, 26, new Rotation2d(1.465), true, true),
+            new ModuleConfig(4, 3, 24, new Rotation2d(2.612), true, false),
+            new ModuleConfig(11, 10, 25, new Rotation2d(-2.563), true, true)
+          };
+          case SIM -> new ModuleConfig[] {
+            new ModuleConfig(0, 0, 0, new Rotation2d(0), true, false),
+            new ModuleConfig(0, 0, 0, new Rotation2d(0), true, true),
+            new ModuleConfig(0, 0, 0, new Rotation2d(0), true, false),
+            new ModuleConfig(0, 0, 0, new Rotation2d(0), true, true)
+          };
         };
 
     public static final ModuleConstants MODULE_CONSTANTS =
-        new ModuleConstants(
-            0.4, 0.6, 0, 11, 0, 0.32, 0.11, 0, 3, 0, 5.357142857142857, 21.428571428571427);
+        switch (getRobotType()) {
+          case COMP, SIM -> new ModuleConstants(
+              0, // steerkS
+              0, // steerkV
+              0, // steerkA
+              0, // steerkP
+              0, // steerkD
+              0, // drivekS
+              0, // drivekV
+              0, // drivekA
+              3, // drivekP
+              0, // drivekD
+              5.357142857142857,
+              21.428571428571427,
+              3.125);
+          case DEV -> new ModuleConstants(
+              0, // steerkS
+              0, // steerkV
+              0, // steerkA
+              11, // steerkP
+              0, // steerkD
+              0, // drivekS
+              0, // drivekV
+              0, // drivekA
+              1.5, // drivekP
+              0, // drivekD
+              5.357142857142857,
+              21.428571428571427,
+              3.125);
+        };
 
     public record DrivebaseConfig(
         double wheelRadius,
@@ -100,21 +149,27 @@ public final class Constants {
         double maxAngularVelocity) {}
 
     public record ModuleConfig(
-        int driveID, int steerID, int encoderID, Rotation2d absoluteEncoderOffset) {}
+        int driveID,
+        int steerID,
+        int encoderID,
+        Rotation2d absoluteEncoderOffset,
+        boolean steerInverted,
+        boolean driveInverted) {}
 
     public record ModuleConstants(
         double steerkS,
         double steerkV,
-        double steerkT,
+        double steerkA,
         double steerkP,
         double steerkD,
         double drivekS,
         double drivekV,
-        double drivekT,
+        double drivekA,
         double drivekP,
         double drivekD,
         double driveReduction,
-        double steerReduction) {}
+        double steerReduction,
+        double couplingGearReduction) {}
 
     public record TrajectoryFollowerConstants() {}
 
