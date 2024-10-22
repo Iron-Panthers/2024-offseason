@@ -111,13 +111,13 @@ public final class Constants {
     public static final ModuleConstants MODULE_CONSTANTS =
         switch (getRobotType()) {
           case COMP, SIM -> new ModuleConstants(
-              0.4, // steerkS
-              0.6, // steerkV
+              0, // steerkS
+              0, // steerkV
               0, // steerkA
-              11, // steerkP
+              0, // steerkP
               0, // steerkD
-              0.32, // drivekS
-              0.11, // drivekV
+              0, // drivekS
+              0, // drivekV
               0, // drivekA
               3, // drivekP
               0, // drivekD
