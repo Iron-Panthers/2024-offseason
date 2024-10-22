@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static RobotType ROBOT_TYPE = RobotType.DEV;
+  public static RobotType ROBOT_TYPE = RobotType.COMP;
 
   public static Mode getRobotMode() {
     return switch (ROBOT_TYPE) {
@@ -63,8 +63,8 @@ public final class Constants {
               Units.inchesToMeters(22.5),
               Units.inchesToMeters(38.5),
               Units.inchesToMeters(33),
-              5.4764, // FIXME
-              6.7759);
+              5, // FIXME
+              5);
           case DEV -> new DrivebaseConfig(
               Units.inchesToMeters(2),
               Units.inchesToMeters(22.5),
@@ -93,10 +93,10 @@ public final class Constants {
     public static final ModuleConfig[] MODULE_CONFIGS =
         switch (getRobotType()) {
           case COMP -> new ModuleConfig[] {
-            new ModuleConfig(5, 6, 1, new Rotation2d(2.0 * Math.PI * 0), true, false),
-            new ModuleConfig(7, 8, 2, new Rotation2d(2.0 * Math.PI * 0), true, true),
-            new ModuleConfig(9, 10, 3, new Rotation2d(2.0 * Math.PI * 0), true, false),
-            new ModuleConfig(11, 12, 4, new Rotation2d(2.0 * Math.PI * 0), true, true)
+            new ModuleConfig(5, 6, 1, new Rotation2d(0), true, false),
+            new ModuleConfig(7, 8, 2, new Rotation2d(0), true, true),
+            new ModuleConfig(9, 10, 3, new Rotation2d(0), true, false),
+            new ModuleConfig(11, 12, 4, new Rotation2d(0), true, true)
           };
           case DEV -> new ModuleConfig[] {
             new ModuleConfig(2, 1, 27, new Rotation2d(1.954), true, false),
