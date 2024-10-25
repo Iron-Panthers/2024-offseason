@@ -2,7 +2,6 @@ package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.Constants.Swerve;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -35,10 +34,12 @@ public class Module {
     /* Find the angular rate to determine what to back out */
     double azimuthTurnRps = inputs.steerVelocityRadsPerSec;
     /* Azimuth turn rate multiplied by coupling ratio provides back-out rps */
-    double driveRateBackOut = azimuthTurnRps * Swerve.MODULE_CONSTANTS.couplingGearReduction();
+    double driveRateBackOut =
+        azimuthTurnRps * DriveConstants.MODULE_CONSTANTS.couplingGearReduction();
 
     double driveVelocityRads =
-        ((targetState.speedMetersPerSecond * cosineScalar) / Swerve.DRIVE_CONFIG.wheelRadius())
+        ((targetState.speedMetersPerSecond * cosineScalar)
+                / DriveConstants.DRIVE_CONFIG.wheelRadius())
             + driveRateBackOut;
 
     moduleIO.runDriveVelocitySetpoint(driveVelocityRads);

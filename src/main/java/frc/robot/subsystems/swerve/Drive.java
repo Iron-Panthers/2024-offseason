@@ -1,5 +1,8 @@
 package frc.robot.subsystems.swerve;
 
+import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
+import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -7,7 +10,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Swerve;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -63,9 +65,9 @@ public class Drive extends SubsystemBase {
     }
 
     // run modules
-    SwerveModuleState[] moduleTargetStates = Swerve.KINEMATICS.toSwerveModuleStates(targetSpeeds);
+    SwerveModuleState[] moduleTargetStates = KINEMATICS.toSwerveModuleStates(targetSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        moduleTargetStates, Swerve.DRIVE_CONFIG.maxLinearVelocity());
+        moduleTargetStates, DRIVE_CONFIG.maxLinearVelocity());
 
     SwerveModuleState[] optimizedTargetStates = new SwerveModuleState[4];
 
@@ -91,8 +93,8 @@ public class Drive extends SubsystemBase {
         MathUtil.applyDeadband(Math.sqrt((xAxis * xAxis) + (yAxis + yAxis)), 0.07);
     double radiusExp = Math.copySign(Math.pow(radiusDeadband, 1.5), radiusDeadband);
 
-    double xVelocity = radiusExp * Math.sin(theta) * Swerve.DRIVE_CONFIG.maxLinearVelocity();
-    double yVelocity = radiusExp * Math.cos(theta) * Swerve.DRIVE_CONFIG.maxLinearVelocity();
+    double xVelocity = radiusExp * Math.sin(theta) * DRIVE_CONFIG.maxLinearVelocity();
+    double yVelocity = radiusExp * Math.cos(theta) * DRIVE_CONFIG.maxLinearVelocity();
 
     /*double xVelocity =
         MathUtil.applyDeadband(Math.copySign(xAxis * xAxis, xAxis), 0.07)
@@ -102,7 +104,7 @@ public class Drive extends SubsystemBase {
             * Swerve.DRIVE_CONFIG.maxLinearVelocity();*/
     double radianVelocity =
         MathUtil.applyDeadband(Math.copySign(omega * omega, omega), 0.07)
-            * Swerve.DRIVE_CONFIG.maxAngularVelocity();
+            * DRIVE_CONFIG.maxAngularVelocity();
 
     this.teleopTargetSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, radianVelocity, arbitraryYaw);
