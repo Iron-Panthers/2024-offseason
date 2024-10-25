@@ -6,7 +6,7 @@ import org.littletonrobotics.junction.Logger;
 public class Intake extends SubsystemBase {
   public enum VoltageTarget {
     IDLE(0),
-    INTAKE(8), // FIXME
+    INTAKE(12), // FIXME
     EJECT(-8);
 
     private int volts;

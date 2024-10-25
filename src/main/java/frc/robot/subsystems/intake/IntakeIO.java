@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeIO {
   @AutoLog
-  public class IntakeIOInputs {
+  class IntakeIOInputs {
     public boolean connected = true;
     public double positionRads = 0;
     public double velocityRadsPerSec = 0;
