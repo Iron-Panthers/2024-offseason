@@ -1,6 +1,6 @@
 package frc.robot.subsystems.swerve;
 
-import static frc.robot.Constants.Swerve.*;
+import static frc.robot.subsystems.swerve.DriveConstants.MODULE_CONSTANTS;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.swerve.DriveConstants.ModuleConfig;
 import java.util.function.Supplier;
 
 public class ModuleIOTalonFX implements ModuleIO {

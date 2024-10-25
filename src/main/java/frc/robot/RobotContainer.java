@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
-import frc.robot.Constants.Swerve;
 import frc.robot.subsystems.flywheels.Flywheels;
 import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
@@ -15,6 +14,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.VoltageTarget;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
+import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.ModuleIO;
@@ -42,10 +42,10 @@ public class RobotContainer {
           swerve =
               new Drive(
                   new GyroIOPigeon2(),
-                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[0]),
-                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[1]),
-                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[2]),
-                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[3]));
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
         }
@@ -53,11 +53,23 @@ public class RobotContainer {
           swerve =
               new Drive(
                   new GyroIOPigeon2(),
-                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[0]),
-                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[1]),
-                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[2]),
-                  new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[3]));
-          intake = new Intake(new IntakeIOTalonFX());
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
+          intake = new Intake(new IntakeIOTalonFX()); // FIXME
+          flywheels = new Flywheels(new FlywheelsIOTalonFX());
+        }
+        case SIM -> {
+          swerve =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
+          intake = new Intake(new IntakeIOTalonFX()); // FIXME
+          flywheels = new Flywheels(new FlywheelsIOTalonFX());
         }
       }
     }
