@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.Swerve;
+import frc.robot.subsystems.flywheels.Flywheels;
+import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.VoltageTarget;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
@@ -30,6 +32,7 @@ public class RobotContainer {
 
   private Drive swerve; // FIXME make final, implement other robot types
   private Intake intake;
+  private Flywheels flywheels;
 
   public RobotContainer() {
     if (Constants.getRobotMode() != Mode.REPLAY) {
@@ -43,6 +46,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFX(Swerve.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX());
+          flywheels = new Flywheels(new FlywheelsIOTalonFX());
         }
         case DEV -> {
           swerve =
