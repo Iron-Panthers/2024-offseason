@@ -8,8 +8,8 @@ public class Flywheels extends SubsystemBase {
   // RPM
   public enum VelocityTarget {
     IDLE(0, 0),
-    SHOOT(3000, 3000),
-    SLOW(90, 90);
+    SHOOT(7500, 7500),
+    SLOW(1200, 1200);
     private int topVelocity, bottomVelocity;
 
     private VelocityTarget(int topVelocity, int bottomVelocity) {

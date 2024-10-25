@@ -53,8 +53,8 @@ public class FlywheelsIOTalonFX implements FlywheelsIO {
     topTalon.getConfigurator().apply(gainsConfig);
     bottomTalon.getConfigurator().apply(gainsConfig);
 
-    topTalon.setInverted(false);
-    topTalon.setInverted(false); // FIXME
+    topTalon.setInverted(true);
+    bottomTalon.setInverted(true); // FIXME
 
     topPositionRads = topTalon.getPosition();
     topVelocityRPM = topTalon.getVelocity();

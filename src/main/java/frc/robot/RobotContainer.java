@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.Swerve;
 import frc.robot.subsystems.flywheels.Flywheels;
+import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.VoltageTarget;
@@ -77,14 +78,14 @@ public class RobotContainer {
 
   private void configureBindings() {
     // -----Driver Controls-----
-    swerve.setDefaultCommand(
-        swerve
-            .run(
-                () -> {
-                  swerve.driveTeleopController(
-                      -driverA.getLeftY(), -driverA.getLeftX(), -driverA.getRightX());
-                })
-            .withName("Drive Teleop"));
+    /*swerve.setDefaultCommand(
+    swerve
+        .run(
+            () -> {
+              swerve.driveTeleopController(
+                  -driverA.getLeftY(), -driverA.getLeftX(), -driverA.getRightX());
+            })
+        .withName("Drive Teleop"));*/
 
     // -----Intake Controls-----
     // FIXME
@@ -112,6 +113,32 @@ public class RobotContainer {
                   intake.setVoltageTarget(VoltageTarget.EJECT);
                 },
                 intake));
+
+    // -----Flywheel Controls-----
+    driverA
+        .y()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  flywheels.setVelocityTarget(VelocityTarget.SHOOT);
+                },
+                flywheels));
+    driverA
+        .b()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  flywheels.setVelocityTarget(VelocityTarget.SLOW);
+                },
+                flywheels));
+    driverA
+        .a()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  flywheels.setVelocityTarget(VelocityTarget.IDLE);
+                },
+                flywheels));
   }
 
   private void configureAutos() {}
