@@ -10,9 +10,10 @@ import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
 import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.Intake.VoltageTarget;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.rollers.Rollers;
+import frc.robot.subsystems.rollers.Rollers.RollerState;
+import frc.robot.subsystems.rollers.intake.Intake;
+import frc.robot.subsystems.rollers.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -32,10 +33,12 @@ public class RobotContainer {
   private final CommandXboxController driverB = new CommandXboxController(1);
 
   private Drive swerve; // FIXME make final, implement other robot types
-  private Intake intake;
+  private Rollers rollers;
   private Flywheels flywheels;
 
   public RobotContainer() {
+    Intake intake = null;
+
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
         case COMP -> {
@@ -84,6 +87,8 @@ public class RobotContainer {
               new ModuleIO() {});
     }
 
+    rollers = new Rollers(intake);
+
     configureBindings();
     configureAutos();
   }
@@ -100,33 +105,10 @@ public class RobotContainer {
         .withName("Drive Teleop"));*/
 
     // -----Intake Controls-----
-    // FIXME
-    driverB
-        .y()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  intake.setVoltageTarget(VoltageTarget.INTAKE);
-                },
-                intake));
-    driverB
-        .b()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  intake.setVoltageTarget(VoltageTarget.IDLE);
-                },
-                intake));
-    driverB
-        .a()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  intake.setVoltageTarget(VoltageTarget.EJECT);
-                },
-                intake));
+    driverA.x().whileTrue(rollers.setTargetCommand(RollerState.INTAKE));
 
     // -----Flywheel Controls-----
+    //
     driverA
         .y()
         .onTrue(

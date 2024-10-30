@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.rollers;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -10,13 +10,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 
-public class IntakeIOTalonFX implements IntakeIO {
-  private static final int id = 13; // FIXME
-  private static final double currentLimitAmps = 40;
-  private static final boolean inverted = false;
-  private static final boolean brake = false;
-  private static final double reduction = 1 / 1;
-
+public abstract class GenericRollersIOTalonFX implements GenericRollersIO {
   private final TalonFX talon;
 
   private final StatusSignal<Double> position;
@@ -29,7 +23,8 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   private final double mechanismReduction;
 
-  public IntakeIOTalonFX() {
+  public GenericRollersIOTalonFX(
+      int id, int currentLimitAmps, boolean inverted, boolean brake, double reduction) {
     talon = new TalonFX(id);
 
     mechanismReduction = reduction;
@@ -52,7 +47,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(GenericRollersIOInputs inputs) {
     inputs.connected =
         BaseStatusSignal.refreshAll(position, velocity, appliedVolts, supplyCurrent).isOK();
     inputs.positionRads =
