@@ -1,39 +1,27 @@
 package frc.robot.subsystems.rollers.intake;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.rollers.GenericRollers;
 
-public class Intake extends SubsystemBase {
-  public enum VoltageTarget {
+public class Intake extends GenericRollers<Intake.Target> {
+  public enum Target implements GenericRollers.VoltageTarget {
     IDLE(0),
-    INTAKE(12), // FIXME
+    INTAKE(12),
     EJECT(-8);
 
     private int volts;
 
-    private VoltageTarget(int volts) {
+    private Target(int volts) {
       this.volts = volts;
+    }
+
+    public int getVolts() {
+      return volts;
     }
   }
 
-  private IntakeIO intakeIO;
-  private IntakeIOInputsAutoLogged intakeInputs = new IntakeIOInputsAutoLogged();
-
-  private VoltageTarget voltageTarget = VoltageTarget.IDLE;
+  private Target voltageTarget = Target.IDLE;
 
   public Intake(IntakeIO intakeIO) {
-    this.intakeIO = intakeIO;
-  }
-
-  @Override
-  public void periodic() {
-    intakeIO.updateInputs(intakeInputs);
-    Logger.processInputs("Mechanism/Intake", intakeInputs);
-
-    intakeIO.runVolts(voltageTarget.volts);
-  }
-
-  public void setVoltageTarget(VoltageTarget target) {
-    voltageTarget = target;
+    super("Intake", intakeIO);
   }
 }
