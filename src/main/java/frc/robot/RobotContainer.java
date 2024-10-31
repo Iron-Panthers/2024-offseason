@@ -12,6 +12,8 @@ import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
 import frc.robot.subsystems.rollers.Rollers;
 import frc.robot.subsystems.rollers.Rollers.RollerState;
+import frc.robot.subsystems.rollers.accelerator.Accelerator;
+import frc.robot.subsystems.rollers.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.rollers.intake.Intake;
 import frc.robot.subsystems.rollers.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
@@ -38,6 +40,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     Intake intake = null;
+    Accelerator accelerator = null;
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
@@ -50,6 +53,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX());
+          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
         }
         case DEV -> {
@@ -61,6 +65,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX()); // FIXME
+          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
         }
         case SIM -> {
@@ -72,6 +77,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX()); // FIXME
+          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
         }
       }
@@ -87,7 +93,7 @@ public class RobotContainer {
               new ModuleIO() {});
     }
 
-    rollers = new Rollers(intake);
+    rollers = new Rollers(intake, accelerator);
 
     configureBindings();
     configureAutos();

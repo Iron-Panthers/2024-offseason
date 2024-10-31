@@ -2,8 +2,8 @@ package frc.robot.subsystems.rollers;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.rollers.accelerator.Accelerator;
 import frc.robot.subsystems.rollers.intake.Intake;
-import frc.robot.subsystems.rollers.intake.Intake.Target;
 import org.littletonrobotics.junction.Logger;
 
 public class Rollers extends SubsystemBase {
@@ -13,25 +13,29 @@ public class Rollers extends SubsystemBase {
   }
 
   private final Intake intake;
+  private final Accelerator accelerator;
 
   private RollerState targetState = RollerState.IDLE;
 
-  public Rollers(Intake intake) {
+  public Rollers(Intake intake, Accelerator accelerator) {
     this.intake = intake;
+    this.accelerator = accelerator;
   }
 
   @Override
   public void periodic() {
-    intake.setVoltageTarget(Target.IDLE);
-
+    intake.setVoltageTarget(Intake.Target.IDLE);
+    accelerator.setVoltageTarget(Accelerator.Target.IDLE);
     switch (targetState) {
       case IDLE -> {}
       case INTAKE -> {
-        intake.setVoltageTarget(Target.INTAKE);
+        intake.setVoltageTarget(Intake.Target.INTAKE);
+        accelerator.setVoltageTarget(Accelerator.Target.INTAKE);
       }
     }
 
     intake.periodic();
+    accelerator.periodic();
 
     Logger.recordOutput("Rollers/TargetState", targetState);
   }
