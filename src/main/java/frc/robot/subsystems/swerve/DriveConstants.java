@@ -46,10 +46,10 @@ public class DriveConstants {
   public static final ModuleConfig[] MODULE_CONFIGS =
       switch (getRobotType()) {
         case COMP -> new ModuleConfig[] {
-          new ModuleConfig(5, 6, 1, new Rotation2d(0), true, false),
-          new ModuleConfig(7, 8, 2, new Rotation2d(0), true, true),
-          new ModuleConfig(9, 10, 3, new Rotation2d(0), true, false),
-          new ModuleConfig(11, 12, 4, new Rotation2d(0), true, true)
+          new ModuleConfig(5, 6, 1, new Rotation2d(0.1855), true, false),
+          new ModuleConfig(7, 8, 2, new Rotation2d(0.1272), true, true),
+          new ModuleConfig(11, 12, 3, new Rotation2d(0.2278), true, false),
+          new ModuleConfig(9, 10, 4, new Rotation2d(-0.2942), true, true)
         };
         case DEV -> new ModuleConfig[] {
           new ModuleConfig(2, 1, 27, new Rotation2d(1.954), true, false),
@@ -71,12 +71,12 @@ public class DriveConstants {
             0, // steerkS
             0, // steerkV
             0, // steerkA
-            0, // steerkP
+            11, // steerkP
             0, // steerkD
             0, // drivekS
             0, // drivekV
             0, // drivekA
-            0, // drivekP
+            1, // drivekP
             0, // drivekD
             5.357142857142857,
             21.428571428571427,
