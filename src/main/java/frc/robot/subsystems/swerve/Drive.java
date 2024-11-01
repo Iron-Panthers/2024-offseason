@@ -82,10 +82,12 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Swerve/DriveMode", driveMode);
   }
 
-  public void driveTeleopController(double xAxis, double yAxis, double omega) {
+  public void driveTeleopController(
+      double xAxis, double yAxis, double joyStick, double triggerLeft, double triggerRight) {
     if (driveMode != DriveModes.TELEOP) { // auto align override?
       driveMode = DriveModes.TELEOP;
     }
+    double omega = joyStick + triggerLeft + triggerRight;
 
     // NWU convention
     /*double theta = Math.atan2(xAxis, yAxis);
@@ -118,5 +120,9 @@ public class Drive extends SubsystemBase {
     if (DriverStation.isAutonomousEnabled()) {
       driveMode = DriveModes.TRAJECTORY;
     }
+  }
+
+  public void zero() {
+    gyroYawOffset = new Rotation2d(0);
   }
 }
