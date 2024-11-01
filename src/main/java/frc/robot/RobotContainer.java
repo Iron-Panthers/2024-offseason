@@ -16,6 +16,8 @@ import frc.robot.subsystems.rollers.accelerator.Accelerator;
 import frc.robot.subsystems.rollers.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.rollers.intake.Intake;
 import frc.robot.subsystems.rollers.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.rollers.serializer.Serializer;
+import frc.robot.subsystems.rollers.serializer.SerializerIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -41,6 +43,7 @@ public class RobotContainer {
   public RobotContainer() {
     Intake intake = null;
     Accelerator accelerator = null;
+    Serializer serializer = null;
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
@@ -55,6 +58,7 @@ public class RobotContainer {
           intake = new Intake(new IntakeIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
+          serializer = new Serializer(new SerializerIOTalonFX());
         }
         case DEV -> {
           swerve =
@@ -67,6 +71,7 @@ public class RobotContainer {
           intake = new Intake(new IntakeIOTalonFX()); // FIXME
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
+          serializer = new Serializer(new SerializerIOTalonFX());
         }
         case SIM -> {
           swerve =
@@ -79,6 +84,7 @@ public class RobotContainer {
           intake = new Intake(new IntakeIOTalonFX()); // FIXME
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
+          serializer = new Serializer(new SerializerIOTalonFX());
         }
       }
     }
@@ -93,7 +99,7 @@ public class RobotContainer {
               new ModuleIO() {});
     }
 
-    rollers = new Rollers(intake, accelerator);
+    rollers = new Rollers(intake, accelerator, serializer);
 
     configureBindings();
     configureAutos();
