@@ -12,15 +12,15 @@ public class PivotConstants {
   public static final int ID = 17;
   public static final int ENCODER_ID = 28;
 
-  public static final double P = 0.3;
+  public static final double P = 0.25;
   public static final double I = 0;
   public static final double D = 0;
 
   public static final double S = 0.03;
   public static final double G = 0.4;
 
-  public static final double UPPER_LIMIT = 80;
+  public static final double UPPER_LIMIT = 70;
 
-  public static final double UPPER_VOLT_LIMIT = 1;
-  public static final double LOWER_VOLT_LIMIT = -1;
+  public static final double UPPER_VOLT_LIMIT = 5;
+  public static final double LOWER_VOLT_LIMIT = -4;
 }

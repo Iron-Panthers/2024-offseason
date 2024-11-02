@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -53,8 +54,9 @@ public class PivotIOTalonFX implements PivotIO {
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     talon.getConfigurator().apply(config);
     talon.setPosition(0);
+    talon.setNeutralMode(NeutralModeValue.Brake);
 
-    positionRotations = talon.getPosition();
+    positionRotations = canCoder.getPosition();
     velocityRPS = talon.getVelocity();
     appliedVolts = talon.getMotorVoltage();
     supplyCurrent = talon.getSupplyCurrent();
@@ -72,7 +74,7 @@ public class PivotIOTalonFX implements PivotIO {
         BaseStatusSignal.refreshAll(
                 positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
             .isOK();
-    inputs.positionRotations = positionRotations.getValueAsDouble();
+    inputs.positionRotations = positionRotations.getValueAsDouble() * 360;
     inputs.velocityRotPerSec = velocityRPS.getValueAsDouble();
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = supplyCurrent.getValueAsDouble();
