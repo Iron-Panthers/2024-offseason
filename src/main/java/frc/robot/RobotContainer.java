@@ -50,7 +50,6 @@ public class RobotContainer {
     Accelerator accelerator = null;
     Serializer serializer = null;
 
-
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
         case COMP -> {
@@ -109,7 +108,6 @@ public class RobotContainer {
     serializerSensor = new SerializerSensor();
     shooterSensor = new ShooterSensor();
 
-
     configureBindings();
     configureAutos();
   }
@@ -126,58 +124,52 @@ public class RobotContainer {
         .withName("Drive Teleop"));*/
 
     // -----Intake Controls-----
-    driverA.leftBumper()
-    .onTrue(
-      new FunctionalCommand(
-        null,
-        ()->rollers.setTargetState(RollerState.INTAKE),
-        interrupted -> rollers.setTargetState(RollerState.IDLE),
-        () -> serializerSensor.get(),
-        rollers)
-      .andThen(
-        new InstantCommand(
-          () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
-          rollers)
-        .withTimeout(0.3)
-      )
-      .andThen(
-        new InstantCommand(
-          () -> rollers.setTargetState(RollerState.IDLE)
-        )
-      )
-    );
-    driverA.b()
-          .onTrue(
-              new FunctionalCommand(
-                  null,
-                  ()->rollers.setTargetState(RollerState.SPEAKER_TRANSFER),
-                  interrupted -> rollers.setTargetState(RollerState.IDLE),
-                  () -> shooterSensor.get(),
-                  rollers)
-    );
-
-    driverA.x()
-      .onTrue(
-        new FunctionalCommand(
-          null,
-          ()->rollers.setTargetState(RollerState.AMP_TRANSFER),
-          interrupted -> rollers.setTargetState(RollerState.IDLE),
-          () -> serializerSensor.get(),
-          rollers)
-      .andThen( 
-        new FunctionalCommand(
-          null,
-          ()->rollers.setTargetState(RollerState.AMP_TRANSFER),
-          interrupted -> rollers.setTargetState(RollerState.IDLE),
-          () -> !serializerSensor.get(),
-          rollers)
-      )                  
-    );
-    
+    // intake note and then outtake for a little time
+    driverA
+        .leftBumper()
+        .onTrue(
+            new FunctionalCommand(
+                    null,
+                    () -> rollers.setTargetState(RollerState.INTAKE),
+                    interrupted -> rollers.setTargetState(RollerState.IDLE),
+                    () -> serializerSensor.get(),
+                    rollers)
+                .andThen(
+                    new InstantCommand(
+                            () -> rollers.setTargetState(RollerState.AMP_TRANSFER), rollers)
+                        .withTimeout(0.3))
+                .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
+    // transfer note to shooter
+    driverA
+        .b()
+        .onTrue(
+            new FunctionalCommand(
+                null,
+                () -> rollers.setTargetState(RollerState.SPEAKER_TRANSFER),
+                interrupted -> rollers.setTargetState(RollerState.IDLE),
+                () -> shooterSensor.get(),
+                rollers));
+    // Outtake a little to amp
+    driverA
+        .x()
+        .onTrue(
+            new FunctionalCommand(
+                    null,
+                    () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
+                    interrupted -> rollers.setTargetState(RollerState.IDLE),
+                    () -> serializerSensor.get(),
+                    rollers)
+                .andThen(
+                    new FunctionalCommand(
+                        null,
+                        () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
+                        interrupted -> rollers.setTargetState(RollerState.IDLE),
+                        () -> !serializerSensor.get(),
+                        rollers)));
 
     // -----Flywheel Controls-----
     //
-    
+
     driverA
         .y()
         .onTrue(

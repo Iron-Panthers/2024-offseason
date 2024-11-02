@@ -1,6 +1,7 @@
 package frc.robot.subsystems.rollers.accelerator;
 
 import frc.robot.subsystems.rollers.GenericRollers;
+import frc.robot.subsystems.rollers.Rollers;
 
 public class Accelerator extends GenericRollers<Accelerator.Target> {
   public enum Target implements GenericRollers.VoltageTarget {
@@ -27,5 +28,32 @@ public class Accelerator extends GenericRollers<Accelerator.Target> {
 
   public Accelerator(AcceleratorIO acceleratorIO) {
     super("Accelerator", acceleratorIO);
+  }
+
+  @Override
+  public void setVoltageTarget(Rollers.RollerState rVoltageState) {
+    switch (rVoltageState) {
+      case IDLE -> {
+        voltageTarget = Target.IDLE;
+      }
+      case INTAKE -> {
+        voltageTarget = Target.INTAKE;
+      }
+      case SHOOT_SPEAKER -> {
+        voltageTarget = Target.SHOOT_SPEAKER;
+      }
+      case SHOOT_AMP -> {
+        voltageTarget = Target.SHOOT_AMP;
+      }
+      case SPEAKER_TRANSFER -> {
+        voltageTarget = Target.SPEAKER_TRANSFER;
+      }
+      case AMP_TRANSFER -> {
+        voltageTarget = Target.AMP_TRANSFER;
+      }
+      case EJECT -> {
+        voltageTarget = Target.EJECT;
+      }
+    }
   }
 }

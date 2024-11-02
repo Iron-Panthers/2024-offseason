@@ -15,8 +15,7 @@ public class Rollers extends SubsystemBase {
     SHOOT_AMP,
     SPEAKER_TRANSFER,
     AMP_TRANSFER,
-    EJECT,
-    SHOOT
+    EJECT
   }
 
   private final Intake intake;
@@ -38,47 +37,13 @@ public class Rollers extends SubsystemBase {
 
   @Override
   public void periodic() {
-    intake.setVoltageTarget(Intake.Target.IDLE);
-    accelerator.setVoltageTarget(Accelerator.Target.IDLE);
-    serializer.setVoltageTarget(Serializer.Target.IDLE);
-    switch (targetState) {
-      case IDLE -> {}
-      case INTAKE -> {
-        intake.setVoltageTarget(Intake.Target.INTAKE);
-        accelerator.setVoltageTarget(Accelerator.Target.INTAKE);
-        serializer.setVoltageTarget(Serializer.Target.INTAKE);
-      }
-      case SHOOT_AMP -> {
-        intake.setVoltageTarget(Intake.Target.SHOOT_AMP);
-        accelerator.setVoltageTarget(Accelerator.Target.SHOOT_AMP);
-        serializer.setVoltageTarget(Serializer.Target.SHOOT_AMP);
-      }
-      case SHOOT_SPEAKER -> {
-        intake.setVoltageTarget(Intake.Target.SHOOT_SPEAKER);
-        accelerator.setVoltageTarget(Accelerator.Target.SHOOT_SPEAKER);
-        serializer.setVoltageTarget(Serializer.Target.SHOOT_SPEAKER);
-      }
-      case SPEAKER_TRANSFER -> {
-        intake.setVoltageTarget(Intake.Target.SPEAKER_TRANSFER);
-        accelerator.setVoltageTarget(Accelerator.Target.SPEAKER_TRANSFER);
-        serializer.setVoltageTarget(Serializer.Target.SPEAKER_TRANSFER);
-      }
-      case AMP_TRANSFER -> {
-        intake.setVoltageTarget(Intake.Target.AMP_TRANSFER);
-        accelerator.setVoltageTarget(Accelerator.Target.AMP_TRANSFER);
-        serializer.setVoltageTarget(Serializer.Target.AMP_TRANSFER);
-      }
-      case EJECT -> {
-        intake.setVoltageTarget(Intake.Target.EJECT);
-        accelerator.setVoltageTarget(Accelerator.Target.EJECT);
-        serializer.setVoltageTarget(Serializer.Target.EJECT);
-      }
-
+    for (GenericRollers g : genericRollers) {
+      g.setVoltageTarget(RollerState.IDLE);
+      g.setVoltageTarget(targetState);
     }
-
-    intake.periodic();
-    accelerator.periodic();
-    serializer.periodic();
+    for (GenericRollers g : genericRollers) {
+      g.periodic();
+    }
 
     Logger.recordOutput("Rollers/TargetState", targetState);
   }

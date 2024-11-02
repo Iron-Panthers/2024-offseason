@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 public abstract class GenericRollers<G extends GenericRollers.VoltageTarget> {
   public interface VoltageTarget {
+
     int getVolts();
   }
 
@@ -30,7 +31,5 @@ public abstract class GenericRollers<G extends GenericRollers.VoltageTarget> {
     return voltageTarget;
   }
 
-  public void setVoltageTarget(G voltageTarget) {
-    this.voltageTarget = voltageTarget;
-  }
+  public void setVoltageTarget(Rollers.RollerState voltageTarget) {}
 }
