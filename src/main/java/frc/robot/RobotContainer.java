@@ -127,22 +127,51 @@ public class RobotContainer {
 
     // -----Intake Controls-----
     driverA.leftBumper()
+    .onTrue(
+      new FunctionalCommand(
+        null,
+        ()->rollers.setTargetState(RollerState.INTAKE),
+        interrupted -> rollers.setTargetState(RollerState.IDLE),
+        () -> serializerSensor.get(),
+        rollers)
+      .andThen(
+        new InstantCommand(
+          () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
+          rollers)
+        .withTimeout(0.3)
+      )
+      .andThen(
+        new InstantCommand(
+          () -> rollers.setTargetState(RollerState.IDLE)
+        )
+      )
+    );
+    driverA.b()
           .onTrue(
               new FunctionalCommand(
                   null,
-                  ()->rollers.setTargetState(RollerState.INTAKE),
+                  ()->rollers.setTargetState(RollerState.SPEAKER_TRANSFER),
                   interrupted -> rollers.setTargetState(RollerState.IDLE),
-                  () -> serializerSensor.get(),
+                  () -> shooterSensor.get(),
                   rollers)
     );
-    driverA.rightBumper()
-          .onTrue(
-              new FunctionalCommand(
-                  null,
-                  ()->rollers.setTargetState(RollerState.SHOOT),
-                  interrupted -> rollers.setTargetState(RollerState.IDLE),
-                  () -> serializerSensor.get(),
-                  rollers)
+
+    driverA.x()
+      .onTrue(
+        new FunctionalCommand(
+          null,
+          ()->rollers.setTargetState(RollerState.AMP_TRANSFER),
+          interrupted -> rollers.setTargetState(RollerState.IDLE),
+          () -> serializerSensor.get(),
+          rollers)
+      .andThen( 
+        new FunctionalCommand(
+          null,
+          ()->rollers.setTargetState(RollerState.AMP_TRANSFER),
+          interrupted -> rollers.setTargetState(RollerState.IDLE),
+          () -> !serializerSensor.get(),
+          rollers)
+      )                  
     );
     
 
