@@ -1,6 +1,6 @@
-package frc.robot.subsystems.superstructure.elevator;
+package frc.robot.subsystems.superstructure.pivot;
 
-public class ElevatorConstants {
+public class PivotConstants {
   public static final double REDUCTION = 1.892 / 1; // rotations to inches
   public static final boolean INVERTED = false; // FIXME
 

@@ -14,6 +14,10 @@ import frc.robot.subsystems.rollers.Rollers;
 import frc.robot.subsystems.rollers.Rollers.RollerState;
 import frc.robot.subsystems.rollers.intake.Intake;
 import frc.robot.subsystems.rollers.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.Superstructure.SuperstructureState;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -35,6 +39,7 @@ public class RobotContainer {
   private Drive swerve; // FIXME make final, implement other robot types
   private Rollers rollers;
   private Flywheels flywheels;
+  private Superstructure superstructure;
 
   public RobotContainer() {
     Intake intake = null;
@@ -88,6 +93,7 @@ public class RobotContainer {
     }
 
     rollers = new Rollers(intake);
+    superstructure = new Superstructure(new Elevator(new ElevatorIOTalonFX()));
 
     configureBindings();
     configureAutos();
@@ -133,6 +139,14 @@ public class RobotContainer {
                   flywheels.setVelocityTarget(VelocityTarget.IDLE);
                 },
                 flywheels));
+    // elevator commands
+    driverB
+        .a()
+        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.AMP)));
+
+    driverB
+        .b()
+        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.STOW)));
   }
 
   private void configureAutos() {}

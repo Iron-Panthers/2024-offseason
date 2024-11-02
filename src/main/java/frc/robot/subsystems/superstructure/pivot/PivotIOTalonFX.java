@@ -1,4 +1,4 @@
-package frc.robot.subsystems.superstructure.elevator;
+package frc.robot.subsystems.superstructure.pivot;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -11,10 +11,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 
-public class ElevatorIOTalonFX implements ElevatorIO {
+public class PivotIOTalonFX implements PivotIO {
   private final TalonFX talon;
 
-  private final PIDController elevatorPID;
+  private final PIDController pivotPID;
 
   private final StatusSignal<Double> positionRotations;
   private final StatusSignal<Double> velocityRPS;
@@ -26,15 +26,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final VoltageOut voltageOutput = new VoltageOut(0).withUpdateFreqHz(0);
   private final NeutralOut neutralOutput = new NeutralOut();
 
-  public ElevatorIOTalonFX() {
-    talon = new TalonFX(ElevatorConstants.ID);
+  public PivotIOTalonFX() {
+    talon = new TalonFX(PivotConstants.ID);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.MotorOutput.Inverted =
-        ElevatorConstants.INVERTED
+        PivotConstants.INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    config.CurrentLimits.SupplyCurrentLimit = ElevatorConstants.SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimit = PivotConstants.SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     talon.getConfigurator().apply(config);
     talon.setPosition(0);
@@ -45,14 +45,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     supplyCurrent = talon.getSupplyCurrent();
     temp = talon.getDeviceTemp();
 
-    elevatorPID = new PIDController(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D);
+    pivotPID = new PIDController(PivotConstants.P, PivotConstants.I, PivotConstants.D);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50, positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp);
   }
 
   @Override
-  public void updateInputs(ElevatorIOInputs inputs) {
+  public void updateInputs(PivotIOInputs inputs) {
     inputs.connected =
         BaseStatusSignal.refreshAll(
                 positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
@@ -67,18 +67,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void runPosition(double position) {
     double pidOutput =
-        elevatorPID.calculate(
-            getPosition(), MathUtil.clamp(position, 0, ElevatorConstants.UPPER_LIMIT));
+        pivotPID.calculate(
+            getPosition(), MathUtil.clamp(position, 0, PivotConstants.UPPER_LIMIT));
     talon.setControl(
         voltageOutput.withOutput(
             MathUtil.clamp(
                 pidOutput
                     + ((Math.abs(pidOutput) > 0.04)
-                        ? ElevatorConstants.S * Math.signum(pidOutput)
+                        ? PivotConstants.S * Math.signum(pidOutput)
                         : 0)
-                    + ElevatorConstants.G,
-                ElevatorConstants.LOWER_VOLT_LIMIT,
-                ElevatorConstants.UPPER_VOLT_LIMIT)));
+                    + PivotConstants.G,
+                PivotConstants.LOWER_VOLT_LIMIT,
+                PivotConstants.UPPER_VOLT_LIMIT)));
   }
 
   @Override
@@ -92,7 +92,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   }
 
   private double getPosition() {
-    return talon.getPosition().getValueAsDouble() / ElevatorConstants.REDUCTION;
+    return talon.getPosition().getValueAsDouble() / PivotConstants.REDUCTION;
   }
 
   public void setOffset() {
