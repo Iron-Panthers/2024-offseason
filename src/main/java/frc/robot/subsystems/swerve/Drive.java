@@ -88,6 +88,7 @@ public class Drive extends SubsystemBase {
       driveMode = DriveModes.TELEOP;
     }
     double omega = joyStick + triggerLeft + triggerRight;
+    omega = Math.pow(omega, 2) * Math.signum(omega);
 
     // NWU convention
     /*double theta = Math.atan2(xAxis, yAxis);
@@ -123,6 +124,6 @@ public class Drive extends SubsystemBase {
   }
 
   public void zero() {
-    gyroYawOffset = new Rotation2d(0);
+    gyroYawOffset = Rotation2d.fromDegrees(gyroInputs.yawPosition.getDegrees());
   }
 }
