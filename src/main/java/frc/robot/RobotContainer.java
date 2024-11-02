@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
@@ -18,6 +19,8 @@ import frc.robot.subsystems.rollers.intake.Intake;
 import frc.robot.subsystems.rollers.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.rollers.serializer.Serializer;
 import frc.robot.subsystems.rollers.serializer.SerializerIOTalonFX;
+import frc.robot.subsystems.sensors.SerializerSensor;
+import frc.robot.subsystems.sensors.ShooterSensor;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -39,11 +42,14 @@ public class RobotContainer {
   private Drive swerve; // FIXME make final, implement other robot types
   private Rollers rollers;
   private Flywheels flywheels;
+  private SerializerSensor serializerSensor;
+  private ShooterSensor shooterSensor;
 
   public RobotContainer() {
     Intake intake = null;
     Accelerator accelerator = null;
     Serializer serializer = null;
+
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
@@ -100,6 +106,9 @@ public class RobotContainer {
     }
 
     rollers = new Rollers(intake, accelerator, serializer);
+    serializerSensor = new SerializerSensor();
+    shooterSensor = new ShooterSensor();
+
 
     configureBindings();
     configureAutos();
@@ -117,10 +126,29 @@ public class RobotContainer {
         .withName("Drive Teleop"));*/
 
     // -----Intake Controls-----
-    driverA.x().whileTrue(rollers.setTargetCommand(RollerState.INTAKE));
+    driverA.leftBumper()
+          .onTrue(
+              new FunctionalCommand(
+                  null,
+                  ()->rollers.setTargetState(RollerState.INTAKE),
+                  interrupted -> rollers.setTargetState(RollerState.IDLE),
+                  () -> serializerSensor.get(),
+                  rollers)
+    );
+    driverA.rightBumper()
+          .onTrue(
+              new FunctionalCommand(
+                  null,
+                  ()->rollers.setTargetState(RollerState.SHOOT),
+                  interrupted -> rollers.setTargetState(RollerState.IDLE),
+                  () -> serializerSensor.get(),
+                  rollers)
+    );
+    
 
     // -----Flywheel Controls-----
     //
+    
     driverA
         .y()
         .onTrue(

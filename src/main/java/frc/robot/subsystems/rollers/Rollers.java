@@ -10,12 +10,19 @@ import org.littletonrobotics.junction.Logger;
 public class Rollers extends SubsystemBase {
   public enum RollerState {
     IDLE,
-    INTAKE
+    INTAKE,
+    SHOOT_SPEAKER,
+    SHOOT_AMP,
+    SPEAKER_TRANSFER,
+    AMP_TRANSFER,
+    EJECT,
+    SHOOT
   }
 
   private final Intake intake;
   private final Accelerator accelerator;
   private final Serializer serializer;
+  private final GenericRollers[] genericRollers;
 
   private RollerState targetState = RollerState.IDLE;
 
@@ -23,6 +30,10 @@ public class Rollers extends SubsystemBase {
     this.intake = intake;
     this.accelerator = accelerator;
     this.serializer = serializer;
+    genericRollers = new GenericRollers[3];
+    genericRollers[0] = intake;
+    genericRollers[1] = accelerator;
+    genericRollers[2] = serializer;
   }
 
   @Override
@@ -37,6 +48,32 @@ public class Rollers extends SubsystemBase {
         accelerator.setVoltageTarget(Accelerator.Target.INTAKE);
         serializer.setVoltageTarget(Serializer.Target.INTAKE);
       }
+      case SHOOT_AMP -> {
+        intake.setVoltageTarget(Intake.Target.SHOOT_AMP);
+        accelerator.setVoltageTarget(Accelerator.Target.SHOOT_AMP);
+        serializer.setVoltageTarget(Serializer.Target.SHOOT_AMP);
+      }
+      case SHOOT_SPEAKER -> {
+        intake.setVoltageTarget(Intake.Target.SHOOT_SPEAKER);
+        accelerator.setVoltageTarget(Accelerator.Target.SHOOT_SPEAKER);
+        serializer.setVoltageTarget(Serializer.Target.SHOOT_SPEAKER);
+      }
+      case SPEAKER_TRANSFER -> {
+        intake.setVoltageTarget(Intake.Target.SPEAKER_TRANSFER);
+        accelerator.setVoltageTarget(Accelerator.Target.SPEAKER_TRANSFER);
+        serializer.setVoltageTarget(Serializer.Target.SPEAKER_TRANSFER);
+      }
+      case AMP_TRANSFER -> {
+        intake.setVoltageTarget(Intake.Target.AMP_TRANSFER);
+        accelerator.setVoltageTarget(Accelerator.Target.AMP_TRANSFER);
+        serializer.setVoltageTarget(Serializer.Target.AMP_TRANSFER);
+      }
+      case EJECT -> {
+        intake.setVoltageTarget(Intake.Target.EJECT);
+        accelerator.setVoltageTarget(Accelerator.Target.EJECT);
+        serializer.setVoltageTarget(Serializer.Target.EJECT);
+      }
+
     }
 
     intake.periodic();

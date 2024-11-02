@@ -5,8 +5,12 @@ import frc.robot.subsystems.rollers.GenericRollers;
 public class Accelerator extends GenericRollers<Accelerator.Target> {
   public enum Target implements GenericRollers.VoltageTarget {
     IDLE(0),
-    INTAKE(12),
-    EJECT(-8);
+    INTAKE(0),
+    SHOOT_SPEAKER(12),
+    SHOOT_AMP(0),
+    SPEAKER_TRANSFER(5),
+    AMP_TRANSFER(-5),
+    EJECT(0);
 
     private int volts;
 
