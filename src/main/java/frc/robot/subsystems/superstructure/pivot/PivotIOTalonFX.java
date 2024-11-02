@@ -2,17 +2,22 @@ package frc.robot.subsystems.superstructure.pivot;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 
 public class PivotIOTalonFX implements PivotIO {
   private final TalonFX talon;
+  private final CANcoder canCoder;
 
   private final PIDController pivotPID;
 
@@ -22,12 +27,22 @@ public class PivotIOTalonFX implements PivotIO {
   private final StatusSignal<Double> supplyCurrent;
   private final StatusSignal<Double> temp;
 
-  private final PositionVoltage positionControl = new PositionVoltage(0).withUpdateFreqHz(0);
   private final VoltageOut voltageOutput = new VoltageOut(0).withUpdateFreqHz(0);
   private final NeutralOut neutralOutput = new NeutralOut();
 
   public PivotIOTalonFX() {
     talon = new TalonFX(PivotConstants.ID);
+    canCoder = new CANcoder(PivotConstants.ENCODER_ID);
+    canCoder
+        .getConfigurator()
+        .apply(
+            new CANcoderConfiguration()
+                .withMagnetSensor(
+                    new MagnetSensorConfigs()
+                        .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+                        .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
+                        .withMagnetOffset(0)));
+    canCoder.getConfigurator().setPosition(0);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.MotorOutput.Inverted =
@@ -67,16 +82,13 @@ public class PivotIOTalonFX implements PivotIO {
   @Override
   public void runPosition(double position) {
     double pidOutput =
-        pivotPID.calculate(
-            getPosition(), MathUtil.clamp(position, 0, PivotConstants.UPPER_LIMIT));
+        pivotPID.calculate(getPosition(), MathUtil.clamp(position, 0, PivotConstants.UPPER_LIMIT));
     talon.setControl(
         voltageOutput.withOutput(
             MathUtil.clamp(
                 pidOutput
-                    + ((Math.abs(pidOutput) > 0.04)
-                        ? PivotConstants.S * Math.signum(pidOutput)
-                        : 0)
-                    + PivotConstants.G,
+                    + ((Math.abs(pidOutput) > 0.04) ? PivotConstants.S * Math.signum(pidOutput) : 0)
+                    + getFeedforward(),
                 PivotConstants.LOWER_VOLT_LIMIT,
                 PivotConstants.UPPER_VOLT_LIMIT)));
   }
@@ -92,7 +104,12 @@ public class PivotIOTalonFX implements PivotIO {
   }
 
   private double getPosition() {
-    return talon.getPosition().getValueAsDouble() / PivotConstants.REDUCTION;
+    return canCoder.getPosition().getValueAsDouble() * 360 / PivotConstants.REDUCTION;
+  }
+
+  private double getFeedforward() {
+    return Math.cos(Math.toRadians(canCoder.getPosition().getValueAsDouble() * 360))
+        * PivotConstants.G;
   }
 
   public void setOffset() {

@@ -6,7 +6,8 @@ public class Pivot {
   public enum PivotTarget {
     STOW(0),
     ZERO(0),
-    AMP(32);
+    SUBWOOF_SHOT(53),
+    SHUTTLE(45);
     private int position;
 
     private PivotTarget(int position) {

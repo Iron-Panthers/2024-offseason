@@ -18,6 +18,8 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Superstructure.SuperstructureState;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.superstructure.pivot.Pivot;
+import frc.robot.subsystems.superstructure.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -93,7 +95,8 @@ public class RobotContainer {
     }
 
     rollers = new Rollers(intake);
-    superstructure = new Superstructure(new Elevator(new ElevatorIOTalonFX()));
+    superstructure =
+        new Superstructure(new Elevator(new ElevatorIOTalonFX()), new Pivot(new PivotIOTalonFX()));
 
     configureBindings();
     configureAutos();
@@ -147,6 +150,15 @@ public class RobotContainer {
     driverB
         .b()
         .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.STOW)));
+    driverB
+        .y()
+        .onTrue(
+            new InstantCommand(
+                () -> superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT)));
+    driverB
+        .x()
+        .onTrue(
+            new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.SHUTTLE)));
   }
 
   private void configureAutos() {}
