@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.rollers.intake.Intake;
 import frc.robot.subsystems.rollers.intake.Intake.Target;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Rollers extends SubsystemBase {
@@ -14,10 +15,14 @@ public class Rollers extends SubsystemBase {
 
   private final Intake intake;
 
+  private final RollerSensorsIO sensorsIO;
+  private RollerSensorsIOInputsAutoLogged sensorsInputs = new RollerSensorsIOInputsAutoLogged();
+
   private RollerState targetState = RollerState.IDLE;
 
-  public Rollers(Intake intake) {
+  public Rollers(Intake intake, RollerSensorsIO sensorsIO) {
     this.intake = intake;
+    this.sensorsIO = sensorsIO;
   }
 
   @Override
@@ -52,5 +57,10 @@ public class Rollers extends SubsystemBase {
         () -> {
           this.targetState = RollerState.IDLE;
         });
+  }
+
+  @AutoLogOutput
+  public boolean isContactingNote() {
+    return intake.isContactingNote();
   }
 }

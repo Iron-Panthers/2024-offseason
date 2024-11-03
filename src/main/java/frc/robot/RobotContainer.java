@@ -10,6 +10,8 @@ import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
 import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
+import frc.robot.subsystems.rollers.RollerSensorsIO;
+import frc.robot.subsystems.rollers.RollerSensorsIOComp;
 import frc.robot.subsystems.rollers.Rollers;
 import frc.robot.subsystems.rollers.Rollers.RollerState;
 import frc.robot.subsystems.rollers.intake.Intake;
@@ -38,6 +40,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     Intake intake = null;
+    RollerSensorsIO rollerSensorsIO = null;
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
@@ -50,6 +53,8 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX());
+          rollerSensorsIO = new RollerSensorsIOComp();
+
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
         }
         case DEV -> {
@@ -87,7 +92,7 @@ public class RobotContainer {
               new ModuleIO() {});
     }
 
-    rollers = new Rollers(intake);
+    rollers = new Rollers(intake, rollerSensorsIO);
 
     configureBindings();
     configureAutos();
