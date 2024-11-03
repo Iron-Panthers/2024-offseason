@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
@@ -129,39 +130,39 @@ public class RobotContainer {
         .leftBumper()
         .onTrue(
             new FunctionalCommand(
-                    null,
+                    () -> serializerSensor.get(), // because null did not work
                     () -> rollers.setTargetState(RollerState.INTAKE),
                     interrupted -> rollers.setTargetState(RollerState.IDLE),
                     () -> serializerSensor.get(),
                     rollers)
                 .andThen(
-                    new InstantCommand(
-                            () -> rollers.setTargetState(RollerState.AMP_TRANSFER), rollers)
-                        .withTimeout(0.3))
+                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
+                        .withTimeout(0.6))
                 .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
+
     // transfer note to shooter
     driverA
         .b()
         .onTrue(
             new FunctionalCommand(
-                null,
+                () -> serializerSensor.get(), // because null did not work
                 () -> rollers.setTargetState(RollerState.SPEAKER_TRANSFER),
                 interrupted -> rollers.setTargetState(RollerState.IDLE),
-                () -> shooterSensor.get(),
+                () -> !shooterSensor.get(),
                 rollers));
     // Outtake a little to amp
     driverA
         .x()
         .onTrue(
             new FunctionalCommand(
-                    null,
+                    () -> serializerSensor.get(), // because null did not work
                     () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
                     interrupted -> rollers.setTargetState(RollerState.IDLE),
                     () -> serializerSensor.get(),
                     rollers)
                 .andThen(
                     new FunctionalCommand(
-                        null,
+                        () -> serializerSensor.get(), // because null did not work
                         () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
                         interrupted -> rollers.setTargetState(RollerState.IDLE),
                         () -> !serializerSensor.get(),
@@ -175,7 +176,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.SHOOT);
+                  flywheels.setVelocityTarget(VelocityTarget.SLOW);
                 },
                 flywheels));
     driverA
@@ -183,7 +184,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.SLOW);
+                  flywheels.setVelocityTarget(VelocityTarget.SHOOT);
                 },
                 flywheels));
     driverA
@@ -194,6 +195,21 @@ public class RobotContainer {
                   flywheels.setVelocityTarget(VelocityTarget.IDLE);
                 },
                 flywheels));
+    driverA
+        .povDown()
+        .onTrue(
+            new FunctionalCommand(
+                    () -> rollers.setTargetState(Rollers.RollerState.SHOOT_SPEAKER), rollers)
+                .alongWith(
+                    new InstantCommand(
+                        () -> flywheels.setVelocityTarget(Flywheels.VelocityTarget.SHOOT)))
+                .andThen(new WaitCommand(2))
+                .andThen(
+                    new InstantCommand(
+                        () -> rollers.setTargetState(Rollers.RollerState.IDLE), rollers))
+                .alongWith(
+                    new InstantCommand(
+                        () -> flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE))));
   }
 
   private void configureAutos() {}

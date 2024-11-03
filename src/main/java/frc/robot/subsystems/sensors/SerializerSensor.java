@@ -15,6 +15,6 @@ public class SerializerSensor implements GenericSensorsIO {
   }
 
   public boolean get() {
-    return sensor.get();
+    return !sensor.get();
   }
 }

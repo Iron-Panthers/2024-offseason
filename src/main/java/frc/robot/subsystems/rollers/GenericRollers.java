@@ -31,5 +31,7 @@ public abstract class GenericRollers<G extends GenericRollers.VoltageTarget> {
     return voltageTarget;
   }
 
-  public void setVoltageTarget(Rollers.RollerState voltageTarget) {}
+  public void setVoltageTarget(G voltageTarget) {
+    this.voltageTarget = voltageTarget;
+  }
 }

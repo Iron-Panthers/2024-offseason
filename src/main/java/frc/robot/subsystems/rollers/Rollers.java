@@ -21,7 +21,6 @@ public class Rollers extends SubsystemBase {
   private final Intake intake;
   private final Accelerator accelerator;
   private final Serializer serializer;
-  private final GenericRollers[] genericRollers;
 
   private RollerState targetState = RollerState.IDLE;
 
@@ -29,21 +28,50 @@ public class Rollers extends SubsystemBase {
     this.intake = intake;
     this.accelerator = accelerator;
     this.serializer = serializer;
-    genericRollers = new GenericRollers[3];
-    genericRollers[0] = intake;
-    genericRollers[1] = accelerator;
-    genericRollers[2] = serializer;
   }
 
   @Override
   public void periodic() {
-    for (GenericRollers g : genericRollers) {
-      g.setVoltageTarget(RollerState.IDLE);
-      g.setVoltageTarget(targetState);
+    switch (targetState) {
+      case IDLE -> {
+        intake.setVoltageTarget(Intake.Target.IDLE);
+        accelerator.setVoltageTarget(Accelerator.Target.IDLE);
+        serializer.setVoltageTarget(Serializer.Target.IDLE);
+      }
+      case INTAKE -> {
+        intake.setVoltageTarget(Intake.Target.INTAKE);
+        accelerator.setVoltageTarget(Accelerator.Target.INTAKE);
+        serializer.setVoltageTarget(Serializer.Target.INTAKE);
+      }
+      case SHOOT_AMP -> {
+        intake.setVoltageTarget(Intake.Target.SHOOT_AMP);
+        accelerator.setVoltageTarget(Accelerator.Target.SHOOT_AMP);
+        serializer.setVoltageTarget(Serializer.Target.SHOOT_AMP);
+      }
+      case SHOOT_SPEAKER -> {
+        intake.setVoltageTarget(Intake.Target.SHOOT_SPEAKER);
+        accelerator.setVoltageTarget(Accelerator.Target.SHOOT_SPEAKER);
+        serializer.setVoltageTarget(Serializer.Target.SHOOT_SPEAKER);
+      }
+      case SPEAKER_TRANSFER -> {
+        intake.setVoltageTarget(Intake.Target.SPEAKER_TRANSFER);
+        accelerator.setVoltageTarget(Accelerator.Target.SPEAKER_TRANSFER);
+        serializer.setVoltageTarget(Serializer.Target.SPEAKER_TRANSFER);
+      }
+      case AMP_TRANSFER -> {
+        intake.setVoltageTarget(Intake.Target.AMP_TRANSFER);
+        accelerator.setVoltageTarget(Accelerator.Target.AMP_TRANSFER);
+        serializer.setVoltageTarget(Serializer.Target.AMP_TRANSFER);
+      }
+      case EJECT -> {
+        intake.setVoltageTarget(Intake.Target.EJECT);
+        accelerator.setVoltageTarget(Accelerator.Target.EJECT);
+        serializer.setVoltageTarget(Serializer.Target.EJECT);
+      }
     }
-    for (GenericRollers g : genericRollers) {
-      g.periodic();
-    }
+    intake.periodic();
+    accelerator.periodic();
+    serializer.periodic();
 
     Logger.recordOutput("Rollers/TargetState", targetState);
   }
