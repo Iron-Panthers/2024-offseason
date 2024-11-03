@@ -29,8 +29,7 @@ public class Rollers extends SubsystemBase {
 
   private RollerState targetState = RollerState.IDLE;
 
-  public Rollers(Intake intake, RollerSensorsIO sensorsIO) {
-  public Rollers(Intake intake, Accelerator accelerator, Serializer serializer) {
+  public Rollers(Intake intake, Accelerator accelerator, Serializer serializer, RollerSensorsIO sensorsIO) {
     this.intake = intake;
     this.sensorsIO = sensorsIO;
     this.accelerator = accelerator;
@@ -104,5 +103,13 @@ public class Rollers extends SubsystemBase {
   @AutoLogOutput
   public boolean isContactingNote() {
     return intake.isContactingNote();
+  }
+
+  public boolean serializerDetected(){
+    return sensorsInputs.serializerDetected;
+  }
+
+  public boolean acceleratorDetected(){
+    return sensorsInputs.acceleratorDetected;
   }
 }

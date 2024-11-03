@@ -28,8 +28,6 @@ import frc.robot.subsystems.superstructure.pivot.Pivot;
 import frc.robot.subsystems.superstructure.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.rollers.serializer.Serializer;
 import frc.robot.subsystems.rollers.serializer.SerializerIOTalonFX;
-import frc.robot.subsystems.sensors.SerializerSensor;
-import frc.robot.subsystems.sensors.ShooterSensor;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -52,8 +50,7 @@ public class RobotContainer {
   private Rollers rollers;
   private Flywheels flywheels;
   private Superstructure superstructure;
-  private SerializerSensor serializerSensor;
-  private ShooterSensor shooterSensor;
+
 
   public RobotContainer() {
     Intake intake = null;
@@ -119,9 +116,7 @@ public class RobotContainer {
 
     superstructure =
         new Superstructure(new Elevator(new ElevatorIOTalonFX()), new Pivot(new PivotIOTalonFX()));
-    serializerSensor = new SerializerSensor();
-    shooterSensor = new ShooterSensor();
-    rollers = new Rollers(intake, rollerSensorsIO);
+    rollers = new Rollers(intake, accelerator, serializer, rollerSensorsIO);
 
     configureBindings();
     configureAutos();
@@ -148,10 +143,10 @@ public class RobotContainer {
         .leftBumper()
         .onTrue(
             new FunctionalCommand(
-                    () -> serializerSensor.get(), // because null did not work
+                    () -> rollers.serializerDetected(), // because null did not work
                     () -> rollers.setTargetState(RollerState.INTAKE),
                     interrupted -> rollers.setTargetState(RollerState.IDLE),
-                    () -> serializerSensor.get(),
+                    () -> rollers.serializerDetected(),
                     rollers)
                 .andThen(
                     new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
@@ -163,28 +158,39 @@ public class RobotContainer {
         .b()
         .onTrue(
             new FunctionalCommand(
-                () -> serializerSensor.get(), // because null did not work
+                () -> rollers.acceleratorDetected(), // because null did not work
                 () -> rollers.setTargetState(RollerState.SPEAKER_TRANSFER),
                 interrupted -> rollers.setTargetState(RollerState.IDLE),
-                () -> !shooterSensor.get(),
+                () -> rollers.acceleratorDetected(),
                 rollers));
     // Outtake a little to amp
     driverA
         .x()
         .onTrue(
             new FunctionalCommand(
-                    () -> serializerSensor.get(), // because null did not work
+                    () -> rollers.serializerDetected(), // because null did not work
                     () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
                     interrupted -> rollers.setTargetState(RollerState.IDLE),
-                    () -> serializerSensor.get(),
+                    () -> rollers.serializerDetected(),
                     rollers)
                 .andThen(
                     new FunctionalCommand(
-                        () -> serializerSensor.get(), // because null did not work
+                        () -> rollers.serializerDetected(), // because null did not work
                         () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
                         interrupted -> rollers.setTargetState(RollerState.IDLE),
-                        () -> !serializerSensor.get(),
-                        rollers)));
+                        () -> !rollers.serializerDetected(),
+                        rollers))
+                .andThen( new FunctionalCommand(
+                    () -> rollers.serializerDetected(), // because null did not work
+                    () -> rollers.setTargetState(RollerState.INTAKE),
+                    interrupted -> rollers.setTargetState(RollerState.IDLE),
+                    () -> rollers.serializerDetected(),
+                    rollers))
+                .andThen(
+                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
+                        .withTimeout(0.6))
+                .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE)))
+                );
 
     // -----Flywheel Controls-----
     //
@@ -216,7 +222,7 @@ public class RobotContainer {
     driverA
         .povDown()
         .onTrue(
-            new FunctionalCommand(
+            new InstantCommand(
                     () -> rollers.setTargetState(Rollers.RollerState.SHOOT_SPEAKER), rollers)
                 .alongWith(
                     new InstantCommand(

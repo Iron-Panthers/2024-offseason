@@ -6,8 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 public class RollerSensorsIOComp implements RollerSensorsIO {
   // FIXME; pretty sure rio DIO pullup
-  private final DigitalInput serializerSensor = new DigitalInput(-1);
-  private final DigitalInput acceleratorSensor = new DigitalInput(-1);
+  private final DigitalInput serializerSensor = new DigitalInput(9);
+  private final DigitalInput acceleratorSensor = new DigitalInput(8);
   private final DigitalGlitchFilter noiseFilter = new DigitalGlitchFilter();
 
   public RollerSensorsIOComp() {
