@@ -82,26 +82,29 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Swerve/DriveMode", driveMode);
   }
 
-  public void driveTeleopController(double xAxis, double yAxis, double omega) {
+  public void driveTeleopController(
+      double xAxis, double yAxis, double joyStick, double triggerLeft, double triggerRight) {
     if (driveMode != DriveModes.TELEOP) { // auto align override?
       driveMode = DriveModes.TELEOP;
     }
+    double omega = joyStick + triggerLeft + triggerRight;
+    omega = Math.pow(omega, 2) * Math.signum(omega);
 
     // NWU convention
-    double theta = Math.atan2(xAxis, yAxis);
+    /*double theta = Math.atan2(xAxis, yAxis);
     double radiusDeadband =
         MathUtil.applyDeadband(Math.sqrt((xAxis * xAxis) + (yAxis + yAxis)), 0.07);
     double radiusExp = Math.copySign(Math.pow(radiusDeadband, 1.5), radiusDeadband);
 
     double xVelocity = radiusExp * Math.sin(theta) * DRIVE_CONFIG.maxLinearVelocity();
-    double yVelocity = radiusExp * Math.cos(theta) * DRIVE_CONFIG.maxLinearVelocity();
+    double yVelocity = radiusExp * Math.cos(theta) * DRIVE_CONFIG.maxLinearVelocity();*/
 
-    /*double xVelocity =
+    double xVelocity =
         MathUtil.applyDeadband(Math.copySign(xAxis * xAxis, xAxis), 0.07)
-            * Swerve.DRIVE_CONFIG.maxLinearVelocity();
+            * DRIVE_CONFIG.maxLinearVelocity();
     double yVelocity =
         MathUtil.applyDeadband(Math.copySign(yAxis * yAxis, yAxis), 0.07)
-            * Swerve.DRIVE_CONFIG.maxLinearVelocity();*/
+            * DRIVE_CONFIG.maxLinearVelocity();
     double radianVelocity =
         MathUtil.applyDeadband(Math.copySign(omega * omega, omega), 0.07)
             * DRIVE_CONFIG.maxAngularVelocity();
@@ -118,5 +121,9 @@ public class Drive extends SubsystemBase {
     if (DriverStation.isAutonomousEnabled()) {
       driveMode = DriveModes.TRAJECTORY;
     }
+  }
+
+  public void zero() {
+    gyroYawOffset = Rotation2d.fromDegrees(gyroInputs.yawPosition.getDegrees());
   }
 }
