@@ -12,6 +12,8 @@ import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
 import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
+import frc.robot.subsystems.rollers.RollerSensorsIO;
+import frc.robot.subsystems.rollers.RollerSensorsIOComp;
 import frc.robot.subsystems.rollers.Rollers;
 import frc.robot.subsystems.rollers.Rollers.RollerState;
 import frc.robot.subsystems.rollers.accelerator.Accelerator;
@@ -57,6 +59,7 @@ public class RobotContainer {
     Intake intake = null;
     Accelerator accelerator = null;
     Serializer serializer = null;
+    RollerSensorsIO rollerSensorsIO = null;
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
@@ -70,6 +73,8 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
+          rollerSensorsIO = new RollerSensorsIOComp();
+
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
           serializer = new Serializer(new SerializerIOTalonFX());
         }
@@ -112,11 +117,11 @@ public class RobotContainer {
               new ModuleIO() {});
     }
 
-    rollers = new Rollers(intake);
     superstructure =
         new Superstructure(new Elevator(new ElevatorIOTalonFX()), new Pivot(new PivotIOTalonFX()));
     serializerSensor = new SerializerSensor();
     shooterSensor = new ShooterSensor();
+    rollers = new Rollers(intake, rollerSensorsIO);
 
     configureBindings();
     configureAutos();

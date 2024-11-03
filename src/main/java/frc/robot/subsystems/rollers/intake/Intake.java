@@ -1,5 +1,7 @@
 package frc.robot.subsystems.rollers.intake;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import frc.robot.subsystems.rollers.GenericRollers;
 
 public class Intake extends GenericRollers<Intake.Target> {
@@ -23,8 +25,18 @@ public class Intake extends GenericRollers<Intake.Target> {
     }
   }
 
+  private Target voltageTarget = Target.IDLE;
+  private Target lastTarget = Target.IDLE;
+  private Debouncer debouncer = new Debouncer(0.2, DebounceType.kFalling); // tune timing
+
   public Intake(IntakeIO intakeIO) {
     super("Intake", intakeIO);
     setVoltageTarget(Target.IDLE);
+  }
+
+  public boolean isContactingNote() {
+    return debouncer.calculate(inputs.supplyCurrentAmps > 40) // FIXME tune
+        && voltageTarget == Target.INTAKE
+        && stateTimer.hasElapsed(0.2); // tune
   }
 }
