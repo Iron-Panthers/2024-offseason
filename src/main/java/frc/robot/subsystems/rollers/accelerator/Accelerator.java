@@ -1,16 +1,16 @@
-package frc.robot.subsystems.rollers.intake;
+package frc.robot.subsystems.rollers.accelerator;
 
 import frc.robot.subsystems.rollers.GenericRollers;
 
-public class Intake extends GenericRollers<Intake.Target> {
+public class Accelerator extends GenericRollers<Accelerator.Target> {
   public enum Target implements GenericRollers.VoltageTarget {
     IDLE(0),
-    INTAKE(12),
-    SHOOT_SPEAKER(0),
+    INTAKE(1),
+    SHOOT_SPEAKER(12),
     SHOOT_AMP(0),
-    SPEAKER_TRANSFER(0),
-    AMP_TRANSFER(0),
-    EJECT(-8);
+    SPEAKER_TRANSFER(2),
+    AMP_TRANSFER(-5),
+    EJECT(0);
 
     private int volts;
 
@@ -23,8 +23,8 @@ public class Intake extends GenericRollers<Intake.Target> {
     }
   }
 
-  public Intake(IntakeIO intakeIO) {
-    super("Intake", intakeIO);
+  public Accelerator(AcceleratorIO acceleratorIO) {
+    super("Accelerator", acceleratorIO);
     setVoltageTarget(Target.IDLE);
   }
 }

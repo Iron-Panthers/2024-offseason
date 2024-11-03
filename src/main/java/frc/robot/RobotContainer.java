@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
@@ -12,6 +14,8 @@ import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
 import frc.robot.subsystems.rollers.Rollers;
 import frc.robot.subsystems.rollers.Rollers.RollerState;
+import frc.robot.subsystems.rollers.accelerator.Accelerator;
+import frc.robot.subsystems.rollers.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.rollers.intake.Intake;
 import frc.robot.subsystems.rollers.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -20,6 +24,10 @@ import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.superstructure.pivot.Pivot;
 import frc.robot.subsystems.superstructure.pivot.PivotIOTalonFX;
+import frc.robot.subsystems.rollers.serializer.Serializer;
+import frc.robot.subsystems.rollers.serializer.SerializerIOTalonFX;
+import frc.robot.subsystems.sensors.SerializerSensor;
+import frc.robot.subsystems.sensors.ShooterSensor;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -42,9 +50,13 @@ public class RobotContainer {
   private Rollers rollers;
   private Flywheels flywheels;
   private Superstructure superstructure;
+  private SerializerSensor serializerSensor;
+  private ShooterSensor shooterSensor;
 
   public RobotContainer() {
     Intake intake = null;
+    Accelerator accelerator = null;
+    Serializer serializer = null;
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
@@ -57,7 +69,9 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX());
+          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
+          serializer = new Serializer(new SerializerIOTalonFX());
         }
         case DEV -> {
           swerve =
@@ -68,7 +82,9 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX()); // FIXME
+          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
+          serializer = new Serializer(new SerializerIOTalonFX());
         }
         case SIM -> {
           swerve =
@@ -79,7 +95,9 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
                   new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
           intake = new Intake(new IntakeIOTalonFX()); // FIXME
+          accelerator = new Accelerator(new AcceleratorIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
+          serializer = new Serializer(new SerializerIOTalonFX());
         }
       }
     }
@@ -97,6 +115,8 @@ public class RobotContainer {
     rollers = new Rollers(intake);
     superstructure =
         new Superstructure(new Elevator(new ElevatorIOTalonFX()), new Pivot(new PivotIOTalonFX()));
+    serializerSensor = new SerializerSensor();
+    shooterSensor = new ShooterSensor();
 
     configureBindings();
     configureAutos();
@@ -118,16 +138,58 @@ public class RobotContainer {
             .withName("Drive Teleop"));
 
     // -----Intake Controls-----
-    driverA.x().whileTrue(rollers.setTargetCommand(RollerState.INTAKE));
+    // intake note and then outtake for a little time
+    driverA
+        .leftBumper()
+        .onTrue(
+            new FunctionalCommand(
+                    () -> serializerSensor.get(), // because null did not work
+                    () -> rollers.setTargetState(RollerState.INTAKE),
+                    interrupted -> rollers.setTargetState(RollerState.IDLE),
+                    () -> serializerSensor.get(),
+                    rollers)
+                .andThen(
+                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
+                        .withTimeout(0.6))
+                .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
+
+    // transfer note to shooter
+    driverA
+        .b()
+        .onTrue(
+            new FunctionalCommand(
+                () -> serializerSensor.get(), // because null did not work
+                () -> rollers.setTargetState(RollerState.SPEAKER_TRANSFER),
+                interrupted -> rollers.setTargetState(RollerState.IDLE),
+                () -> !shooterSensor.get(),
+                rollers));
+    // Outtake a little to amp
+    driverA
+        .x()
+        .onTrue(
+            new FunctionalCommand(
+                    () -> serializerSensor.get(), // because null did not work
+                    () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
+                    interrupted -> rollers.setTargetState(RollerState.IDLE),
+                    () -> serializerSensor.get(),
+                    rollers)
+                .andThen(
+                    new FunctionalCommand(
+                        () -> serializerSensor.get(), // because null did not work
+                        () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
+                        interrupted -> rollers.setTargetState(RollerState.IDLE),
+                        () -> !serializerSensor.get(),
+                        rollers)));
 
     // -----Flywheel Controls-----
     //
+
     driverA
         .y()
         .onTrue(
             new InstantCommand(
                 () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.SHOOT);
+                  flywheels.setVelocityTarget(VelocityTarget.SLOW);
                 },
                 flywheels));
     driverA
@@ -135,7 +197,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.SLOW);
+                  flywheels.setVelocityTarget(VelocityTarget.SHOOT);
                 },
                 flywheels));
     driverA
@@ -146,6 +208,21 @@ public class RobotContainer {
                   flywheels.setVelocityTarget(VelocityTarget.IDLE);
                 },
                 flywheels));
+    driverA
+        .povDown()
+        .onTrue(
+            new FunctionalCommand(
+                    () -> rollers.setTargetState(Rollers.RollerState.SHOOT_SPEAKER), rollers)
+                .alongWith(
+                    new InstantCommand(
+                        () -> flywheels.setVelocityTarget(Flywheels.VelocityTarget.SHOOT)))
+                .andThen(new WaitCommand(2))
+                .andThen(
+                    new InstantCommand(
+                        () -> rollers.setTargetState(Rollers.RollerState.IDLE), rollers))
+                .alongWith(
+                    new InstantCommand(
+                        () -> flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE))));
     driverA
         .start()
         .onTrue(
