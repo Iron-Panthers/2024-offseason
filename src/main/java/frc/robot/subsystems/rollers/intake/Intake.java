@@ -22,7 +22,6 @@ public class Intake extends GenericRollers<Intake.Target> {
   }
 
   private Target voltageTarget = Target.IDLE;
-  private Target lastTarget = Target.IDLE;
   private Debouncer debouncer = new Debouncer(0.2, DebounceType.kFalling); // tune timing
 
   public Intake(IntakeIO intakeIO) {

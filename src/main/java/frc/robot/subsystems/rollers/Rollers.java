@@ -27,6 +27,9 @@ public class Rollers extends SubsystemBase {
 
   @Override
   public void periodic() {
+    sensorsIO.updateInputs(sensorsInputs);
+    Logger.processInputs("RollerSensors", sensorsInputs);
+
     intake.setVoltageTarget(Target.IDLE);
 
     switch (targetState) {
