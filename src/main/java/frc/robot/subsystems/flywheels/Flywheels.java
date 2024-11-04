@@ -1,5 +1,6 @@
 package frc.robot.subsystems.flywheels;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -41,5 +42,10 @@ public class Flywheels extends SubsystemBase {
 
   public void setVelocityTarget(VelocityTarget target) {
     velocityTarget = target;
+  }
+
+  public boolean atSpeed(){
+    return MathUtil.isNear(velocityTarget.bottomVelocity, inputs.bottomVelocityRPM, 20)&&
+      MathUtil.isNear(velocityTarget.topVelocity, inputs.topVelocityRPM, 20);
   }
 }

@@ -1,7 +1,6 @@
 package frc.robot.subsystems.rollers.serializer;
 
 import frc.robot.subsystems.rollers.GenericRollers;
-import frc.robot.subsystems.rollers.accelerator.Accelerator.Target;
 
 public class Serializer extends GenericRollers<Serializer.Target> {
   public enum Target implements GenericRollers.VoltageTarget {

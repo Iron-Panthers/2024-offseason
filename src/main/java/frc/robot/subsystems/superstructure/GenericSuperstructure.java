@@ -49,4 +49,8 @@ public class GenericSuperstructure <G extends GenericSuperstructure.PositionTarg
     public void runCharacterization(){
         zeroing = true;
     }
+
+    public boolean atPosition(){
+        return Math.abs(inputs.positionRotations-positionTarget.getPosition())<0.5;
+    }
 }
