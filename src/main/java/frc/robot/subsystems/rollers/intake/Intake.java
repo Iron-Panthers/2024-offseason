@@ -19,7 +19,6 @@ public class Intake extends GenericRollers<Intake.Target> {
     }
   }
 
-  private Target voltageTarget = Target.IDLE;
 
   public Intake(IntakeIO intakeIO) {
     super("Intake", intakeIO);
