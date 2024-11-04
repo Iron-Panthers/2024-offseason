@@ -1,59 +1,24 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import org.littletonrobotics.junction.Logger;
 
-public class Elevator {
-  public enum ElevatorTarget {
+import frc.robot.subsystems.superstructure.GenericSuperstructure;
+
+public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>{
+  public enum ElevatorTarget implements GenericSuperstructure.PositionTarget{
     STOW(0),
     ZERO(0),
     AMP(32);
-    private int position;
+    private double position;
 
-    private ElevatorTarget(int position) {
+    private ElevatorTarget(double position) {
       this.position = position;
     }
 
-    public int getPosition() {
+    public double getPosition() {
       return position;
     }
   }
-
-  private final ElevatorIO io;
-  private ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
-
-  private ElevatorTarget target = ElevatorTarget.STOW;
-
   public Elevator(ElevatorIO io) {
-    this.io = io;
-  }
-
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Superstructure/Elevator", inputs);
-    if (target.equals(ElevatorTarget.ZERO)) {
-      runZero();
-    } else {
-      io.runPosition(target.getPosition());
-    }
-  }
-
-  public ElevatorTarget getTarget() {
-    return target;
-  }
-
-  public void setTarget(ElevatorTarget target) {
-    this.target = target;
-  }
-
-  // bad FIXME
-  public boolean runZero() {
-    io.runCharacterization(ElevatorConstants.ZEROING_VOLTS); // FIXME
-
-    if (inputs.supplyCurrentAmps >= ElevatorConstants.ZEROING_CURRENT_LIMIT) {
-      io.stop();
-      return true;
-    }
-
-    return false;
+    super("Elevator", io);
   }
 }
