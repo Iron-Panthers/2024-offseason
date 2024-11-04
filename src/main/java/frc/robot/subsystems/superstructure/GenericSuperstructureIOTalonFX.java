@@ -1,0 +1,124 @@
+package frc.robot.subsystems.superstructure;
+
+import java.util.Optional;
+
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import frc.robot.subsystems.superstructure.pivot.PivotConstants;
+
+public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
+  private final TalonFX talon;
+
+  private final StatusSignal<Double> positionRotations;
+  private final StatusSignal<Double> velocityRPS;
+  private final StatusSignal<Double> appliedVolts;
+  private final StatusSignal<Double> supplyCurrent;
+  private final StatusSignal<Double> temp;
+
+  private final VoltageOut voltageOutput = new VoltageOut(0).withUpdateFreqHz(0);
+  private final NeutralOut neutralOutput = new NeutralOut();
+  private final PositionVoltage positionControl = new PositionVoltage(0).withUpdateFreqHz(0);
+
+
+  public GenericSuperstructureIOTalonFX(int id, boolean inverted, double supplyCurrentLimit, Optional<Integer> canCoderID) {
+    talon = new TalonFX(id);
+
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.MotorOutput.Inverted =
+        inverted
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
+    config.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    if (canCoderID.isPresent()){
+      CANcoder canCoder = new CANcoder(id);
+      canCoder
+        .getConfigurator()
+        .apply(
+            new CANcoderConfiguration()
+                .withMagnetSensor(
+                    new MagnetSensorConfigs()
+                        .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+                        .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
+                        .withMagnetOffset(0)));
+      canCoder.getConfigurator().setPosition(0);
+      config.Feedback.withRemoteCANcoder(canCoder);
+    }
+    talon.getConfigurator().apply(config);
+    talon.setPosition(0);
+    talon.setNeutralMode(NeutralModeValue.Brake);
+
+    velocityRPS = talon.getVelocity();
+    appliedVolts = talon.getMotorVoltage();
+    supplyCurrent = talon.getSupplyCurrent();
+    temp = talon.getDeviceTemp();
+    positionRotations = talon.getPosition();
+
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50, positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp);
+  }
+
+  @Override
+  public void updateInputs(GenericSuperstructureIOInputs inputs) {
+    inputs.connected =
+        BaseStatusSignal.refreshAll(
+                positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
+            .isOK();
+    inputs.positionRotations = positionRotations.getValueAsDouble() * 360;
+    inputs.velocityRotPerSec = velocityRPS.getValueAsDouble();
+    inputs.appliedVolts = appliedVolts.getValueAsDouble();
+    inputs.supplyCurrentAmps = supplyCurrent.getValueAsDouble();
+    inputs.tempCelsius = temp.getValueAsDouble();
+  }
+
+  @Override
+  public void runPosition(double rotations) {
+    talon.setControl(positionControl.withPosition(rotations));
+  }
+
+  @Override
+  public void runCharacterization() {
+    talon.setControl(voltageOutput.withOutput(-1));
+  }
+
+  @Override
+  public void stop() {
+    talon.setControl(neutralOutput);
+  }
+
+  public void setOffset() {
+    talon.setPosition(0);
+  }
+
+  @Override
+  public void setSlot0(double kP, double kI, double kD, double kS, double kV, double kA, GravityTypeValue gravityTypeValue){
+    Slot0Configs gainsConfig = new Slot0Configs();
+    gainsConfig.kP = kP;
+    gainsConfig.kI = kI;
+    gainsConfig.kD = kD;
+    gainsConfig.kS = kS;
+    gainsConfig.kV = kV;
+    gainsConfig.kA = kA;
+    gainsConfig.GravityType = gravityTypeValue;
+
+    talon.getConfigurator().apply(gainsConfig);
+  }
+
+}
