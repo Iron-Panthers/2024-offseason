@@ -31,28 +31,28 @@ public class Superstructure extends SubsystemBase {
   public void periodic() {
     switch (targetState) {
       case STOW -> {
-        pivot.setTarget(PivotTarget.STOW);
-        elevator.setTarget(ElevatorTarget.STOW);
+        pivot.setPositionTarget(PivotTarget.STOW);
+        elevator.setPositionTarget(ElevatorTarget.STOW);
       }
       case INTAKE -> {
-        pivot.setTarget(PivotTarget.STOW);
-        elevator.setTarget(ElevatorTarget.STOW);
+        pivot.setPositionTarget(PivotTarget.STOW);
+        elevator.setPositionTarget(ElevatorTarget.STOW);
       }
       case SUBWOOF_SHOT -> {
-        pivot.setTarget(PivotTarget.SUBWOOF_SHOT);
-        elevator.setTarget(ElevatorTarget.STOW);
+        pivot.setPositionTarget(PivotTarget.SUBWOOF_SHOT);
+        elevator.setPositionTarget(ElevatorTarget.STOW);
       }
       case SHUTTLE -> {
-        pivot.setTarget(PivotTarget.SHUTTLE);
-        elevator.setTarget(ElevatorTarget.STOW);
+        pivot.setPositionTarget(PivotTarget.SHUTTLE);
+        elevator.setPositionTarget(ElevatorTarget.STOW);
       }
       case AMP -> {
-        elevator.setTarget(ElevatorTarget.AMP);
-        pivot.setTarget(PivotTarget.STOW);
+        elevator.setPositionTarget(ElevatorTarget.AMP);
+        pivot.setPositionTarget(PivotTarget.STOW);
       }
       case ZERO -> {
-        elevator.runZero();
-        pivot.runZero();
+        elevator.runCharacterization();
+        pivot.runCharacterization();
       }
     }
     elevator.periodic();

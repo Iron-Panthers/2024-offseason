@@ -42,11 +42,11 @@ public class GenericSuperstructure <G extends GenericSuperstructure.PositionTarg
         return positionTarget;
     }
 
-    public void setVoltageTarget(G positionTarget){
+    public void setPositionTarget(G positionTarget){
         this.positionTarget = positionTarget;
     }
 
-    public void runCharacterization(GenericSuperstructureIO structure){
+    public void runCharacterization(){
         zeroing = true;
     }
 }
