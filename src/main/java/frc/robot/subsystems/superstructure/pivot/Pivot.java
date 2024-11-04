@@ -1,60 +1,26 @@
 package frc.robot.subsystems.superstructure.pivot;
 
-import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.superstructure.GenericSuperstructure;
 
-public class Pivot {
-  public enum PivotTarget {
+public class Pivot extends GenericSuperstructure<Pivot.PivotTarget>{
+  public enum PivotTarget implements GenericSuperstructure.PositionTarget{
     STOW(0),
     ZERO(0),
     SUBWOOF_SHOT(53),
     SHUTTLE(45);
-    private int position;
+    private double position;
 
-    private PivotTarget(int position) {
+    private PivotTarget(double position) {
       this.position = position;
     }
 
-    public int getPosition() {
+    public double getPosition() {
       return position;
     }
   }
 
-  private final PivotIO io;
-  private PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
-
-  private PivotTarget target = PivotTarget.STOW;
 
   public Pivot(PivotIO io) {
-    this.io = io;
-  }
-
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Superstructure/Pivot", inputs);
-    if (target.equals(PivotTarget.ZERO)) {
-      runZero();
-    } else {
-      io.runPosition(target.getPosition());
-    }
-  }
-
-  public PivotTarget getTarget() {
-    return target;
-  }
-
-  public void setTarget(PivotTarget target) {
-    this.target = target;
-  }
-
-  // bad FIXME
-  public boolean runZero() {
-    io.runCharacterization(PivotConstants.ZEROING_VOLTS); // FIXME
-
-    if (inputs.supplyCurrentAmps >= PivotConstants.ZEROING_CURRENT_LIMIT) {
-      io.stop();
-      return true;
-    }
-
-    return false;
+    super("Pivot", io);
   }
 }

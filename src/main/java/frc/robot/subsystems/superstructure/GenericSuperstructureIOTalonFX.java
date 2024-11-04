@@ -21,7 +21,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import frc.robot.subsystems.superstructure.pivot.PivotConstants;
 
 public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
   private final TalonFX talon;
@@ -37,7 +36,15 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
   private final PositionVoltage positionControl = new PositionVoltage(0).withUpdateFreqHz(0);
 
 
-  public GenericSuperstructureIOTalonFX(int id, boolean inverted, double supplyCurrentLimit, Optional<Integer> canCoderID) {
+  public GenericSuperstructureIOTalonFX(
+    int id, 
+    boolean inverted, 
+    double supplyCurrentLimit, 
+    Optional<Integer> canCoderID, 
+    double reduction,
+    double upperLimit,
+    double upperVoltLimit,
+    double lowerVoltLimit) {
     talon = new TalonFX(id);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -47,6 +54,13 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
             : InvertedValue.CounterClockwise_Positive;
     config.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true);
+    config.SoftwareLimitSwitch.withForwardSoftLimitThreshold(upperLimit);
+    config.Voltage.withPeakForwardVoltage(upperVoltLimit);
+    config.Voltage.withPeakReverseVoltage(lowerVoltLimit);
+    config.Feedback.withSensorToMechanismRatio(reduction);
+
+    
     if (canCoderID.isPresent()){
       CANcoder canCoder = new CANcoder(id);
       canCoder
@@ -102,7 +116,7 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
   public void stop() {
     talon.setControl(neutralOutput);
   }
-
+  @Override
   public void setOffset() {
     talon.setPosition(0);
   }
@@ -120,5 +134,6 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
 
     talon.getConfigurator().apply(gainsConfig);
   }
+
 
 }

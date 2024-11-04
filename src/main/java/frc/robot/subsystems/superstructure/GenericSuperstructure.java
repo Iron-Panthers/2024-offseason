@@ -25,7 +25,10 @@ public class GenericSuperstructure <G extends GenericSuperstructure.PositionTarg
 
         if (zeroing){
             superstructureIO.runCharacterization();
-            zeroing = inputs.velocityRotPerSec<0.01;
+            if (inputs.velocityRotPerSec<0.01){
+                zeroing = false;
+                superstructureIO.setOffset();
+            }
         }
         else{
             superstructureIO.runPosition(positionTarget.getPosition());

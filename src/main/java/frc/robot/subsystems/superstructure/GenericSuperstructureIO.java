@@ -25,4 +25,6 @@ public interface GenericSuperstructureIO {
   default void setSlot0(double kP, double kI, double kD, double kS, double kV, double kA, GravityTypeValue gravityTypeValue) {}
 
   default void stop() {}
+
+  default void setOffset(){}
 }
