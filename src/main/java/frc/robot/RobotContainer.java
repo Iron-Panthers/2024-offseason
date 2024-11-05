@@ -4,16 +4,12 @@
 
 package frc.robot;
 
-import javax.management.InstanceNotFoundException;
-
-import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
-import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
 import frc.robot.subsystems.rollers.RollerSensorsIO;
 import frc.robot.subsystems.rollers.RollerSensorsIOComp;
@@ -23,14 +19,14 @@ import frc.robot.subsystems.rollers.accelerator.Accelerator;
 import frc.robot.subsystems.rollers.accelerator.AcceleratorIOTalonFX;
 import frc.robot.subsystems.rollers.intake.Intake;
 import frc.robot.subsystems.rollers.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.rollers.serializer.Serializer;
+import frc.robot.subsystems.rollers.serializer.SerializerIOTalonFX;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Superstructure.SuperstructureState;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.superstructure.pivot.Pivot;
 import frc.robot.subsystems.superstructure.pivot.PivotIOTalonFX;
-import frc.robot.subsystems.rollers.serializer.Serializer;
-import frc.robot.subsystems.rollers.serializer.SerializerIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
 import frc.robot.subsystems.swerve.GyroIO;
@@ -53,7 +49,6 @@ public class RobotContainer {
   private Rollers rollers;
   private Flywheels flywheels;
   private Superstructure superstructure;
-
 
   public RobotContainer() {
     Intake intake = null;
@@ -144,93 +139,119 @@ public class RobotContainer {
     driverA
         .leftBumper()
         .onTrue(
-            new FunctionalCommand( 
-                ()-> superstructure.setTargetState(SuperstructureState.INTAKE),
-                ()-> {},
-                interrupted -> {},
-                () -> superstructure.atPosition())
-        .andThen(
             new FunctionalCommand(
-                    () -> rollers.setTargetState(RollerState.INTAKE), 
+                    () -> superstructure.setTargetState(SuperstructureState.INTAKE),
                     () -> {},
-                    interrupted -> rollers.setTargetState(RollerState.IDLE),
-                    () -> rollers.serializerDetected(),
-                    rollers))
-        .andThen(
-            new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
-                .withTimeout(0.6))
-        .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
+                    interrupted -> {},
+                    () -> superstructure.atPosition())
+                .andThen(
+                    new FunctionalCommand(
+                        () -> rollers.setTargetState(RollerState.INTAKE),
+                        () -> {},
+                        interrupted -> rollers.setTargetState(RollerState.IDLE),
+                        () -> rollers.serializerDetected(),
+                        rollers))
+                .andThen(
+                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
+                        .withTimeout(0.6))
+                .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
 
-    //Shoot command (either amp or speaker)
+    // Shoot command (either amp or speaker)
     driverA
         .rightBumper()
         .onTrue(
             new InstantCommand(
-                ()-> rollers.setTargetState(rollers.acceleratorDetected()&&flywheels.atSpeed()?RollerState.SHOOT_SPEAKER 
-                    :superstructure.atPosition()&&superstructure.getTargetState() == SuperstructureState.AMP ? RollerState.SHOOT_AMP 
-                    :rollers.getTargetState()),
-                rollers)
-            
-        .andThen(new WaitCommand(2))
-        .andThen(new InstantCommand(()-> {
-            if (rollers.getTargetState() == RollerState.SHOOT_SPEAKER || rollers.getTargetState() == RollerState.SHOOT_AMP){
-            rollers.setTargetState(RollerState.INTAKE);
-            flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE);
-            superstructure.setTargetState(SuperstructureState.STOW);}})));
+                    () ->
+                        rollers.setTargetState(
+                            rollers.acceleratorDetected() && flywheels.atSpeed()
+                                ? RollerState.SHOOT_SPEAKER
+                                : superstructure.atPosition()
+                                        && superstructure.getTargetState()
+                                            == SuperstructureState.AMP
+                                    ? RollerState.SHOOT_AMP
+                                    : rollers.getTargetState()),
+                    rollers)
+                .andThen(new WaitCommand(2))
+                .andThen(
+                    new InstantCommand(
+                        () -> {
+                          if (rollers.getTargetState() == RollerState.SHOOT_SPEAKER
+                              || rollers.getTargetState() == RollerState.SHOOT_AMP) {
+                            rollers.setTargetState(RollerState.INTAKE);
+                            flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE);
+                            superstructure.setTargetState(SuperstructureState.STOW);
+                          }
+                        })));
     // transfer note to shooter
     driverA
         .b()
         .onTrue(
-            new FunctionalCommand( 
-                ()-> superstructure.setTargetState(SuperstructureState.STOW),
-                ()-> {},
-                interrupted -> {},
-                () -> superstructure.atPosition())
-        .andThen(
             new FunctionalCommand(
-                () -> {},
-                () -> rollers.setTargetState(RollerState.SPEAKER_TRANSFER),
-                interrupted -> {rollers.setTargetState(RollerState.IDLE);
-                                flywheels.setVelocityTarget(Flywheels.VelocityTarget.SHOOT);},
-                () -> rollers.acceleratorDetected(),
-                rollers, flywheels)));
-    // Outtake a little to amp
+                    () -> superstructure.setTargetState(SuperstructureState.STOW),
+                    () -> {},
+                    interrupted -> {},
+                    () -> superstructure.atPosition())
+                .andThen(
+                    new FunctionalCommand(
+                        () -> {},
+                        () -> rollers.setTargetState(RollerState.SPEAKER_TRANSFER),
+                        interrupted -> {
+                          rollers.setTargetState(RollerState.IDLE);
+                          flywheels.setVelocityTarget(Flywheels.VelocityTarget.SHOOT);
+                        },
+                        () -> rollers.acceleratorDetected(),
+                        rollers,
+                        flywheels)));
+    // Initiate amp shot
     driverA
         .x()
         .onTrue(
-                new FunctionalCommand( 
-                    ()-> superstructure.setTargetState(SuperstructureState.INTAKE),
-                    ()-> {},
+            new FunctionalCommand(
+                    () -> superstructure.setTargetState(SuperstructureState.INTAKE),
+                    () -> {},
                     interrupted -> {},
                     () -> superstructure.atPosition())
-            .andThen(
-                new FunctionalCommand(
-                    () -> {},
-                    () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
-                    interrupted -> rollers.setTargetState(RollerState.IDLE),
-                    () -> rollers.serializerDetected(),
-                    rollers))
-            .andThen(
-                new FunctionalCommand(
-                    () -> {},
-                    () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
-                    interrupted -> rollers.setTargetState(RollerState.IDLE),
-                    () -> !rollers.serializerDetected(),
-                    rollers))
-            .andThen( new InstantCommand(()->superstructure.setTargetState(SuperstructureState.AMP), superstructure)
-            ));
-    //Initiate subwoofer shot
-    
-    // -----Flywheel Controls-----
-    //
+                .andThen(
+                    new FunctionalCommand(
+                        () -> {},
+                        () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
+                        interrupted -> rollers.setTargetState(RollerState.IDLE),
+                        () -> rollers.serializerDetected(),
+                        rollers))
+                .andThen(
+                    new FunctionalCommand(
+                        () -> {},
+                        () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
+                        interrupted -> rollers.setTargetState(RollerState.IDLE),
+                        () -> !rollers.serializerDetected(),
+                        rollers))
+                .andThen(
+                    new InstantCommand(
+                        () -> superstructure.setTargetState(SuperstructureState.AMP),
+                        superstructure)));
+    // Initiate subwoofer shot
     driverA
         .a()
         .onTrue(
-            new InstantCommand(
-                () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.IDLE);
-                },
-                flywheels));
+            new FunctionalCommand(
+                    () -> {},
+                    () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 0),
+                    interrupted -> {},
+                    () -> Math.abs(swerve.getAngularError(0)) < 1,
+                    swerve)
+                .alongWith(
+                    new InstantCommand(
+                        () -> superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT))));
+    // -----Flywheel Controls-----
+    //
+    // driverA
+    //     .a()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () -> {
+    //               flywheels.setVelocityTarget(VelocityTarget.IDLE);
+    //             },
+    //             flywheels));
 
     driverA
         .start()
@@ -238,7 +259,8 @@ public class RobotContainer {
             new InstantCommand(
                 () -> {
                   swerve.zero();
-                  superstructure.setTargetState(SuperstructureState.ZERO);;
+                  superstructure.setTargetState(SuperstructureState.ZERO);
+                  ;
                 },
                 swerve));
     // elevator commands

@@ -4,22 +4,27 @@ import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Util;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
   public enum DriveModes {
     TELEOP,
-    TRAJECTORY;
+    TRAJECTORY,
+    ANGLE;
   }
 
   private DriveModes driveMode = DriveModes.TELEOP;
+
+  private PIDController rotController;
 
   private GyroIO gyroIO;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -41,6 +46,10 @@ public class Drive extends SubsystemBase {
     modules[1] = new Module(fr, 1);
     modules[2] = new Module(bl, 2);
     modules[3] = new Module(br, 3);
+
+    rotController = new PIDController(0.0179, 0, 0);
+    rotController.setSetpoint(0);
+    rotController.setTolerance(1);
   }
 
   @Override
@@ -62,6 +71,9 @@ public class Drive extends SubsystemBase {
         targetSpeeds = teleopTargetSpeeds;
       }
       case TRAJECTORY -> {}
+      case ANGLE -> {
+        targetSpeeds = teleopTargetSpeeds;
+      }
     }
 
     // run modules
@@ -125,5 +137,30 @@ public class Drive extends SubsystemBase {
 
   public void zero() {
     gyroYawOffset = Rotation2d.fromDegrees(gyroInputs.yawPosition.getDegrees());
+  }
+
+  public void driveAnglePeriodic(double xAxis, double yAxis, double targetAngle) {
+
+    double angularDifference = getAngularError(targetAngle);
+
+    double rotationValue = rotController.calculate(angularDifference);
+
+    // we are treating this like a joystick, so -1 and 1 are its lower and upper bound
+    rotationValue = MathUtil.clamp(rotationValue, -1, 1);
+
+    // this value makes our unit-less [-1, 1] into [-max angular, max angular]
+    double omegaRadiansPerSecond =
+        rotationValue * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+
+    // initialize chassis speeds but add our desired angle
+    teleopTargetSpeeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            xAxis, yAxis, omegaRadiansPerSecond, gyroInputs.yawPosition);
+
+    // use the existing drive periodic logic to assign to motors ect
+  }
+
+  public double getAngularError(double targetAngle) {
+    return -Util.relativeAngularDifference(gyroInputs.yawPosition.times(-1), targetAngle);
   }
 }

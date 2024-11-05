@@ -1,10 +1,8 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import java.util.Optional;
-
 import com.ctre.phoenix6.signals.GravityTypeValue;
-
 import frc.robot.subsystems.superstructure.GenericSuperstructureIOTalonFX;
+import java.util.Optional;
 
 public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements ElevatorIO {
   public static final double REDUCTION = 1.892 / 1; // rotations to inches
@@ -30,15 +28,17 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
   public static final double LOWER_VOLT_LIMIT = -4;
 
   public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Elevator_Static;
-  
-  public ElevatorIOTalonFX(){
-    super(ID, 
-      INVERTED, 
-      SUPPLY_CURRENT_LIMIT, 
-      Optional.empty(), 
-      REDUCTION, UPPER_LIMIT, 
-      UPPER_VOLT_LIMIT, 
-      LOWER_VOLT_LIMIT);
-    setSlot0(P,I,D,S,0,0,GRAVITY_TYPE);
+
+  public ElevatorIOTalonFX() {
+    super(
+        ID,
+        INVERTED,
+        SUPPLY_CURRENT_LIMIT,
+        Optional.empty(),
+        REDUCTION,
+        UPPER_LIMIT,
+        UPPER_VOLT_LIMIT,
+        LOWER_VOLT_LIMIT);
+    setSlot0(P, I, D, S, 0, 0, GRAVITY_TYPE);
   }
 }

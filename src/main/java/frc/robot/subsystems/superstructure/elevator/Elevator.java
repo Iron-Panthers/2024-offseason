@@ -1,10 +1,9 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-
 import frc.robot.subsystems.superstructure.GenericSuperstructure;
 
-public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>{
-  public enum ElevatorTarget implements GenericSuperstructure.PositionTarget{
+public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
+  public enum ElevatorTarget implements GenericSuperstructure.PositionTarget {
     STOW(0),
     ZERO(0),
     AMP(32);
@@ -18,6 +17,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget>{
       return position;
     }
   }
+
   public Elevator(ElevatorIO io) {
     super("Elevator", io);
   }

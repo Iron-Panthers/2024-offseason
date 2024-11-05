@@ -2,8 +2,8 @@ package frc.robot.subsystems.superstructure.pivot;
 
 import frc.robot.subsystems.superstructure.GenericSuperstructure;
 
-public class Pivot extends GenericSuperstructure<Pivot.PivotTarget>{
-  public enum PivotTarget implements GenericSuperstructure.PositionTarget{
+public class Pivot extends GenericSuperstructure<Pivot.PivotTarget> {
+  public enum PivotTarget implements GenericSuperstructure.PositionTarget {
     STOW(0),
     ZERO(0),
     SUBWOOF_SHOT(53),
@@ -18,7 +18,6 @@ public class Pivot extends GenericSuperstructure<Pivot.PivotTarget>{
       return position;
     }
   }
-
 
   public Pivot(PivotIO io) {
     super("Pivot", io);

@@ -44,8 +44,8 @@ public class Flywheels extends SubsystemBase {
     velocityTarget = target;
   }
 
-  public boolean atSpeed(){
-    return MathUtil.isNear(velocityTarget.bottomVelocity, inputs.bottomVelocityRPM, 20)&&
-      MathUtil.isNear(velocityTarget.topVelocity, inputs.topVelocityRPM, 20);
+  public boolean atSpeed() {
+    return MathUtil.isNear(velocityTarget.bottomVelocity, inputs.bottomVelocityRPM, 20)
+        && MathUtil.isNear(velocityTarget.topVelocity, inputs.topVelocityRPM, 20);
   }
 }

@@ -28,6 +28,18 @@ public class DriveConstants {
             4,
             4);
       };
+  public static final double MAX_VELOCITY_METERS_PER_SECOND =
+      6380.0 // falcon 500 free speed rpm
+          / 60.0
+          * 0.10033
+          * (1 / 6.12) // mk4i l3 16t falcon drive reduction (sourced from adrian)
+          * Math.PI;
+  // theoretical value
+  // FIXME measure and validate experimentally
+  public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND =
+      MAX_VELOCITY_METERS_PER_SECOND
+          / Math.hypot(DRIVE_CONFIG.trackWidth() / 2.0, DRIVE_CONFIG.trackWidth() / 2.0)
+          * .5;
 
   public static final Translation2d[] MODULE_TRANSLATIONS =
       new Translation2d[] {

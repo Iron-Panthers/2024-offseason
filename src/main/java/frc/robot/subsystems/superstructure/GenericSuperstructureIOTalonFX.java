@@ -1,7 +1,5 @@
 package frc.robot.subsystems.superstructure;
 
-import java.util.Optional;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -14,13 +12,11 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+import java.util.Optional;
 
 public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
   private final TalonFX talon;
@@ -35,23 +31,20 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
   private final NeutralOut neutralOutput = new NeutralOut();
   private final PositionVoltage positionControl = new PositionVoltage(0).withUpdateFreqHz(0);
 
-
   public GenericSuperstructureIOTalonFX(
-    int id, 
-    boolean inverted, 
-    double supplyCurrentLimit, 
-    Optional<Integer> canCoderID, 
-    double reduction,
-    double upperLimit,
-    double upperVoltLimit,
-    double lowerVoltLimit) {
+      int id,
+      boolean inverted,
+      double supplyCurrentLimit,
+      Optional<Integer> canCoderID,
+      double reduction,
+      double upperLimit,
+      double upperVoltLimit,
+      double lowerVoltLimit) {
     talon = new TalonFX(id);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.MotorOutput.Inverted =
-        inverted
-            ? InvertedValue.Clockwise_Positive
-            : InvertedValue.CounterClockwise_Positive;
+        inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     config.CurrentLimits.SupplyCurrentLimit = supplyCurrentLimit;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true);
@@ -60,18 +53,17 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
     config.Voltage.withPeakReverseVoltage(lowerVoltLimit);
     config.Feedback.withSensorToMechanismRatio(reduction);
 
-    
-    if (canCoderID.isPresent()){
+    if (canCoderID.isPresent()) {
       CANcoder canCoder = new CANcoder(id);
       canCoder
-        .getConfigurator()
-        .apply(
-            new CANcoderConfiguration()
-                .withMagnetSensor(
-                    new MagnetSensorConfigs()
-                        .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-                        .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
-                        .withMagnetOffset(0)));
+          .getConfigurator()
+          .apply(
+              new CANcoderConfiguration()
+                  .withMagnetSensor(
+                      new MagnetSensorConfigs()
+                          .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+                          .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
+                          .withMagnetOffset(0)));
       canCoder.getConfigurator().setPosition(0);
       config.Feedback.withRemoteCANcoder(canCoder);
     }
@@ -116,13 +108,21 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
   public void stop() {
     talon.setControl(neutralOutput);
   }
+
   @Override
   public void setOffset() {
     talon.setPosition(0);
   }
 
   @Override
-  public void setSlot0(double kP, double kI, double kD, double kS, double kV, double kA, GravityTypeValue gravityTypeValue){
+  public void setSlot0(
+      double kP,
+      double kI,
+      double kD,
+      double kS,
+      double kV,
+      double kA,
+      GravityTypeValue gravityTypeValue) {
     Slot0Configs gainsConfig = new Slot0Configs();
     gainsConfig.kP = kP;
     gainsConfig.kI = kI;
@@ -134,6 +134,4 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
 
     talon.getConfigurator().apply(gainsConfig);
   }
-
-
 }
