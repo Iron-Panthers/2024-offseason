@@ -1,8 +1,7 @@
 package frc.robot.subsystems.superstructure;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface GenericSuperstructureIO {
   @AutoLog
@@ -21,10 +20,17 @@ public interface GenericSuperstructureIO {
   default void runPosition(double position) {}
 
   default void runCharacterization() {}
-  
-  default void setSlot0(double kP, double kI, double kD, double kS, double kV, double kA, GravityTypeValue gravityTypeValue) {}
+
+  default void setSlot0(
+      double kP,
+      double kI,
+      double kD,
+      double kS,
+      double kV,
+      double kA,
+      GravityTypeValue gravityTypeValue) {}
 
   default void stop() {}
 
-  default void setOffset(){}
+  default void setOffset() {}
 }

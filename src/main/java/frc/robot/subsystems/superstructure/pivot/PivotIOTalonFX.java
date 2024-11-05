@@ -1,13 +1,11 @@
 package frc.robot.subsystems.superstructure.pivot;
 
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import frc.robot.subsystems.superstructure.GenericSuperstructureIOTalonFX;
 import java.util.Optional;
 
-import com.ctre.phoenix6.signals.GravityTypeValue;
-
-import frc.robot.subsystems.superstructure.GenericSuperstructureIOTalonFX;
-
 public class PivotIOTalonFX extends GenericSuperstructureIOTalonFX implements PivotIO {
-  public static final double REDUCTION = 1 / 1; // rotations to degrees
+  public static final double REDUCTION = 1/360; // rotations to degrees
   public static final boolean INVERTED = true; // FIXME
 
   public static final double SUPPLY_CURRENT_LIMIT = 30; // FIXME
@@ -30,15 +28,16 @@ public class PivotIOTalonFX extends GenericSuperstructureIOTalonFX implements Pi
   public static final double LOWER_VOLT_LIMIT = -4;
   public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Arm_Cosine;
 
-  public PivotIOTalonFX(){
-    super(ID, 
-      INVERTED, 
-      SUPPLY_CURRENT_LIMIT, 
-      Optional.of(ENCODER_ID), 
-      REDUCTION, UPPER_LIMIT, 
-      UPPER_VOLT_LIMIT, 
-      LOWER_VOLT_LIMIT);
-    setSlot0(P,I,D,S,0,0,GRAVITY_TYPE);
+  public PivotIOTalonFX() {
+    super(
+        ID,
+        INVERTED,
+        SUPPLY_CURRENT_LIMIT,
+        Optional.of(ENCODER_ID),
+        REDUCTION,
+        UPPER_LIMIT,
+        UPPER_VOLT_LIMIT,
+        LOWER_VOLT_LIMIT);
+    setSlot0(P, I, D, S, 0, 0, GRAVITY_TYPE);
   }
-
 }
