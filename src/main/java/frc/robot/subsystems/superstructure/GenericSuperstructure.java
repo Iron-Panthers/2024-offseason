@@ -34,7 +34,7 @@ public class GenericSuperstructure<G extends GenericSuperstructure.PositionTarge
     }
 
     Logger.recordOutput("Superstructure/" + name + "/Target", positionTarget.toString());
-    Logger.recordOutput("Superstructure/" + name + "/Target", zeroing);
+    Logger.recordOutput("Superstructure/" + name + "/Target", positionTarget.toString());
   }
 
   public G getGetPositionTarget() {
@@ -48,7 +48,6 @@ public class GenericSuperstructure<G extends GenericSuperstructure.PositionTarge
   public void runCharacterization() {
     zeroing = true;
   }
-
   public boolean atPosition() {
     return Math.abs(inputs.positionRotations - positionTarget.getPosition()) < 0.5;
   }

@@ -54,7 +54,7 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
     config.Feedback.withSensorToMechanismRatio(reduction);
 
     if (canCoderID.isPresent()) {
-      CANcoder canCoder = new CANcoder(id);
+      CANcoder canCoder = new CANcoder(canCoderID.get());
       canCoder
           .getConfigurator()
           .apply(
@@ -64,14 +64,16 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
                           .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
                           .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
                           .withMagnetOffset(0)));
+
       canCoder.getConfigurator().setPosition(0);
       config.Feedback.withRemoteCANcoder(canCoder);
+      config.Feedback.withSensorToMechanismRatio(reduction);
     }
     talon.getConfigurator().apply(config);
     talon.setPosition(0);
     talon.setNeutralMode(NeutralModeValue.Brake);
 
-    velocityRPS = talon.getVelocity();
+    velocityRPS = talon.getClosedLoopError();
     appliedVolts = talon.getMotorVoltage();
     supplyCurrent = talon.getSupplyCurrent();
     temp = talon.getDeviceTemp();
@@ -87,7 +89,7 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
         BaseStatusSignal.refreshAll(
                 positionRotations, velocityRPS, appliedVolts, supplyCurrent, temp)
             .isOK();
-    inputs.positionRotations = positionRotations.getValueAsDouble() * 360;
+    inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.velocityRotPerSec = velocityRPS.getValueAsDouble();
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = supplyCurrent.getValueAsDouble();
