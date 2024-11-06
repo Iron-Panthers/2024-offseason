@@ -8,7 +8,9 @@ public class GenericSuperstructure<G extends GenericSuperstructure.PositionTarge
   }
 
   private final String name;
+  private boolean stop;
   private final GenericSuperstructureIO superstructureIO;
+
   private GenericSuperstructureIOInputsAutoLogged inputs =
       new GenericSuperstructureIOInputsAutoLogged();
   private G positionTarget;
@@ -22,10 +24,11 @@ public class GenericSuperstructure<G extends GenericSuperstructure.PositionTarge
   public void periodic() {
     superstructureIO.updateInputs(inputs);
     Logger.processInputs(name, inputs);
-
-    if (zeroing) {
+    if (stop) {
+      superstructureIO.stop();
+    } else if (zeroing) {
       superstructureIO.runCharacterization();
-      if (inputs.velocityRotPerSec < 0.01) {
+      if (inputs.supplyCurrentAmps > 3) {
         zeroing = false;
         superstructureIO.setOffset();
       }
@@ -42,13 +45,20 @@ public class GenericSuperstructure<G extends GenericSuperstructure.PositionTarge
   }
 
   public void setPositionTarget(G positionTarget) {
+    stop = false;
     this.positionTarget = positionTarget;
   }
 
   public void runCharacterization() {
+    stop = false;
     zeroing = true;
   }
+
   public boolean atPosition() {
-    return Math.abs(inputs.positionRotations - positionTarget.getPosition()) < 0.5;
+    return Math.abs(inputs.positionRotations - positionTarget.getPosition()) < 1;
+  }
+
+  public void stop() {
+    stop = true;
   }
 }
