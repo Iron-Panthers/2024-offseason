@@ -113,7 +113,7 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
 
   @Override
   public void setOffset() {
-    talon.setPosition(0);
+    talon.getConfigurator().setPosition(0);
   }
 
   @Override

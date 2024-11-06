@@ -202,26 +202,6 @@ public class RobotContainer {
                           }
                         })));
     // transfer note to shooter
-    driverA
-        .b()
-        .onTrue(
-            new FunctionalCommand(
-                    () -> superstructure.setTargetState(SuperstructureState.STOW),
-                    () -> {},
-                    interrupted -> {},
-                    () -> superstructure.atPosition())
-                .andThen(new WaitCommand(1))
-                .andThen(
-                    new FunctionalCommand(
-                        () -> {},
-                        () -> rollers.setTargetState(RollerState.SPEAKER_TRANSFER),
-                        interrupted -> {
-                          rollers.setTargetState(RollerState.IDLE);
-                          flywheels.setVelocityTarget(Flywheels.VelocityTarget.SHOOT);
-                        },
-                        () -> rollers.acceleratorDetected(),
-                        rollers,
-                        flywheels)));
     driverB
         .b()
         .onTrue(
@@ -229,7 +209,7 @@ public class RobotContainer {
                     () -> superstructure.setTargetState(SuperstructureState.STOW),
                     () -> {},
                     interrupted -> {},
-                    () -> superstructure.atPosition())
+                    () -> superstructure.atPosition() && superstructure.getTargetState() == SuperstructureState.STOW)
                 .andThen(
                     new FunctionalCommand(
                         () -> {},
@@ -242,8 +222,8 @@ public class RobotContainer {
                         rollers,
                         flywheels)));
     // Initiate amp shot
-    driverA
-        .x()
+    driverB
+        .a()
         .onTrue(
             new FunctionalCommand(
                     () -> superstructure.setTargetState(SuperstructureState.INTAKE),
@@ -294,39 +274,10 @@ public class RobotContainer {
                         superstructure,
                         rollers,
                         flywheels)));
-    driverB
-        .a()
-        .onTrue(
-            new FunctionalCommand(
-                    () -> superstructure.setTargetState(SuperstructureState.INTAKE),
-                    () -> {},
-                    interrupted -> {},
-                    () -> superstructure.atPosition())
-                .andThen(
-                    new FunctionalCommand(
-                        () -> {},
-                        () ->
-                            rollers.setTargetState(
-                                rollers.acceleratorDetected()
-                                    ? RollerState.AMP_TRANSFER
-                                    : RollerState.INTAKE),
-                        interrupted -> rollers.setTargetState(RollerState.IDLE),
-                        () -> rollers.serializerDetected(),
-                        rollers))
-                .andThen(
-                    new FunctionalCommand(
-                        () -> {},
-                        () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
-                        interrupted -> rollers.setTargetState(RollerState.IDLE),
-                        () -> !rollers.serializerDetected(),
-                        rollers))
-                .andThen(
-                    new InstantCommand(
-                        () -> superstructure.setTargetState(SuperstructureState.AMP),
-                        superstructure)));
+
     // Initiate subwoofer shot
-    driverA
-        .a()
+    driverB
+        .x()
         .onTrue(
             new FunctionalCommand(
                     () -> {},
@@ -354,24 +305,17 @@ public class RobotContainer {
             new InstantCommand(
                 () -> {
                   swerve.zero();
-                  //   superstructure.setTargetState(SuperstructureState.ZERO);
-                  ;
+                  superstructure.setTargetState(SuperstructureState.ZERO);
                 },
                 swerve,
-                superstructure));
-    // elevator commands
-    driverB
-        .a()
-        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.AMP)));
+                superstructure)
+            .andThen(new InstantCommand(
+                () -> {
+                  superstructure.setTargetState(SuperstructureState.STOW);
+                },
+                superstructure)));
 
-    driverB
-        .b()
-        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.STOW)));
-    driverB
-        .y()
-        .onTrue(
-            new InstantCommand(
-                () -> superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT)));
+
     // cancel everything
     driverB
         .x()
