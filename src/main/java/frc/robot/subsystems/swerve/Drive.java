@@ -163,4 +163,11 @@ public class Drive extends SubsystemBase {
   public double getAngularError(double targetAngle) {
     return -Util.relativeAngularDifference(gyroInputs.yawPosition.times(-1), targetAngle);
   }
+
+  public void setVelocityTarget(){
+    ChassisSpeeds speeds = new ChassisSpeeds(0.25, 0.25, 0);
+    teleopTargetSpeeds = 
+        ChassisSpeeds.fromFieldRelativeSpeeds(speeds, gyroInputs.yawPosition);
+
+  }
 }

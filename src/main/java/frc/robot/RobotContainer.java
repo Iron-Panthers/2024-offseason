@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
+import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.rollers.RollerSensorsIO;
 import frc.robot.subsystems.rollers.RollerSensorsIOComp;
 import frc.robot.subsystems.rollers.Rollers;
@@ -282,5 +283,26 @@ public class RobotContainer {
             new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.SHUTTLE)));
   }
 
-  private void configureAutos() {}
-}
+  private void configureAutos() {
+    /*Steps:
+     * 1. Intake the note a little bit
+     * 2. Shoot the note
+     * 3. Move away from the speaker a little bit (0.25 power for 1.5 seconds)
+     * 4. Turn to an angle parallel to the sides of the field
+     * 5. Move backwards (0.5 power for 2 seconds) */
+
+     if(rollers.isContactingNote() == true) {
+        rollers.setTargetCommand(RollerState.INTAKE);
+     } else {
+        rollers.setTargetCommand(RollerState.IDLE);
+     }
+     new WaitCommand(1.0);
+     flywheels.setVelocityTarget(VelocityTarget.SHOOT);
+     new WaitCommand(1.0);
+     swerve.setVelocityTarget();
+     
+     
+     
+  }
+
+  }
