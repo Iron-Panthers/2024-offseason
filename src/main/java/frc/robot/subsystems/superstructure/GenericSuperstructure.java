@@ -34,7 +34,7 @@ public class GenericSuperstructure<G extends GenericSuperstructure.PositionTarge
     }
 
     Logger.recordOutput("Superstructure/" + name + "/Target", positionTarget.toString());
-    Logger.recordOutput("Superstructure/" + name + "/Target", zeroing);
+    Logger.recordOutput("Superstructure/" + name + "/Target", positionTarget.toString());
   }
 
   public G getGetPositionTarget() {

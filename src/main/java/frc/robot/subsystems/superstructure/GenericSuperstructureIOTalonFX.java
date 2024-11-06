@@ -67,12 +67,13 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
 
       canCoder.getConfigurator().setPosition(0);
       config.Feedback.withRemoteCANcoder(canCoder);
+      config.Feedback.withSensorToMechanismRatio(reduction);
     }
     talon.getConfigurator().apply(config);
     talon.setPosition(0);
     talon.setNeutralMode(NeutralModeValue.Brake);
 
-    velocityRPS = talon.getVelocity();
+    velocityRPS = talon.getClosedLoopError();
     appliedVolts = talon.getMotorVoltage();
     supplyCurrent = talon.getSupplyCurrent();
     temp = talon.getDeviceTemp();

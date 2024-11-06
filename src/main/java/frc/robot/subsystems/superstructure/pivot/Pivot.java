@@ -6,8 +6,8 @@ public class Pivot extends GenericSuperstructure<Pivot.PivotTarget> {
   public enum PivotTarget implements GenericSuperstructure.PositionTarget {
     STOW(0),
     ZERO(0),
-    SUBWOOF_SHOT(1),
-    SHUTTLE(0.1);
+    SUBWOOF_SHOT(53),
+    SHUTTLE(45);
     private double position;
 
     private PivotTarget(double position) {
