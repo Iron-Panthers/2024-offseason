@@ -118,7 +118,7 @@ public class Drive extends SubsystemBase {
         MathUtil.applyDeadband(Math.copySign(yAxis * yAxis, yAxis), 0.07)
             * DRIVE_CONFIG.maxLinearVelocity();
     double radianVelocity =
-        MathUtil.applyDeadband(Math.copySign(omega * omega, omega), 0.07)
+        MathUtil.applyDeadband(Math.copySign(omega * omega, omega), 0.02)
             * DRIVE_CONFIG.maxAngularVelocity();
 
     this.teleopTargetSpeeds =
