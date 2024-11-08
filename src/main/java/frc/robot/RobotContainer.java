@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import org.ejml.dense.block.decomposition.chol.InnerCholesky_DDRB;
+
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
+import frc.robot.subsystems.RGBSubsystem;
 import frc.robot.subsystems.flywheels.Flywheels;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
 import frc.robot.subsystems.rollers.RollerSensorsIO;
@@ -49,12 +52,14 @@ public class RobotContainer {
   private Rollers rollers;
   private Flywheels flywheels;
   private Superstructure superstructure;
+  private RGBSubsystem rgbSubsystem;
 
   public RobotContainer() {
     Intake intake = null;
     Accelerator accelerator = null;
     Serializer serializer = null;
     RollerSensorsIO rollerSensorsIO = null;
+    rgbSubsystem = new RGBSubsystem();
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
       switch (Constants.getRobotType()) {
@@ -148,6 +153,13 @@ public class RobotContainer {
                         () -> rollers.serializerDetected(),
                         rollers))
                 .andThen(
+                    new InstantCommand(
+                        () ->
+                            rgbSubsystem.showMessage(
+                                RGBSubsystem.Lights.Colors.RED,
+                                RGBSubsystem.PatternTypes.STROBE,
+                                RGBSubsystem.MessagePriority.F_NOTE_IN_ROBOT)))
+                .andThen(
                     new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
                         .withTimeout(0.6))
                 .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
@@ -190,7 +202,8 @@ public class RobotContainer {
                             flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE);
                             superstructure.setTargetState(SuperstructureState.STOW);
                           }
-                        })));
+                        }))
+        .andThen(new InstantCommand (()->rgbSubsystem.expireCurrent())));
     // transfer note to shooter
     driverB
         .b()
