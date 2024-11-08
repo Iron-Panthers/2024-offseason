@@ -65,6 +65,12 @@ public class Drive extends SubsystemBase {
     }
 
     // run modules
+
+    /* optimize, use kinematics to */
+    ChassisSpeeds discretizedSpeeds =
+        ChassisSpeeds.discretize(
+            targetSpeeds,
+            0.02); // dt will change depending on frequency (if move into high-priority thread)
     SwerveModuleState[] moduleTargetStates = KINEMATICS.toSwerveModuleStates(targetSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         moduleTargetStates, DRIVE_CONFIG.maxLinearVelocity());
