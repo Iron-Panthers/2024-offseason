@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import frc.robot.Constants.State;
+import frc.robot.subsystems.swerve.DriveConstants;
 
 public class RobotState {
   public record OdometryMeasurement(
@@ -18,8 +18,10 @@ public class RobotState {
 
   public record VisionMeasurement(Pose2d visionPose, double timestamp) {}
 
+  private static final double poseBufferSizeSeconds = 2;
+
   private TimeInterpolatableBuffer<Pose2d> poseBuffer =
-      TimeInterpolatableBuffer.createBuffer(State.POSE_BUFFER_SIZE_SECONDS);
+      TimeInterpolatableBuffer.createBuffer(poseBufferSizeSeconds);
 
   private Pose2d odometryPose = new Pose2d();
   private Pose2d estimatedPose = new Pose2d();
@@ -44,7 +46,7 @@ public class RobotState {
 
   public void addOdometryMeasurement(OdometryMeasurement measurement) {
     Twist2d twist =
-        Constants.Swerve.KINEMATICS.toTwist2d(lastWheelPositions, measurement.wheelPositions());
+        DriveConstants.KINEMATICS.toTwist2d(lastWheelPositions, measurement.wheelPositions());
     lastWheelPositions = measurement.wheelPositions();
 
     twist.dtheta = measurement.gyroAngle().minus(lastGyroAngle).getRadians();
@@ -58,7 +60,7 @@ public class RobotState {
   public void addVisionMeasurement(VisionMeasurement measurement) {
     // if measurement is old enough to be outside buffer timespan, skip
     if (poseBuffer.getInternalBuffer().isEmpty()
-        || poseBuffer.getInternalBuffer().lastKey() < State.POSE_BUFFER_SIZE_SECONDS) {
+        || poseBuffer.getInternalBuffer().lastKey() < poseBufferSizeSeconds) {
       return;
     }
   }
