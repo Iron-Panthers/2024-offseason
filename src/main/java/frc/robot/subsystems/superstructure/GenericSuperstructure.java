@@ -54,8 +54,8 @@ public class GenericSuperstructure<G extends GenericSuperstructure.PositionTarge
     zeroing = true;
   }
 
-  public boolean atPosition() {
-    return Math.abs(inputs.positionRotations - positionTarget.getPosition()) < 1;
+  public double position() {
+    return inputs.positionRotations;
   }
 
   public void stop() {

@@ -24,8 +24,8 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
 
   public static final double UPPER_LIMIT = 33;
 
-  public static final double UPPER_VOLT_LIMIT = 7;
-  public static final double LOWER_VOLT_LIMIT = -5;
+  public static final double UPPER_VOLT_LIMIT = 10;
+  public static final double LOWER_VOLT_LIMIT = -7;
 
   public static final GravityTypeValue GRAVITY_TYPE = GravityTypeValue.Elevator_Static;
 

@@ -139,11 +139,7 @@ public class RobotContainer {
     driverA
         .leftBumper()
         .onTrue(
-            new FunctionalCommand(
-                    () -> superstructure.setTargetState(SuperstructureState.INTAKE),
-                    () -> {},
-                    interrupted -> {},
-                    () -> superstructure.atPosition())
+            new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.INTAKE))
                 .andThen(
                     new FunctionalCommand(
                         () -> rollers.setTargetState(RollerState.INTAKE),
@@ -158,11 +154,7 @@ public class RobotContainer {
     driverB
         .leftBumper()
         .onTrue(
-            new FunctionalCommand(
-                    () -> superstructure.setTargetState(SuperstructureState.INTAKE),
-                    () -> {},
-                    interrupted -> {},
-                    () -> superstructure.atPosition())
+            new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.INTAKE))
                 .andThen(
                     new FunctionalCommand(
                         () -> rollers.setTargetState(RollerState.INTAKE),
@@ -184,9 +176,7 @@ public class RobotContainer {
                         rollers.setTargetState(
                             rollers.acceleratorDetected() && flywheels.atSpeed()
                                 ? RollerState.SHOOT_SPEAKER
-                                : superstructure.atPosition()
-                                        && superstructure.getTargetState()
-                                            == SuperstructureState.AMP
+                                : superstructure.getTargetState() == SuperstructureState.AMP
                                     ? RollerState.SHOOT_AMP
                                     : rollers.getTargetState()),
                     rollers)
@@ -209,7 +199,9 @@ public class RobotContainer {
                     () -> superstructure.setTargetState(SuperstructureState.STOW),
                     () -> {},
                     interrupted -> {},
-                    () -> superstructure.atPosition() && superstructure.getTargetState() == SuperstructureState.STOW)
+                    () ->
+                        superstructure.elevatorPosition() < 1
+                            && superstructure.getTargetState() == SuperstructureState.STOW)
                 .andThen(
                     new FunctionalCommand(
                         () -> {},
@@ -221,15 +213,27 @@ public class RobotContainer {
                         () -> rollers.acceleratorDetected(),
                         rollers,
                         flywheels)));
+    // speaker shot pivot snap and drive base
+    driverB
+        .y()
+        .onTrue(
+            new FunctionalCommand(
+                    () -> {},
+                    () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 0),
+                    interrupted -> {},
+                    () -> Math.abs(swerve.getAngularError(0)) < 1,
+                    swerve)
+                .alongWith(
+                    new InstantCommand(
+                        () -> superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT)))
+                .alongWith(
+                    new InstantCommand(
+                        () -> flywheels.setVelocityTarget(Flywheels.VelocityTarget.SHOOT))));
     // Initiate amp shot
     driverB
         .a()
         .onTrue(
-            new FunctionalCommand(
-                    () -> superstructure.setTargetState(SuperstructureState.INTAKE),
-                    () -> {},
-                    interrupted -> {},
-                    () -> superstructure.atPosition())
+            new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.INTAKE))
                 .andThen(
                     new FunctionalCommand(
                         () -> {},
@@ -262,8 +266,8 @@ public class RobotContainer {
                         () -> !rollers.serializerDetected(),
                         rollers))
                 .andThen(
-                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
-                        .withTimeout(0.7))
+                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers))
+                .andThen(new WaitCommand(0.08))
                 .andThen(
                     new InstantCommand(
                         () -> {
@@ -303,18 +307,18 @@ public class RobotContainer {
         .start()
         .onTrue(
             new InstantCommand(
-                () -> {
-                  swerve.zero();
-                  superstructure.setTargetState(SuperstructureState.ZERO);
-                },
-                swerve,
-                superstructure)
-            .andThen(new InstantCommand(
-                () -> {
-                  superstructure.setTargetState(SuperstructureState.STOW);
-                },
-                superstructure)));
-
+                    () -> {
+                      swerve.zero();
+                      superstructure.setTargetState(SuperstructureState.ZERO);
+                    },
+                    swerve,
+                    superstructure)
+                .andThen(
+                    new InstantCommand(
+                        () -> {
+                          superstructure.setTargetState(SuperstructureState.STOW);
+                        },
+                        superstructure)));
 
     // cancel everything
     driverB
@@ -326,7 +330,10 @@ public class RobotContainer {
                   ;
                   flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE);
                   superstructure.setTargetState(SuperstructureState.STOP);
-                }));
+                },
+                rollers,
+                flywheels,
+                superstructure));
   }
 
   private void configureAutos() {}

@@ -70,8 +70,8 @@ public class Superstructure extends SubsystemBase {
     targetState = superstructureState;
   }
 
-  public boolean atPosition() {
-    return elevator.atPosition() && pivot.atPosition();
+  public double elevatorPosition() {
+    return elevator.position();
   }
 
   public SuperstructureState getTargetState() {
