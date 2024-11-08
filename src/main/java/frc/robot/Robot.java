@@ -22,8 +22,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
 
-  private static final String defaultAuto = "Default";
-  private static final String customAuto = "My Auto";
   private String autoSelected;
   private final LoggedDashboardChooser<String> chooser =
       new LoggedDashboardChooser<>("Auto Choices");
@@ -68,8 +66,6 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // Initialize auto chooser
-    chooser.addDefaultOption("Default Auto", defaultAuto);
-    chooser.addOption("My Auto", customAuto);
 
     robotContainer = new RobotContainer();
   }
@@ -89,17 +85,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-    switch (autoSelected) {
-      case customAuto:
-        // Put custom auto code here
-        break;
-      case defaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
-  }
+  public void autonomousPeriodic() {}
 
   /** This function is called once when teleop is enabled. */
   @Override
