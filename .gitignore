@@ -158,6 +158,8 @@ gradle-app.setting
 .settings/
 bin/
 
+.factorypath
+
 # IntelliJ
 *.iml
 *.ipr
@@ -173,6 +175,3 @@ simgui*.json
 
 # Version file
 src/main/java/frc/robot/BuildConstants.java
-
-
-.factorypath

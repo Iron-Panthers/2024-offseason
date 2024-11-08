@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -29,7 +30,7 @@ public class Drive extends SubsystemBase {
   private Rotation2d arbitraryYaw = new Rotation2d();
 
   @AutoLogOutput(key = "Swerve/YawOffset")
-  private Rotation2d gyroYawOffset = new Rotation2d(0);
+  private Rotation2d gyroYawOffset = new Rotation2d();
 
   private ChassisSpeeds teleopTargetSpeeds = new ChassisSpeeds();
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
@@ -66,11 +67,9 @@ public class Drive extends SubsystemBase {
 
     // run modules
 
-    /* optimize, use kinematics to */
+    /* use kinematics to get desired module states */
     ChassisSpeeds discretizedSpeeds =
-        ChassisSpeeds.discretize(
-            targetSpeeds,
-            0.02); // dt will change depending on frequency (if move into high-priority thread)
+        ChassisSpeeds.discretize(targetSpeeds, Constants.PERIODIC_LOOP_SEC);
     SwerveModuleState[] moduleTargetStates = KINEMATICS.toSwerveModuleStates(targetSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         moduleTargetStates, DRIVE_CONFIG.maxLinearVelocity());
@@ -93,17 +92,10 @@ public class Drive extends SubsystemBase {
     if (driveMode != DriveModes.TELEOP) { // auto align override?
       driveMode = DriveModes.TELEOP;
     }
-    double omega = joyStick + triggerLeft + triggerRight;
+    double omega = joyStick + triggerLeft + triggerRight; // ok..
     omega = Math.pow(omega, 2) * Math.signum(omega);
 
-    // NWU convention
-    /*double theta = Math.atan2(xAxis, yAxis);
-    double radiusDeadband =
-        MathUtil.applyDeadband(Math.sqrt((xAxis * xAxis) + (yAxis + yAxis)), 0.07);
-    double radiusExp = Math.copySign(Math.pow(radiusDeadband, 1.5), radiusDeadband);
-
-    double xVelocity = radiusExp * Math.sin(theta) * DRIVE_CONFIG.maxLinearVelocity();
-    double yVelocity = radiusExp * Math.cos(theta) * DRIVE_CONFIG.maxLinearVelocity();*/
+    // FIXME, make life easier and use wpilib utils
 
     double xVelocity =
         MathUtil.applyDeadband(Math.copySign(xAxis * xAxis, xAxis), 0.07)
@@ -130,6 +122,6 @@ public class Drive extends SubsystemBase {
   }
 
   public void zero() {
-    gyroYawOffset = Rotation2d.fromDegrees(gyroInputs.yawPosition.getDegrees());
+    gyroYawOffset = gyroInputs.yawPosition;
   }
 }
