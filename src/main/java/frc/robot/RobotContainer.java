@@ -99,6 +99,7 @@ public class RobotContainer {
         swerve
             .run(
                 () -> {
+                  // for future review
                   swerve.driveTeleopController(
                       -driverA.getLeftY(),
                       -driverA.getLeftX(),
@@ -108,43 +109,11 @@ public class RobotContainer {
                 })
             .withName("Drive Teleop"));
 
+    driverA.start().onTrue(swerve.runOnce(() -> swerve.zero()));
+
     // -----Intake Controls-----
-    driverA.x().whileTrue(rollers.setTargetCommand(RollerState.INTAKE));
 
     // -----Flywheel Controls-----
-    //
-    driverA
-        .y()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.SHOOT);
-                },
-                flywheels));
-    driverA
-        .b()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.SLOW);
-                },
-                flywheels));
-    driverA
-        .a()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.IDLE);
-                },
-                flywheels));
-    driverA
-        .start()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerve.zero();
-                },
-                swerve));
   }
 
   private void configureAutos() {}
