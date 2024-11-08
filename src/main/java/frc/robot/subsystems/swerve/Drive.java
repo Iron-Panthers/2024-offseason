@@ -100,7 +100,7 @@ public class Drive extends SubsystemBase {
       driveMode = DriveModes.TELEOP;
     }
     double omega = joyStick + triggerLeft + triggerRight;
-    omega = Math.pow(omega, 2) * Math.signum(omega);
+    omega = Math.pow(omega, 1);
 
     // NWU convention
     /*double theta = Math.atan2(xAxis, yAxis);

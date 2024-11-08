@@ -74,6 +74,14 @@ public class Superstructure extends SubsystemBase {
     return elevator.position();
   }
 
+  public double getElevatorSupplyCurrentAmps() {
+    return elevator.supplyCurrentAmps();
+  }
+
+  public double getPivotSupplyCurrentAmps() {
+    return pivot.supplyCurrentAmps();
+  }
+
   public SuperstructureState getTargetState() {
     return targetState;
   }

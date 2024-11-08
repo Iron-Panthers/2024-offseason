@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import org.ejml.dense.block.decomposition.chol.InnerCholesky_DDRB;
-
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -192,7 +190,7 @@ public class RobotContainer {
                                     ? RollerState.SHOOT_AMP
                                     : rollers.getTargetState()),
                     rollers)
-                .andThen(new WaitCommand(2))
+                .andThen(new WaitCommand(1))
                 .andThen(
                     new InstantCommand(
                         () -> {
@@ -203,7 +201,32 @@ public class RobotContainer {
                             superstructure.setTargetState(SuperstructureState.STOW);
                           }
                         }))
-        .andThen(new InstantCommand (()->rgbSubsystem.expireCurrent())));
+                .andThen(new InstantCommand(() -> rgbSubsystem.expireCurrent())));
+    driverB
+        .rightBumper()
+        .onTrue(
+            new InstantCommand(
+                    () ->
+                        rollers.setTargetState(
+                            rollers.acceleratorDetected()
+                                ? RollerState.SHOOT_SPEAKER
+                                : superstructure.getTargetState() == SuperstructureState.AMP
+                                    ? RollerState.SHOOT_AMP
+                                    : rollers.getTargetState()),
+                    rollers)
+                .andThen(new WaitCommand(1))
+                .andThen(
+                    new InstantCommand(
+                        () -> {
+                          if (rollers.getTargetState() == RollerState.SHOOT_SPEAKER
+                              || rollers.getTargetState() == RollerState.SHOOT_AMP) {
+                            rollers.setTargetState(RollerState.IDLE);
+                            flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE);
+                            superstructure.setTargetState(SuperstructureState.STOW);
+                          }
+                        }))
+                .andThen(new InstantCommand(() -> rgbSubsystem.expireCurrent())));
+
     // transfer note to shooter
     driverB
         .b()
@@ -230,15 +253,15 @@ public class RobotContainer {
     driverB
         .y()
         .onTrue(
-            new FunctionalCommand(
-                    () -> {},
-                    () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 0),
-                    interrupted -> {},
-                    () -> Math.abs(swerve.getAngularError(0)) < 1,
-                    swerve)
-                .alongWith(
-                    new InstantCommand(
-                        () -> superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT)))
+            // new FunctionalCommand(
+            //         () -> {},
+            //         () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 180),
+            //         interrupted -> {},
+            //         () -> Math.abs(swerve.getAngularError(0)) < 1,
+            //         swerve)
+            //     .alongWith(
+            new InstantCommand(
+                    () -> superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT))
                 .alongWith(
                     new InstantCommand(
                         () -> flywheels.setVelocityTarget(Flywheels.VelocityTarget.SHOOT))));
@@ -296,15 +319,15 @@ public class RobotContainer {
     driverB
         .x()
         .onTrue(
-            new FunctionalCommand(
-                    () -> {},
-                    () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 0),
-                    interrupted -> {},
-                    () -> Math.abs(swerve.getAngularError(0)) < 1,
-                    swerve)
-                .alongWith(
-                    new InstantCommand(
-                        () -> superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT))));
+            // new FunctionalCommand(
+            //         () -> {},
+            //         () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 0),
+            //         interrupted -> {},
+            //         () -> Math.abs(swerve.getAngularError(0)) < 1,
+            //         swerve)
+
+            new InstantCommand(
+                () -> superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT)));
     // -----Flywheel Controls-----
     //
     // driverA
@@ -319,18 +342,22 @@ public class RobotContainer {
     driverA
         .start()
         .onTrue(
-            new InstantCommand(
+            new FunctionalCommand(
                     () -> {
                       swerve.zero();
                       superstructure.setTargetState(SuperstructureState.ZERO);
                     },
+                    () -> {},
+                    interrupted -> {},
+                    () ->
+                        // superstructure.getElevatorSupplyCurrentAmps() > 4
+                        //     && superstructure.getPivotSupplyCurrentAmps() > 4
+                        true,
                     swerve,
                     superstructure)
                 .andThen(
                     new InstantCommand(
-                        () -> {
-                          superstructure.setTargetState(SuperstructureState.STOW);
-                        },
+                        () -> superstructure.setTargetState(SuperstructureState.STOW),
                         superstructure)));
 
     // cancel everything
@@ -347,6 +374,12 @@ public class RobotContainer {
                 rollers,
                 flywheels,
                 superstructure));
+    driverB
+        .povDown()
+        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.STOW)));
+    driverB
+        .povUp()
+        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.AMP)));
   }
 
   private void configureAutos() {}

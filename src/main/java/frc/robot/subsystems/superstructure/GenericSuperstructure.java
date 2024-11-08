@@ -28,7 +28,7 @@ public class GenericSuperstructure<G extends GenericSuperstructure.PositionTarge
       superstructureIO.stop();
     } else if (zeroing) {
       superstructureIO.runCharacterization();
-      if (inputs.supplyCurrentAmps > 3) {
+      if (inputs.supplyCurrentAmps > 4) {
         zeroing = false;
         superstructureIO.setOffset();
       }
@@ -56,6 +56,10 @@ public class GenericSuperstructure<G extends GenericSuperstructure.PositionTarge
 
   public double position() {
     return inputs.positionRotations;
+  }
+
+  public double supplyCurrentAmps() {
+    return inputs.supplyCurrentAmps;
   }
 
   public void stop() {
