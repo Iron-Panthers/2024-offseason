@@ -158,8 +158,15 @@ public class RobotContainer {
                                 RGBSubsystem.PatternTypes.STROBE,
                                 RGBSubsystem.MessagePriority.F_NOTE_IN_ROBOT)))
                 .andThen(
-                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
+                    new InstantCommand(() -> rollers.setTargetState(RollerState.AMP_EJECT), rollers)
                         .withTimeout(0.6))
+                .andThen(new FunctionalCommand(
+                        ()-> rollers.setTargetState(RollerState.EJECT), 
+                        ()-> {}, 
+                        interrupted -> rollers.setTargetState(RollerState.IDLE),
+                        ()-> false, 
+                        rollers)
+                    .withTimeout(2))
                 .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
     driverB
         .leftBumper()
@@ -176,6 +183,16 @@ public class RobotContainer {
                     new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
                         .withTimeout(0.6))
                 .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
+    //eject note manual command
+    driverB.leftTrigger()
+                .onTrue(
+                    new FunctionalCommand(
+                        ()-> rollers.setTargetState(RollerState.EJECT), 
+                        ()-> {}, 
+                        interrupted -> rollers.setTargetState(RollerState.IDLE),
+                        ()-> false, 
+                        rollers)
+                    .withTimeout(2));
 
     // Shoot command (either amp or speaker)
     driverA
@@ -302,7 +319,7 @@ public class RobotContainer {
                         () -> !rollers.serializerDetected(),
                         rollers))
                 .andThen(
-                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers))
+                    new InstantCommand(() -> rollers.setTargetState(RollerState.AMP_EJECT), rollers))
                 .andThen(new WaitCommand(0.08))
                 .andThen(
                     new InstantCommand(

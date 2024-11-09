@@ -10,7 +10,8 @@ public class Accelerator extends GenericRollers<Accelerator.Target> {
     SHOOT_AMP(0),
     SPEAKER_TRANSFER(2),
     AMP_TRANSFER(-2),
-    EJECT(0);
+    EJECT(0),
+    AMP_EJECT(0);
 
     private int volts;
 

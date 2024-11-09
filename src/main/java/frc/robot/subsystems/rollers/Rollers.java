@@ -16,7 +16,8 @@ public class Rollers extends SubsystemBase {
     SHOOT_AMP,
     SPEAKER_TRANSFER,
     AMP_TRANSFER,
-    EJECT
+    EJECT,
+    AMP_EJECT
   }
 
   private final Intake intake;
@@ -76,6 +77,11 @@ public class Rollers extends SubsystemBase {
         intake.setVoltageTarget(Intake.Target.EJECT);
         accelerator.setVoltageTarget(Accelerator.Target.EJECT);
         serializer.setVoltageTarget(Serializer.Target.EJECT);
+      }
+      case AMP_EJECT -> {
+        intake.setVoltageTarget(Intake.Target.AMP_EJECT);
+        accelerator.setVoltageTarget(Accelerator.Target.AMP_EJECT);
+        serializer.setVoltageTarget(Serializer.Target.AMP_EJECT);
       }
     }
     intake.periodic();

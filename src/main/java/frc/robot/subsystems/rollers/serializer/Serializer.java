@@ -10,7 +10,8 @@ public class Serializer extends GenericRollers<Serializer.Target> {
     SHOOT_AMP(-8),
     SPEAKER_TRANSFER(3),
     AMP_TRANSFER(-2),
-    EJECT(-1);
+    EJECT(0),
+    AMP_EJECT(-1);
 
     private int volts;
 
