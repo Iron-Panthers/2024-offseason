@@ -146,13 +146,14 @@ public class RobotContainer {
                 () -> {},
                 () ->
                     swerve.driveAnglePeriodic(
-                        driverA.getLeftY(),
-                        driverA.getLeftX(),
+                        -driverA.getLeftY(),
+                        -driverA.getLeftX(),
                         swerve.getTargetAngle()
                             + 5
-                                * Math.signum(
+                                * Math.copySign(
                                     rotationAbsolute.getAsDouble()
-                                        * Math.pow(Math.abs(rotationAbsolute.getAsDouble()), 1.5))),
+                                        * Math.pow(Math.abs(rotationAbsolute.getAsDouble()), 1),
+                                    rotationAbsolute.getAsDouble())),
                 interrupted -> {},
                 () -> false,
                 swerve));
