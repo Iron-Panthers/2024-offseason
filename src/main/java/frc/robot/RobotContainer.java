@@ -269,31 +269,36 @@ public class RobotContainer {
     driverB
         .a()
         .onTrue(
-            new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.INTAKE))
+            new InstantCommand(
+                    () ->
+                        superstructure.setTargetState(
+                            superstructure.getTargetState() == SuperstructureState.AMP
+                                ? SuperstructureState.AMP
+                                : SuperstructureState.INTAKE))
                 .andThen(
                     new FunctionalCommand(
                         () -> {},
                         () -> {
-                            if (superstructure.getTargetState() == SuperstructureState.AMP){
-                                rollers.setTargetState(RollerState.IDLE);
-                            }
-                            else{
-                          boolean once = false;
-                          rollers.setTargetState(
-                              rollers.acceleratorDetected()
-                                  ? RollerState.AMP_TRANSFER
-                                  : RollerState.INTAKE);
-                          if (rollers.getTargetState() == RollerState.AMP_TRANSFER
-                              && rollers.serializerDetected()) {
-                            once = true;
-                          }
-                          if (once && !rollers.serializerDetected()) {
-                            rollers.setTargetState(RollerState.INTAKE);
-                          }
-                          if (rollers.serializerDetected()
-                              && rollers.getTargetState() == RollerState.INTAKE) {
+                          if (superstructure.getTargetState() == SuperstructureState.AMP) {
                             rollers.setTargetState(RollerState.IDLE);
-                          }}
+                          } else {
+                            boolean once = false;
+                            rollers.setTargetState(
+                                rollers.acceleratorDetected()
+                                    ? RollerState.AMP_TRANSFER
+                                    : RollerState.INTAKE);
+                            if (rollers.getTargetState() == RollerState.AMP_TRANSFER
+                                && rollers.serializerDetected()) {
+                              once = true;
+                            }
+                            if (once && !rollers.serializerDetected()) {
+                              rollers.setTargetState(RollerState.INTAKE);
+                            }
+                            if (rollers.serializerDetected()
+                                && rollers.getTargetState() == RollerState.INTAKE) {
+                              rollers.setTargetState(RollerState.IDLE);
+                            }
+                          }
                         },
                         interrupted -> rollers.setTargetState(RollerState.IDLE),
                         () -> rollers.getTargetState() == RollerState.IDLE,
@@ -301,20 +306,26 @@ public class RobotContainer {
                 .andThen(
                     new FunctionalCommand(
                         () -> {},
-                        () -> {if (superstructure.getTargetState() == SuperstructureState.AMP){
-                                rollers.setTargetState(RollerState.IDLE);
-                            }
-                            else{
-                            rollers.setTargetState(RollerState.AMP_TRANSFER);}},
+                        () -> {
+                          if (superstructure.getTargetState() == SuperstructureState.AMP) {
+                            rollers.setTargetState(RollerState.IDLE);
+                          } else {
+                            rollers.setTargetState(RollerState.AMP_TRANSFER);
+                          }
+                        },
                         interrupted -> rollers.setTargetState(RollerState.IDLE),
                         () -> !rollers.serializerDetected(),
                         rollers))
                 .andThen(
-                    new InstantCommand(() -> {if (superstructure.getTargetState() == SuperstructureState.AMP){
-                                rollers.setTargetState(RollerState.IDLE);
-                            }
-                            else{
-                            rollers.setTargetState(RollerState.EJECT);}}, rollers))
+                    new InstantCommand(
+                        () -> {
+                          if (superstructure.getTargetState() == SuperstructureState.AMP) {
+                            rollers.setTargetState(RollerState.IDLE);
+                          } else {
+                            rollers.setTargetState(RollerState.EJECT);
+                          }
+                        },
+                        rollers))
                 .andThen(new WaitCommand(0.08))
                 .andThen(
                     new InstantCommand(
