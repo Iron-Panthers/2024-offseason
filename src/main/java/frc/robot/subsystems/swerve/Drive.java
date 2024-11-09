@@ -23,6 +23,7 @@ public class Drive extends SubsystemBase {
   }
 
   private DriveModes driveMode = DriveModes.TELEOP;
+  private double targetAngle = 0;
 
   private PIDController rotController;
 
@@ -47,7 +48,8 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(bl, 2);
     modules[3] = new Module(br, 3);
 
-    rotController = new PIDController(0.0179, 0, 0);
+    rotController = new PIDController(0.01, 0, 0);
+    rotController.setTolerance(1);
     rotController.setSetpoint(0);
     rotController.setTolerance(1);
   }
@@ -94,39 +96,12 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Swerve/DriveMode", driveMode);
   }
 
-  public void driveTeleopController(
-      double xAxis, double yAxis, double joyStick, double triggerLeft, double triggerRight) {
-    if (driveMode != DriveModes.TELEOP) { // auto align override?
+  public void driveTeleopController(double xAxis, double yAxis) {
+    if (driveMode != DriveModes.TELEOP) {
       driveMode = DriveModes.TELEOP;
+      targetAngle = gyroInputs.yawPosition.getDegrees();
     }
-    double omega = joyStick + triggerLeft + triggerRight;
-    omega = Math.pow(omega, 1);
-
-    // NWU convention
-    /*double theta = Math.atan2(xAxis, yAxis);
-    double radiusDeadband =
-        MathUtil.applyDeadband(Math.sqrt((xAxis * xAxis) + (yAxis + yAxis)), 0.07);
-    double radiusExp = Math.copySign(Math.pow(radiusDeadband, 1.5), radiusDeadband);
-
-    double xVelocity = radiusExp * Math.sin(theta) * DRIVE_CONFIG.maxLinearVelocity();
-    double yVelocity = radiusExp * Math.cos(theta) * DRIVE_CONFIG.maxLinearVelocity();*/
-
-    double xVelocity =
-        MathUtil.applyDeadband(Math.copySign(xAxis * xAxis, xAxis), 0.07)
-            * DRIVE_CONFIG.maxLinearVelocity();
-    double yVelocity =
-        MathUtil.applyDeadband(Math.copySign(yAxis * yAxis, yAxis), 0.07)
-            * DRIVE_CONFIG.maxLinearVelocity();
-    double radianVelocity =
-        MathUtil.applyDeadband(Math.copySign(omega * omega, omega), 0.02)
-            * DRIVE_CONFIG.maxAngularVelocity();
-
-    this.teleopTargetSpeeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, radianVelocity, arbitraryYaw);
-
-    Logger.recordOutput("Swerve/Teleop/xVelocity", xVelocity);
-    Logger.recordOutput("Swerve/Teleop/yVelocity", yVelocity);
-    Logger.recordOutput("Swerve/Teleop/radianVelocity", radianVelocity);
+    driveAnglePeriodic(xAxis, yAxis, targetAngle);
   }
 
   public void setTrajectoryFollower(ChassisSpeeds trajectorySpeeds) {
@@ -140,7 +115,7 @@ public class Drive extends SubsystemBase {
   }
 
   public void driveAnglePeriodic(double xAxis, double yAxis, double targetAngle) {
-
+    this.targetAngle = targetAngle;
     double angularDifference = getAngularError(targetAngle);
 
     double rotationValue = rotController.calculate(angularDifference);
@@ -152,15 +127,27 @@ public class Drive extends SubsystemBase {
     double omegaRadiansPerSecond =
         rotationValue * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
 
+    double xVelocity =
+        MathUtil.applyDeadband(Math.copySign(xAxis * xAxis, xAxis), 0.07)
+            * DRIVE_CONFIG.maxLinearVelocity();
+    double yVelocity =
+        MathUtil.applyDeadband(Math.copySign(yAxis * yAxis, yAxis), 0.07)
+            * DRIVE_CONFIG.maxLinearVelocity();
+
     // initialize chassis speeds but add our desired angle
     teleopTargetSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            xAxis, yAxis, omegaRadiansPerSecond, gyroInputs.yawPosition);
-
-    // use the existing drive periodic logic to assign to motors ect
+            xVelocity, yVelocity, omegaRadiansPerSecond, gyroInputs.yawPosition);
+    Logger.recordOutput("Swerve/Teleop/xVelocity", xVelocity);
+    Logger.recordOutput("Swerve/Teleop/yVelocity", yVelocity);
+    Logger.recordOutput("Swerve/Teleop/radianVelocity", 0);
   }
 
   public double getAngularError(double targetAngle) {
     return -Util.relativeAngularDifference(gyroInputs.yawPosition.times(-1), targetAngle);
+  }
+
+  public double getTargetAngle() {
+    return targetAngle;
   }
 }
