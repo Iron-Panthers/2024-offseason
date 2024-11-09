@@ -4,10 +4,13 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.RGBSubsystem;
 import frc.robot.subsystems.flywheels.Flywheels;
@@ -131,12 +134,23 @@ public class RobotContainer {
                 () -> {
                   swerve.driveTeleopController(
                       -driverA.getLeftY(),
-                      -driverA.getLeftX(),
-                      -driverA.getRightX(),
-                      driverA.getLeftTriggerAxis(),
-                      -driverA.getRightTriggerAxis());
+                      -driverA.getLeftX());
                 })
             .withName("Drive Teleop"));
+
+    DoubleSupplier rotationAbsolute = () -> driverA.getRightTriggerAxis() - driverA.getLeftTriggerAxis();
+
+    new Trigger(() -> Math.abs(rotationAbsolute.getAsDouble()) > 0.07)
+            .whileTrue(
+            new FunctionalCommand(
+                () -> {},
+                () -> swerve.driveAnglePeriodic(
+                    driverA.getLeftY(),
+                    driverA.getLeftX(), 
+                    swerve.getTargetAngle()+5*Math.signum(rotationAbsolute.getAsDouble()*Math.pow(Math.abs(rotationAbsolute.getAsDouble()), 1.5))), 
+                interrupted -> {},
+                () -> false,
+                swerve));
 
     // intake note and then outtake for a little time
     driverA
