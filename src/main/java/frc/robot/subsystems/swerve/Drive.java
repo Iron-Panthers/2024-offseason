@@ -95,9 +95,8 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Swerve/DriveMode", driveMode);
   }
 
-  public void driveTeleopController(
-      double xAxis, double yAxis) {
-    if (driveMode != DriveModes.TELEOP) { 
+  public void driveTeleopController(double xAxis, double yAxis) {
+    if (driveMode != DriveModes.TELEOP) {
       driveMode = DriveModes.TELEOP;
       targetAngle = gyroInputs.yawPosition.getDegrees();
     }
@@ -141,14 +140,13 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Swerve/Teleop/xVelocity", xVelocity);
     Logger.recordOutput("Swerve/Teleop/yVelocity", yVelocity);
     Logger.recordOutput("Swerve/Teleop/radianVelocity", 0);
-
   }
 
   public double getAngularError(double targetAngle) {
     return -Util.relativeAngularDifference(gyroInputs.yawPosition.times(-1), targetAngle);
   }
 
-  public double getTargetAngle(){
+  public double getTargetAngle() {
     return targetAngle;
   }
 }

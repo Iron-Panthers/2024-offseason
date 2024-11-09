@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
-
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -37,6 +37,7 @@ import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.ModuleIO;
 import frc.robot.subsystems.swerve.ModuleIOTalonFX;
+import java.util.function.DoubleSupplier;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -132,22 +133,26 @@ public class RobotContainer {
         swerve
             .run(
                 () -> {
-                  swerve.driveTeleopController(
-                      -driverA.getLeftY(),
-                      -driverA.getLeftX());
+                  swerve.driveTeleopController(-driverA.getLeftY(), -driverA.getLeftX());
                 })
             .withName("Drive Teleop"));
 
-    DoubleSupplier rotationAbsolute = () -> driverA.getRightTriggerAxis() - driverA.getLeftTriggerAxis();
+    DoubleSupplier rotationAbsolute =
+        () -> driverA.getRightTriggerAxis() - driverA.getLeftTriggerAxis();
 
     new Trigger(() -> Math.abs(rotationAbsolute.getAsDouble()) > 0.07)
-            .whileTrue(
+        .whileTrue(
             new FunctionalCommand(
                 () -> {},
-                () -> swerve.driveAnglePeriodic(
-                    driverA.getLeftY(),
-                    driverA.getLeftX(), 
-                    swerve.getTargetAngle()+5*Math.signum(rotationAbsolute.getAsDouble()*Math.pow(Math.abs(rotationAbsolute.getAsDouble()), 1.5))), 
+                () ->
+                    swerve.driveAnglePeriodic(
+                        driverA.getLeftY(),
+                        driverA.getLeftX(),
+                        swerve.getTargetAngle()
+                            + 5
+                                * Math.signum(
+                                    rotationAbsolute.getAsDouble()
+                                        * Math.pow(Math.abs(rotationAbsolute.getAsDouble()), 1.5))),
                 interrupted -> {},
                 () -> false,
                 swerve));
@@ -359,7 +364,7 @@ public class RobotContainer {
             new FunctionalCommand(
                     () -> {
                       swerve.zero();
-                      superstructure.setTargetState(SuperstructureState.ZERO);
+                      //   superstructure.setTargetState(SuperstructureState.ZERO);
                     },
                     () -> {},
                     interrupted -> {},
@@ -388,12 +393,66 @@ public class RobotContainer {
                 rollers,
                 flywheels,
                 superstructure));
+    // manual elevator
     driverB
         .povDown()
         .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.STOW)));
     driverB
         .povUp()
         .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.AMP)));
+
+    // turning setpoints
+    // source
+    driverA
+        .povUp()
+        .onTrue(
+            new FunctionalCommand(
+                () -> {},
+                () ->
+                    swerve.driveAnglePeriodic(
+                        driverA.getLeftX(),
+                        driverA.getLeftY(),
+                        DriverStation.getAlliance().get().equals(Alliance.Red) ? -39 : 39),
+                interrupted -> {},
+                () -> Math.abs(swerve.getAngularError(0)) < 5));
+    // amp
+    driverA
+        .povLeft()
+        .onTrue(
+            new FunctionalCommand(
+                () -> {},
+                () ->
+                    swerve.driveAnglePeriodic(
+                        driverA.getLeftX(),
+                        driverA.getLeftY(),
+                        DriverStation.getAlliance().get().equals(Alliance.Red) ? -90 : 90),
+                interrupted -> {},
+                () -> Math.abs(swerve.getAngularError(0)) < 5));
+    // shuttle
+    driverA
+        .povRight()
+        .onTrue(
+            new FunctionalCommand(
+                () -> {},
+                () -> {
+                  swerve.driveAnglePeriodic(
+                      driverA.getLeftX(),
+                      driverA.getLeftY(),
+                      DriverStation.getAlliance().get().equals(Alliance.Red) ? -50 : 50);
+                  superstructure.setTargetState(SuperstructureState.SHUTTLE);
+                },
+                interrupted -> {},
+                () -> Math.abs(swerve.getAngularError(0)) < 5,
+                superstructure));
+    // speaker
+    driverA
+        .povDown()
+        .onTrue(
+            new FunctionalCommand(
+                () -> {},
+                () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 0),
+                interrupted -> {},
+                () -> Math.abs(swerve.getAngularError(0)) < 5));
   }
 
   private void configureAutos() {}
