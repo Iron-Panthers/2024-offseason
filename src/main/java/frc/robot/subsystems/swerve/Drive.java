@@ -164,10 +164,15 @@ public class Drive extends SubsystemBase {
     return -Util.relativeAngularDifference(gyroInputs.yawPosition.times(-1), targetAngle);
   }
 
-  public void setVelocityTarget(){
-    ChassisSpeeds speeds = new ChassisSpeeds(0.25, 0.25, 0);
-    teleopTargetSpeeds = 
-        ChassisSpeeds.fromFieldRelativeSpeeds(speeds, gyroInputs.yawPosition);
+  // sets the velocity of the robot (parameters of setVelocity target: x speed, y speed, and rate of rotation)
+  public ChassisSpeeds setVelocityTarget(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond){
+  ChassisSpeeds speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+  teleopTargetSpeeds =
+      ChassisSpeeds.fromFieldRelativeSpeeds(speeds, gyroInputs.yawPosition);
+  return teleopTargetSpeeds;
 
-  }
+
+}
+
+
 }

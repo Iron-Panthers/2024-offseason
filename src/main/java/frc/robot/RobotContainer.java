@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -281,6 +282,11 @@ public class RobotContainer {
         .x()
         .onTrue(
             new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.SHUTTLE)));
+  }
+
+  public void containerMatchStarting() {
+    CommandScheduler.getInstance().schedule(/*FIXME - Vibrate the controller */);
+
   }
 
   private void configureAutos() {}
