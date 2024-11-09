@@ -12,7 +12,8 @@ public class Intake extends GenericRollers<Intake.Target> {
     SHOOT_AMP(0),
     SPEAKER_TRANSFER(0),
     AMP_TRANSFER(0),
-    EJECT(-8);
+    EJECT(-8),
+    AMP_EJECT(0);
 
     private int volts;
 

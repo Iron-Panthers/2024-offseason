@@ -14,7 +14,8 @@ public class Superstructure extends SubsystemBase {
     SUBWOOF_SHOT,
     SHUTTLE,
     AMP,
-    ZERO
+    ZERO,
+    STOP
   }
 
   private SuperstructureState targetState = SuperstructureState.STOW;
@@ -54,6 +55,11 @@ public class Superstructure extends SubsystemBase {
         elevator.runCharacterization();
         pivot.runCharacterization();
       }
+      case STOP -> {
+        elevator.stop();
+        pivot.stop();
+        setTargetState(SuperstructureState.STOW);
+      }
     }
     elevator.periodic();
     pivot.periodic();
@@ -64,8 +70,16 @@ public class Superstructure extends SubsystemBase {
     targetState = superstructureState;
   }
 
-  public boolean atPosition() {
-    return elevator.atPosition() && pivot.atPosition();
+  public double elevatorPosition() {
+    return elevator.position();
+  }
+
+  public double getElevatorSupplyCurrentAmps() {
+    return elevator.supplyCurrentAmps();
+  }
+
+  public double getPivotSupplyCurrentAmps() {
+    return pivot.supplyCurrentAmps();
   }
 
   public SuperstructureState getTargetState() {

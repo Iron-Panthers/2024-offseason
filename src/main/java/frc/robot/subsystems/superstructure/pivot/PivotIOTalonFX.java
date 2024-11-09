@@ -5,7 +5,7 @@ import frc.robot.subsystems.superstructure.GenericSuperstructureIOTalonFX;
 import java.util.Optional;
 
 public class PivotIOTalonFX extends GenericSuperstructureIOTalonFX implements PivotIO {
-  public static final double REDUCTION = 1 / 1; // rotations to degrees
+  public static final double REDUCTION = 1 / 360.0; // rotations to degrees
   public static final boolean INVERTED = true; // FIXME
 
   public static final double SUPPLY_CURRENT_LIMIT = 30; // FIXME
@@ -15,7 +15,7 @@ public class PivotIOTalonFX extends GenericSuperstructureIOTalonFX implements Pi
   public static final int ID = 17;
   public static final int ENCODER_ID = 28;
 
-  public static final double P = 0.25;
+  public static final double P = 0.27;
   public static final double I = 0;
   public static final double D = 0;
 

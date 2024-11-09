@@ -6,7 +6,7 @@ public class Elevator extends GenericSuperstructure<Elevator.ElevatorTarget> {
   public enum ElevatorTarget implements GenericSuperstructure.PositionTarget {
     STOW(0),
     ZERO(0),
-    AMP(32);
+    AMP(29);
     private double position;
 
     private ElevatorTarget(double position) {
