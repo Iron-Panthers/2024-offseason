@@ -500,8 +500,7 @@ public class RobotContainer {
                   superstructure.setTargetState(SuperstructureState.SHUTTLE);
                 },
                 interrupted -> {},
-                () -> Math.abs(swerve.getAngularError(0)) < 5,
-                superstructure));
+                () -> Math.abs(swerve.getAngularError(0)) < 5));
     // speaker
     driverA
         .povDown()

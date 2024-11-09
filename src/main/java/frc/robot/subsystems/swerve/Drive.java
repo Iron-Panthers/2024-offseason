@@ -99,7 +99,7 @@ public class Drive extends SubsystemBase {
   public void driveTeleopController(double xAxis, double yAxis) {
     if (driveMode != DriveModes.TELEOP) {
       driveMode = DriveModes.TELEOP;
-      targetAngle = gyroInputs.yawPosition.getDegrees();
+      targetAngle = arbitraryYaw.getDegrees();
     }
     driveAnglePeriodic(xAxis, yAxis, targetAngle);
   }
@@ -112,6 +112,7 @@ public class Drive extends SubsystemBase {
 
   public void zero() {
     gyroYawOffset = Rotation2d.fromDegrees(gyroInputs.yawPosition.getDegrees());
+    targetAngle = 0;
   }
 
   public void driveAnglePeriodic(double xAxis, double yAxis, double targetAngle) {
@@ -144,7 +145,7 @@ public class Drive extends SubsystemBase {
   }
 
   public double getAngularError(double targetAngle) {
-    return -Util.relativeAngularDifference(gyroInputs.yawPosition.times(-1), targetAngle);
+    return -Util.relativeAngularDifference(arbitraryYaw.times(-1), targetAngle);
   }
 
   public double getTargetAngle() {
