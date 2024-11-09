@@ -180,8 +180,22 @@ public class RobotContainer {
                         () -> rollers.serializerDetected(),
                         rollers))
                 .andThen(
-                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers)
+                    new InstantCommand(
+                        () ->
+                            rgbSubsystem.showMessage(
+                                RGBSubsystem.Lights.Colors.RED,
+                                RGBSubsystem.PatternTypes.STROBE,
+                                RGBSubsystem.MessagePriority.F_NOTE_IN_ROBOT)))
+                .andThen(
+                    new InstantCommand(() -> rollers.setTargetState(RollerState.AMP_EJECT), rollers)
                         .withTimeout(0.6))
+                .andThen(new FunctionalCommand(
+                        ()-> rollers.setTargetState(RollerState.EJECT), 
+                        ()-> {}, 
+                        interrupted -> rollers.setTargetState(RollerState.IDLE),
+                        ()-> false, 
+                        rollers)
+                    .withTimeout(2))
                 .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
     //eject note manual command
     driverB.leftTrigger()
@@ -266,7 +280,7 @@ public class RobotContainer {
                         () -> rollers.acceleratorDetected(),
                         rollers,
                         flywheels)));
-    // speaker shot pivot snap and drive base
+    // speaker shot pivot snap 
     driverB
         .y()
         .onTrue(
@@ -333,18 +347,7 @@ public class RobotContainer {
                         flywheels)));
 
     // Initiate subwoofer shot
-    driverB
-        .x()
-        .onTrue(
-            // new FunctionalCommand(
-            //         () -> {},
-            //         () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 0),
-            //         interrupted -> {},
-            //         () -> Math.abs(swerve.getAngularError(0)) < 1,
-            //         swerve)
 
-            new InstantCommand(
-                () -> superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT)));
     // -----Flywheel Controls-----
     //
     // driverA
@@ -355,7 +358,7 @@ public class RobotContainer {
     //               flywheels.setVelocityTarget(VelocityTarget.IDLE);
     //             },
     //             flywheels));
-
+    //zeroing
     driverA
         .start()
         .onTrue(
@@ -379,6 +382,19 @@ public class RobotContainer {
 
     // cancel everything
     driverB
+        .x()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  rollers.setTargetState(RollerState.IDLE);
+                  ;
+                  flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE);
+                  superstructure.setTargetState(SuperstructureState.STOP);
+                },
+                rollers,
+                flywheels,
+                superstructure));
+    driverA
         .x()
         .onTrue(
             new InstantCommand(
