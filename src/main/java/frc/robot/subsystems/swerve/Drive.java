@@ -152,15 +152,13 @@ public class Drive extends SubsystemBase {
     return targetAngle;
   }
 
-  // sets the velocity of the robot (parameters of setVelocity target: x speed, y speed, and rate of rotation)
-  public ChassisSpeeds setVelocityTarget(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond){
-  ChassisSpeeds speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
-  teleopTargetSpeeds =
-      ChassisSpeeds.fromFieldRelativeSpeeds(speeds, gyroInputs.yawPosition);
-  return teleopTargetSpeeds;
-
-
-}
-
-
+  // sets the velocity of the robot (parameters of setVelocity target: x speed, y speed, and rate of
+  // rotation)
+  public ChassisSpeeds setVelocityTarget(
+      double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond) {
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+    teleopTargetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, gyroInputs.yawPosition);
+    return teleopTargetSpeeds;
+  }
 }

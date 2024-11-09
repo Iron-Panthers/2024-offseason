@@ -16,7 +16,6 @@ import frc.robot.Constants.Mode;
 import frc.robot.subsystems.RGBSubsystem;
 import frc.robot.subsystems.flywheels.Flywheels;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
-import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.rollers.RollerSensorsIO;
 import frc.robot.subsystems.rollers.RollerSensorsIOComp;
 import frc.robot.subsystems.rollers.Rollers;
@@ -516,10 +515,8 @@ public class RobotContainer {
   }
 
   public void containerMatchStarting() {
-    CommandScheduler.getInstance().schedule(/*FIXME - Vibrate the controller */);
-
+    CommandScheduler.getInstance().schedule(/*FIXME - Vibrate the controller */ );
   }
 
   private void configureAutos() {}
-
-  }
+}

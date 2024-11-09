@@ -5,14 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.DefaultAutoCommand;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import frc.robot.commands.DefaultAutoCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,7 +22,6 @@ import frc.robot.commands.DefaultAutoCommand;
 public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
   private DefaultAutoCommand defaultAutoCommand;
-
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -78,10 +76,10 @@ public class Robot extends LoggedRobot {
   /** This function is called once when autonomous is enabled. */
   @Override
   public void autonomousInit() {
-    //FIXME: Add -  if the match starts, then get the autonomous command (we already - 
-    //are running the program through the following statements below
+    // FIXME: Add -  if the match starts, then get the autonomous command (we already -
+    // are running the program through the following statements below
 
-    if(defaultAutoCommand != null) {
+    if (defaultAutoCommand != null) {
       defaultAutoCommand.schedule();
     }
   }
@@ -89,31 +87,27 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    //intentionally left empty
+    // intentionally left empty
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {
-    
-  }
+  public void teleopInit() {}
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-
-  }
+  public void teleopPeriodic() {}
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    //intentionally empty
+    // intentionally empty
   }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    //intentionally empty
+    // intentionally empty
   }
 
   /** This function is called once when test mode is enabled. */
