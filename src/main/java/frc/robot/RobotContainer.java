@@ -274,6 +274,10 @@ public class RobotContainer {
                     new FunctionalCommand(
                         () -> {},
                         () -> {
+                            if (superstructure.getTargetState() == SuperstructureState.AMP){
+                                rollers.setTargetState(RollerState.IDLE);
+                            }
+                            else{
                           boolean once = false;
                           rollers.setTargetState(
                               rollers.acceleratorDetected()
@@ -289,7 +293,7 @@ public class RobotContainer {
                           if (rollers.serializerDetected()
                               && rollers.getTargetState() == RollerState.INTAKE) {
                             rollers.setTargetState(RollerState.IDLE);
-                          }
+                          }}
                         },
                         interrupted -> rollers.setTargetState(RollerState.IDLE),
                         () -> rollers.getTargetState() == RollerState.IDLE,
@@ -297,12 +301,20 @@ public class RobotContainer {
                 .andThen(
                     new FunctionalCommand(
                         () -> {},
-                        () -> rollers.setTargetState(RollerState.AMP_TRANSFER),
+                        () -> {if (superstructure.getTargetState() == SuperstructureState.AMP){
+                                rollers.setTargetState(RollerState.IDLE);
+                            }
+                            else{
+                            rollers.setTargetState(RollerState.AMP_TRANSFER);}},
                         interrupted -> rollers.setTargetState(RollerState.IDLE),
                         () -> !rollers.serializerDetected(),
                         rollers))
                 .andThen(
-                    new InstantCommand(() -> rollers.setTargetState(RollerState.EJECT), rollers))
+                    new InstantCommand(() -> {if (superstructure.getTargetState() == SuperstructureState.AMP){
+                                rollers.setTargetState(RollerState.IDLE);
+                            }
+                            else{
+                            rollers.setTargetState(RollerState.EJECT);}}, rollers))
                 .andThen(new WaitCommand(0.08))
                 .andThen(
                     new InstantCommand(
