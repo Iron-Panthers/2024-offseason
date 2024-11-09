@@ -48,7 +48,8 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(bl, 2);
     modules[3] = new Module(br, 3);
 
-    rotController = new PIDController(0.0179, 0, 0);
+    rotController = new PIDController(0.01, 0, 0);
+    rotController.setTolerance(1);
     rotController.setSetpoint(0);
     rotController.setTolerance(1);
   }
