@@ -160,13 +160,14 @@ public class RobotContainer {
                 .andThen(
                     new InstantCommand(() -> rollers.setTargetState(RollerState.AMP_EJECT), rollers)
                         .withTimeout(0.6))
-                .andThen(new FunctionalCommand(
-                        ()-> rollers.setTargetState(RollerState.EJECT), 
-                        ()-> {}, 
-                        interrupted -> rollers.setTargetState(RollerState.IDLE),
-                        ()-> false, 
-                        rollers)
-                    .withTimeout(2))
+                .andThen(
+                    new FunctionalCommand(
+                            () -> rollers.setTargetState(RollerState.EJECT),
+                            () -> {},
+                            interrupted -> rollers.setTargetState(RollerState.IDLE),
+                            () -> false,
+                            rollers)
+                        .withTimeout(2))
                 .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
     driverB
         .leftBumper()
@@ -189,24 +190,26 @@ public class RobotContainer {
                 .andThen(
                     new InstantCommand(() -> rollers.setTargetState(RollerState.AMP_EJECT), rollers)
                         .withTimeout(0.6))
-                .andThen(new FunctionalCommand(
-                        ()-> rollers.setTargetState(RollerState.EJECT), 
-                        ()-> {}, 
-                        interrupted -> rollers.setTargetState(RollerState.IDLE),
-                        ()-> false, 
-                        rollers)
-                    .withTimeout(2))
-                .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
-    //eject note manual command
-    driverB.leftTrigger()
-                .onTrue(
+                .andThen(
                     new FunctionalCommand(
-                        ()-> rollers.setTargetState(RollerState.EJECT), 
-                        ()-> {}, 
-                        interrupted -> rollers.setTargetState(RollerState.IDLE),
-                        ()-> false, 
-                        rollers)
-                    .withTimeout(2));
+                            () -> rollers.setTargetState(RollerState.EJECT),
+                            () -> {},
+                            interrupted -> rollers.setTargetState(RollerState.IDLE),
+                            () -> false,
+                            rollers)
+                        .withTimeout(2))
+                .andThen(new InstantCommand(() -> rollers.setTargetState(RollerState.IDLE))));
+    // eject note manual command
+    driverB
+        .leftTrigger()
+        .onTrue(
+            new FunctionalCommand(
+                    () -> rollers.setTargetState(RollerState.EJECT),
+                    () -> {},
+                    interrupted -> rollers.setTargetState(RollerState.IDLE),
+                    () -> false,
+                    rollers)
+                .withTimeout(2));
 
     // Shoot command (either amp or speaker)
     driverA
@@ -280,7 +283,7 @@ public class RobotContainer {
                         () -> rollers.acceleratorDetected(),
                         rollers,
                         flywheels)));
-    // speaker shot pivot snap 
+    // speaker shot pivot snap
     driverB
         .y()
         .onTrue(
@@ -333,7 +336,8 @@ public class RobotContainer {
                         () -> !rollers.serializerDetected(),
                         rollers))
                 .andThen(
-                    new InstantCommand(() -> rollers.setTargetState(RollerState.AMP_EJECT), rollers))
+                    new InstantCommand(
+                        () -> rollers.setTargetState(RollerState.AMP_EJECT), rollers))
                 .andThen(new WaitCommand(0.08))
                 .andThen(
                     new InstantCommand(
@@ -358,7 +362,7 @@ public class RobotContainer {
     //               flywheels.setVelocityTarget(VelocityTarget.IDLE);
     //             },
     //             flywheels));
-    //zeroing
+    // zeroing
     driverA
         .start()
         .onTrue(
