@@ -138,7 +138,7 @@ public class Drive extends SubsystemBase {
     // initialize chassis speeds but add our desired angle
     teleopTargetSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            xVelocity, yVelocity, omegaRadiansPerSecond, gyroInputs.yawPosition);
+            xVelocity, yVelocity, omegaRadiansPerSecond, arbitraryYaw);
     Logger.recordOutput("Swerve/Teleop/xVelocity", xVelocity);
     Logger.recordOutput("Swerve/Teleop/yVelocity", yVelocity);
     Logger.recordOutput("Swerve/Teleop/radianVelocity", 0);
