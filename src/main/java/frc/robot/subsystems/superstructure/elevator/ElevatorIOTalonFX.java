@@ -35,7 +35,6 @@ public class ElevatorIOTalonFX extends GenericSuperstructureIOTalonFX implements
         INVERTED,
         SUPPLY_CURRENT_LIMIT,
         Optional.empty(),
-        Optional.empty(),
         REDUCTION,
         UPPER_LIMIT,
         UPPER_VOLT_LIMIT,

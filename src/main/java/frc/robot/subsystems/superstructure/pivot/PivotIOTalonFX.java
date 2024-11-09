@@ -15,8 +15,6 @@ public class PivotIOTalonFX extends GenericSuperstructureIOTalonFX implements Pi
   public static final int ID = 17;
   public static final int ENCODER_ID = 28;
 
-  public static final double CANCODER_OFFSET = 64.16 / 360;
-
   public static final double P = 0.27;
   public static final double I = 0;
   public static final double D = 0;
@@ -36,7 +34,6 @@ public class PivotIOTalonFX extends GenericSuperstructureIOTalonFX implements Pi
         INVERTED,
         SUPPLY_CURRENT_LIMIT,
         Optional.of(ENCODER_ID),
-        Optional.of(CANCODER_OFFSET),
         REDUCTION,
         UPPER_LIMIT,
         UPPER_VOLT_LIMIT,
