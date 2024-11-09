@@ -36,6 +36,7 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
       boolean inverted,
       double supplyCurrentLimit,
       Optional<Integer> canCoderID,
+      Optional<Double> cancoderOffset,
       double reduction,
       double upperLimit,
       double upperVoltLimit,
@@ -63,14 +64,15 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
                       new MagnetSensorConfigs()
                           .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
                           .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
-                          .withMagnetOffset(0)));
+                          .withMagnetOffset(cancoderOffset.get())));
 
-      canCoder.getConfigurator().setPosition(0);
+      // canCoder.getConfigurator().setPosition(0);
       config.Feedback.withRemoteCANcoder(canCoder);
       config.Feedback.withSensorToMechanismRatio(reduction);
+    } else {
+      talon.setPosition(0);
     }
     talon.getConfigurator().apply(config);
-    talon.setPosition(0);
     talon.setNeutralMode(NeutralModeValue.Brake);
 
     velocityRPS = talon.getClosedLoopError();
