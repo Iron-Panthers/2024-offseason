@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Util;
+import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -35,7 +36,7 @@ public class Drive extends SubsystemBase {
   private Rotation2d arbitraryYaw = new Rotation2d();
 
   @AutoLogOutput(key = "Swerve/YawOffset")
-  private Rotation2d gyroYawOffset = new Rotation2d(0);
+  private Rotation2d gyroYawOffset = new Rotation2d();
 
   private ChassisSpeeds teleopTargetSpeeds = new ChassisSpeeds();
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
@@ -79,6 +80,10 @@ public class Drive extends SubsystemBase {
     }
 
     // run modules
+
+    /* use kinematics to get desired module states */
+    ChassisSpeeds discretizedSpeeds =
+        ChassisSpeeds.discretize(targetSpeeds, Constants.PERIODIC_LOOP_SEC);
     SwerveModuleState[] moduleTargetStates = KINEMATICS.toSwerveModuleStates(targetSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         moduleTargetStates, DRIVE_CONFIG.maxLinearVelocity());

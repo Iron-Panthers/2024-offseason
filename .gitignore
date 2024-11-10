@@ -160,6 +160,8 @@ gradle-app.setting
 .settings/
 bin/
 
+.factorypath
+
 # IntelliJ
 *.iml
 *.ipr
