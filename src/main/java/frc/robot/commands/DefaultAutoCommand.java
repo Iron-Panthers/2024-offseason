@@ -8,6 +8,7 @@ import frc.robot.subsystems.flywheels.Flywheels;
 import frc.robot.subsystems.rollers.Rollers;
 import frc.robot.subsystems.rollers.Rollers.RollerState;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.Superstructure.SuperstructureState;
 import frc.robot.subsystems.swerve.Drive;
 
 public class DefaultAutoCommand extends SequentialCommandGroup {
@@ -22,6 +23,7 @@ public class DefaultAutoCommand extends SequentialCommandGroup {
             interrupted -> {
               rollers.setTargetState(RollerState.IDLE);
               flywheels.setVelocityTarget(Flywheels.VelocityTarget.SHOOT);
+              superstructure.setTargetState(SuperstructureState.SUBWOOF_SHOT);
             },
             () -> rollers.acceleratorDetected(),
             rollers,

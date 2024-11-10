@@ -79,7 +79,8 @@ public class Robot extends LoggedRobot {
     // FIXME: Add -  if the match starts, then get the autonomous command (we already -
     // are running the program through the following statements below
 
-    defaultAutoCommand.schedule();
+      robotContainer.getAutonomousCommand().schedule();
+
   }
 
   /** This function is called periodically during autonomous. */
