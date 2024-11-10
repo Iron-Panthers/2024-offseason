@@ -473,7 +473,7 @@ public class RobotContainer {
                         driverA.getLeftY(),
                         DriverStation.getAlliance().get().equals(Alliance.Red) ? -39 : 39),
                 interrupted -> {},
-                () -> Math.abs(swerve.getAngularError(0)) < 5));
+                () -> true));
     // amp
     driverA
         .povLeft()
@@ -486,7 +486,7 @@ public class RobotContainer {
                         driverA.getLeftY(),
                         DriverStation.getAlliance().get().equals(Alliance.Red) ? -90 : 90),
                 interrupted -> {},
-                () -> Math.abs(swerve.getAngularError(0)) < 5));
+                () -> true));
     // shuttle
     driverA
         .povRight()
@@ -501,7 +501,7 @@ public class RobotContainer {
                   superstructure.setTargetState(SuperstructureState.SHUTTLE);
                 },
                 interrupted -> {},
-                () -> Math.abs(swerve.getAngularError(0)) < 5));
+                () -> true));
     // speaker
     driverA
         .povDown()
@@ -510,7 +510,7 @@ public class RobotContainer {
                 () -> {},
                 () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 0),
                 interrupted -> {},
-                () -> Math.abs(swerve.getAngularError(0)) < 5));
+                () -> true));
   }
 
   private void configureAutos() {}

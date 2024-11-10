@@ -97,10 +97,7 @@ public class Drive extends SubsystemBase {
   }
 
   public void driveTeleopController(double xAxis, double yAxis) {
-    if (driveMode != DriveModes.TELEOP) {
-      driveMode = DriveModes.TELEOP;
-      targetAngle = arbitraryYaw.getDegrees();
-    }
+    
     driveAnglePeriodic(xAxis, yAxis, targetAngle);
   }
 
@@ -118,7 +115,7 @@ public class Drive extends SubsystemBase {
   public void driveAnglePeriodic(double xAxis, double yAxis, double targetAngle) {
     this.targetAngle = targetAngle;
     double angularDifference = getAngularError(targetAngle);
-
+    
     double rotationValue = rotController.calculate(angularDifference);
 
     // we are treating this like a joystick, so -1 and 1 are its lower and upper bound
