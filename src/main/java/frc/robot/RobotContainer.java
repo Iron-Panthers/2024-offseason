@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.DefaultAutoCommand;
 import frc.robot.subsystems.RGBSubsystem;
 import frc.robot.subsystems.flywheels.Flywheels;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
@@ -518,5 +520,13 @@ public class RobotContainer {
     CommandScheduler.getInstance().schedule(/*FIXME - Vibrate the controller */ );
   }
 
+    /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+        return new WaitCommand(1).andThen(new DefaultAutoCommand(rollers, swerve, flywheels, superstructure));
+  }
   private void configureAutos() {}
 }
