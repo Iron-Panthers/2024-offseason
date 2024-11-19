@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static double PERIODIC_LOOP_SEC = 0.02;
+
   public static RobotType ROBOT_TYPE = RobotType.COMP;
 
   public static Mode getRobotMode() {
