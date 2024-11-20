@@ -3,14 +3,19 @@ package frc.robot.subsystems.swerve;
 import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 
+import java.util.Arrays;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -57,6 +62,10 @@ public class Drive extends SubsystemBase {
     for (Module module : modules) {
       module.updateInputs();
     }
+
+    // pass odometry data to robotstate
+    SwerveDriveWheelPositions wheelPositions = new SwerveDriveWheelPositions(Arrays.stream(modules).map(module -> module.getModulePosition()).toArray());
+    RobotState.getInstance().addOdometryMeasurement(new RobotState.OdometryMeasurement(wheelPositions, inputs.)); // FIXME im going to bed
 
     switch (driveMode) {
       case TELEOP -> {
@@ -120,7 +129,4 @@ public class Drive extends SubsystemBase {
       driveMode = DriveModes.TRAJECTORY;
     }
   }
-
-  public record SwerveData(
-      GyroIOInputsAutoLogged gyroInputs, SwerveModulePosition[] modulePositions) {}
 }

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -12,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.subsystems.swerve.DriveConstants;
 
+/* based on wpimath/../PoseEstimator.java */
 public class RobotState {
   public record OdometryMeasurement(
       SwerveDriveWheelPositions wheelPositions, Rotation2d gyroAngle, double timestamp) {}
@@ -42,6 +45,8 @@ public class RobotState {
     if (instance == null) instance = new RobotState();
     return instance;
   }
+
+  private RobotState() {}
 
   /* update pose estimation based on odometry measurements */
   public void addOdometryMeasurement(OdometryMeasurement measurement) {
@@ -74,10 +79,12 @@ public class RobotState {
     poseBuffer.clear();
   }
 
+  @AutoLogOutput(key = "RobotState/OdometryPose")
   public Pose2d getOdometryPose() {
     return odometryPose;
   }
 
+  @AutoLogOutput(key = "RobotState/EstimatedPose")
   public Pose2d getEstimatedPose() {
     return estimatedPose;
   }
