@@ -46,7 +46,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     encoder = new CANcoder(config.encoderID());
 
     // config
-    encoderConfig.MagnetSensor.MagnetOffset = config.absoluteEncoderOffset().getRotations();
+    encoderConfig.MagnetSensor.MagnetOffset = -config.absoluteEncoderOffset().getRotations();
 
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.MotorOutput.Inverted =

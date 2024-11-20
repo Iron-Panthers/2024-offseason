@@ -42,14 +42,14 @@ public class DriveConstants {
 
   public static final int GYRO_ID = 0;
 
-  // fl, fr, bl, br
+  // fl, fr, bl, br; negate offsets
   public static final ModuleConfig[] MODULE_CONFIGS =
       switch (getRobotType()) {
         case COMP -> new ModuleConfig[] {
-          new ModuleConfig(5, 6, 1, new Rotation2d(0), true, false),
-          new ModuleConfig(7, 8, 2, new Rotation2d(0), true, true),
-          new ModuleConfig(11, 12, 3, new Rotation2d(0), true, false),
-          new ModuleConfig(9, 10, 4, new Rotation2d(0), true, true)
+          new ModuleConfig(5, 6, 1, new Rotation2d(1.1397), true, false),
+          new ModuleConfig(7, 8, 2, new Rotation2d(0.8038), true, true),
+          new ModuleConfig(11, 12, 3, new Rotation2d(1.4327), true, false),
+          new ModuleConfig(9, 10, 4, new Rotation2d(-1.8208), true, true)
         };
         case DEV -> new ModuleConfig[] {
           new ModuleConfig(2, 1, 27, new Rotation2d(0), true, false),
@@ -71,12 +71,12 @@ public class DriveConstants {
             0, // steerkS
             0, // steerkV
             0, // steerkA
-            0, // steerkP
+            300, // steerkP
             0, // steerkD
             0, // drivekS
             0, // drivekV
             0, // drivekA
-            0, // drivekP
+            1, // drivekP
             0, // drivekD
             5.357142857142857,
             21.428571428571427,
