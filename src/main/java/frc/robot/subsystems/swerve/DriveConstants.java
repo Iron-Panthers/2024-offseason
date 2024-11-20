@@ -48,14 +48,14 @@ public class DriveConstants {
         case COMP -> new ModuleConfig[] {
           new ModuleConfig(5, 6, 1, new Rotation2d(0), true, false),
           new ModuleConfig(7, 8, 2, new Rotation2d(0), true, true),
-          new ModuleConfig(9, 10, 3, new Rotation2d(0), true, false),
-          new ModuleConfig(11, 12, 4, new Rotation2d(0), true, true)
+          new ModuleConfig(11, 12, 3, new Rotation2d(0), true, false),
+          new ModuleConfig(9, 10, 4, new Rotation2d(0), true, true)
         };
         case DEV -> new ModuleConfig[] {
-          new ModuleConfig(2, 1, 27, new Rotation2d(1.954), true, false),
-          new ModuleConfig(13, 12, 26, new Rotation2d(1.465), true, true),
-          new ModuleConfig(4, 3, 24, new Rotation2d(2.612), true, false),
-          new ModuleConfig(11, 10, 25, new Rotation2d(-2.563), true, true)
+          new ModuleConfig(2, 1, 27, new Rotation2d(0), true, false),
+          new ModuleConfig(13, 12, 26, new Rotation2d(0), true, true),
+          new ModuleConfig(4, 3, 24, new Rotation2d(0), true, false),
+          new ModuleConfig(11, 10, 25, new Rotation2d(0), true, true)
         };
         case SIM -> new ModuleConfig[] {
           new ModuleConfig(0, 0, 0, new Rotation2d(0), true, false),
