@@ -18,13 +18,13 @@ public class RobotState {
 
   public record VisionMeasurement(Pose2d visionPose, double timestamp) {}
 
-  private static final double poseBufferSizeSeconds = 2;
+  private static final double poseBufferSizeSeconds = 2; // shorter?
 
   private TimeInterpolatableBuffer<Pose2d> poseBuffer =
       TimeInterpolatableBuffer.createBuffer(poseBufferSizeSeconds);
 
-  private Pose2d odometryPose = new Pose2d();
-  private Pose2d estimatedPose = new Pose2d();
+  private Pose2d odometryPose = new Pose2d(); // motion sensors
+  private Pose2d estimatedPose = new Pose2d(); // odometry + vision
 
   private SwerveDriveWheelPositions lastWheelPositions =
       new SwerveDriveWheelPositions(
@@ -39,30 +39,39 @@ public class RobotState {
   private static RobotState instance;
 
   public static RobotState getInstance() {
+    if (instance == null) instance = new RobotState();
     return instance;
   }
 
-  private RobotState() {}
-
+  /* update pose estimation based on odometry measurements */
   public void addOdometryMeasurement(OdometryMeasurement measurement) {
     Twist2d twist =
         DriveConstants.KINEMATICS.toTwist2d(lastWheelPositions, measurement.wheelPositions());
-    lastWheelPositions = measurement.wheelPositions();
-
     twist.dtheta = measurement.gyroAngle().minus(lastGyroAngle).getRadians();
+
+    lastWheelPositions = measurement.wheelPositions();
     lastGyroAngle = measurement.gyroAngle();
 
+    // integrate to find difference in pose over time, add to pose estimate
     odometryPose = odometryPose.exp(twist);
 
+    // add post estimate to buffer at timestamp; for vision
     poseBuffer.addSample(measurement.timestamp(), odometryPose);
   }
 
+  // FIXME TO DO
   public void addVisionMeasurement(VisionMeasurement measurement) {
     // if measurement is old enough to be outside buffer timespan, skip
     if (poseBuffer.getInternalBuffer().isEmpty()
         || poseBuffer.getInternalBuffer().lastKey() < poseBufferSizeSeconds) {
       return;
     }
+  }
+
+  public void resetPose(Pose2d pose) {
+    odometryPose = pose;
+    estimatedPose = pose;
+    poseBuffer.clear();
   }
 
   public Pose2d getOdometryPose() {
