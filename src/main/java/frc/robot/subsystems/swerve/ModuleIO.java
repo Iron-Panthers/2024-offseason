@@ -13,11 +13,13 @@ public interface ModuleIO {
     public double drivePositionRads = 0;
     public double driveVelocityRadsPerSec = 0;
     public double driveAppliedVolts = 0;
+    public double driveSupplyCurrent = 0;
 
     public Rotation2d steerAbsolutePostion = new Rotation2d();
     public Rotation2d steerPosition = new Rotation2d();
     public double steerVelocityRadsPerSec = 0;
     public double steerAppliedVolts = 0;
+    public double steerSupplyCurrent = 0;
   }
 
   default void updateInputs(ModuleIOInputs inputs) {}

@@ -25,11 +25,13 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Double> drivePosition;
   private final StatusSignal<Double> driveVelocity;
   private final StatusSignal<Double> driveAppliedVolts;
+  private final StatusSignal<Double> driveSupplyCurrent;
 
   private final Supplier<Rotation2d> steerAbsolutePosition;
   private final StatusSignal<Double> steerPosition;
   private final StatusSignal<Double> steerVelocity;
   private final StatusSignal<Double> steerAppliedVolts;
+  private final StatusSignal<Double> steerSupplyCurrent;
 
   private final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
   private final TalonFXConfiguration steerConfig = new TalonFXConfiguration();
@@ -85,22 +87,26 @@ public class ModuleIOTalonFX implements ModuleIO {
     drivePosition = driveTalon.getPosition();
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
+    driveSupplyCurrent = driveTalon.getSupplyCurrent();
 
     steerAbsolutePosition =
         () -> Rotation2d.fromRotations(encoder.getAbsolutePosition().getValueAsDouble());
-    //                .minus(config.absoluteEncoderOffset());
     steerPosition = steerTalon.getPosition();
     steerVelocity = steerTalon.getVelocity();
     steerAppliedVolts = steerTalon.getMotorVoltage();
+    steerSupplyCurrent = steerTalon.getSupplyCurrent();
+
     BaseStatusSignal.setUpdateFrequencyForAll(
         100,
         drivePosition,
         driveVelocity,
         driveAppliedVolts,
+        driveSupplyCurrent,
         encoder.getAbsolutePosition(),
         steerPosition,
         steerVelocity,
-        steerAppliedVolts);
+        steerAppliedVolts,
+        steerSupplyCurrent);
 
     driveTalon.optimizeBusUtilization();
     steerTalon.optimizeBusUtilization();
@@ -112,17 +118,23 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
     inputs.driveMotorConnected =
-        BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts).isOK();
+        BaseStatusSignal.refreshAll(
+                drivePosition, driveVelocity, driveAppliedVolts, driveSupplyCurrent)
+            .isOK();
     inputs.drivePositionRads = Units.rotationsToRadians(drivePosition.getValueAsDouble());
     inputs.driveVelocityRadsPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
+    inputs.driveSupplyCurrent = driveSupplyCurrent.getValueAsDouble();
 
     inputs.steerMotorConnected =
-        BaseStatusSignal.refreshAll(steerPosition, steerVelocity, steerAppliedVolts).isOK();
+        BaseStatusSignal.refreshAll(
+                steerPosition, steerVelocity, steerAppliedVolts, steerSupplyCurrent)
+            .isOK();
     inputs.steerAbsolutePostion = steerAbsolutePosition.get();
     inputs.steerPosition = Rotation2d.fromRotations(steerPosition.getValueAsDouble());
     inputs.steerVelocityRadsPerSec = Units.rotationsToRadians(steerVelocity.getValueAsDouble());
     inputs.steerAppliedVolts = steerAppliedVolts.getValueAsDouble();
+    inputs.steerSupplyCurrent = steerSupplyCurrent.getValueAsDouble();
   }
 
   @Override
