@@ -26,12 +26,14 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Double> driveVelocity;
   private final StatusSignal<Double> driveAppliedVolts;
   private final StatusSignal<Double> driveSupplyCurrent;
+  private final StatusSignal<Double> driveStatorCurrent;
 
   private final Supplier<Rotation2d> steerAbsolutePosition;
   private final StatusSignal<Double> steerPosition;
   private final StatusSignal<Double> steerVelocity;
   private final StatusSignal<Double> steerAppliedVolts;
   private final StatusSignal<Double> steerSupplyCurrent;
+  private final StatusSignal<Double> steerStatorCurrent;
 
   private final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
   private final TalonFXConfiguration steerConfig = new TalonFXConfiguration();
@@ -88,6 +90,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
     driveSupplyCurrent = driveTalon.getSupplyCurrent();
+    driveStatorCurrent = driveTalon.getStatorCurrent();
 
     steerAbsolutePosition =
         () -> Rotation2d.fromRotations(encoder.getAbsolutePosition().getValueAsDouble());
@@ -95,6 +98,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     steerVelocity = steerTalon.getVelocity();
     steerAppliedVolts = steerTalon.getMotorVoltage();
     steerSupplyCurrent = steerTalon.getSupplyCurrent();
+    steerStatorCurrent = steerTalon.getStatorCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         100,
@@ -102,11 +106,13 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveVelocity,
         driveAppliedVolts,
         driveSupplyCurrent,
+        driveStatorCurrent,
         encoder.getAbsolutePosition(),
         steerPosition,
         steerVelocity,
         steerAppliedVolts,
-        steerSupplyCurrent);
+        steerSupplyCurrent,
+        steerStatorCurrent);
 
     driveTalon.optimizeBusUtilization();
     steerTalon.optimizeBusUtilization();
@@ -119,22 +125,32 @@ public class ModuleIOTalonFX implements ModuleIO {
   public void updateInputs(ModuleIOInputs inputs) {
     inputs.driveMotorConnected =
         BaseStatusSignal.refreshAll(
-                drivePosition, driveVelocity, driveAppliedVolts, driveSupplyCurrent)
+                drivePosition,
+                driveVelocity,
+                driveAppliedVolts,
+                driveSupplyCurrent,
+                driveStatorCurrent)
             .isOK();
     inputs.drivePositionRads = Units.rotationsToRadians(drivePosition.getValueAsDouble());
     inputs.driveVelocityRadsPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
     inputs.driveSupplyCurrent = driveSupplyCurrent.getValueAsDouble();
+    inputs.driveStatorCurrent = driveStatorCurrent.getValueAsDouble();
 
     inputs.steerMotorConnected =
         BaseStatusSignal.refreshAll(
-                steerPosition, steerVelocity, steerAppliedVolts, steerSupplyCurrent)
+                steerPosition,
+                steerVelocity,
+                steerAppliedVolts,
+                steerSupplyCurrent,
+                steerStatorCurrent)
             .isOK();
     inputs.steerAbsolutePostion = steerAbsolutePosition.get();
     inputs.steerPosition = Rotation2d.fromRotations(steerPosition.getValueAsDouble());
     inputs.steerVelocityRadsPerSec = Units.rotationsToRadians(steerVelocity.getValueAsDouble());
     inputs.steerAppliedVolts = steerAppliedVolts.getValueAsDouble();
     inputs.steerSupplyCurrent = steerSupplyCurrent.getValueAsDouble();
+    inputs.steerStatorCurrent = steerStatorCurrent.getValueAsDouble();
   }
 
   @Override
