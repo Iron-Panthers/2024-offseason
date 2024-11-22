@@ -50,6 +50,12 @@ public class ModuleIOTalonFX implements ModuleIO {
     // config
     encoderConfig.MagnetSensor.MagnetOffset = -config.absoluteEncoderOffset().getRotations();
 
+    driveConfig.CurrentLimits.StatorCurrentLimit = 80; // FIXME
+    driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    steerConfig.CurrentLimits.StatorCurrentLimit = 50; // FIXME
+    steerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.MotorOutput.Inverted =
         config.driveInverted()
