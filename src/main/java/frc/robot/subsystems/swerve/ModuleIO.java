@@ -1,8 +1,6 @@
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.subsystems.swerve.DriveConstants.Gains;
-import frc.robot.subsystems.swerve.DriveConstants.MotionProfileGains;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ModuleIO {
@@ -36,9 +34,9 @@ public interface ModuleIO {
 
   default void runSteerPositionSetpoint(double angleRads) {}
 
-  default void setDriveGains(Gains gains) {}
+  default void setDriveSlot0(double kP, double kI, double kD, double kS, double kV, double kA) {}
 
-  default void setSteerGains(Gains gains, MotionProfileGains motionProfileGains) {}
+  default void setSteerSlot0(double kP, double kI, double kD, double kS, double kV, double kA) {}
 
   default void stop() {}
 }

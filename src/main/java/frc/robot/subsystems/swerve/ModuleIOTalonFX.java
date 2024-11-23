@@ -6,7 +6,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -14,9 +14,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.swerve.DriveConstants.Gains;
 import frc.robot.subsystems.swerve.DriveConstants.ModuleConfig;
-import frc.robot.subsystems.swerve.DriveConstants.MotionProfileGains;
 import java.util.function.Supplier;
 
 public class ModuleIOTalonFX implements ModuleIO {
@@ -41,9 +39,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final TalonFXConfiguration steerConfig = new TalonFXConfiguration();
   private final CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
 
-  private final VelocityVoltage driveVelocityControl = new VelocityVoltage(0).withUpdateFreqHz(0);
-  private final MotionMagicVoltage steerPositionControl =
-      new MotionMagicVoltage(0).withUpdateFreqHz(0);
+  private VelocityVoltage driveVelocityControl = new VelocityVoltage(0).withUpdateFreqHz(0);
+  private PositionVoltage steerPositionControl = new PositionVoltage(0).withUpdateFreqHz(0);
 
   public ModuleIOTalonFX(ModuleConfig config) {
     driveTalon = new TalonFX(config.driveID());
@@ -75,8 +72,20 @@ public class ModuleIOTalonFX implements ModuleIO {
     steerConfig.Feedback.SensorToMechanismRatio = MODULE_CONSTANTS.steerReduction();
     steerConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
-    setDriveGains(MODULE_CONSTANTS.driveGains());
-    setSteerGains(MODULE_CONSTANTS.steerGains(), MODULE_CONSTANTS.steerMotionGains());
+    setDriveSlot0(
+        MODULE_CONSTANTS.drivekP(),
+        0,
+        MODULE_CONSTANTS.drivekD(),
+        MODULE_CONSTANTS.drivekS(),
+        MODULE_CONSTANTS.drivekV(),
+        MODULE_CONSTANTS.drivekA());
+    setSteerSlot0(
+        MODULE_CONSTANTS.steerkP(),
+        0,
+        MODULE_CONSTANTS.steerkD(),
+        MODULE_CONSTANTS.steerkS(),
+        MODULE_CONSTANTS.steerkV(),
+        MODULE_CONSTANTS.steerkA());
 
     driveTalon.getConfigurator().apply(driveConfig);
     steerTalon.getConfigurator().apply(steerConfig);
@@ -162,27 +171,24 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public void setDriveGains(Gains gains) {
-    driveConfig.Slot0.kP = gains.kP();
-    driveConfig.Slot0.kI = gains.kI();
-    driveConfig.Slot0.kD = gains.kD();
-    driveConfig.Slot0.kS = gains.kS();
-    driveConfig.Slot0.kV = gains.kV();
-    driveConfig.Slot0.kA = gains.kA();
+  public void setDriveSlot0(double kP, double kI, double kD, double kS, double kV, double kA) {
+    driveConfig.Slot0.kP = kP;
+    driveConfig.Slot0.kI = kI;
+    driveConfig.Slot0.kD = kD;
+    driveConfig.Slot0.kS = kS;
+    driveConfig.Slot0.kV = kV;
+    driveConfig.Slot0.kA = kA;
     driveTalon.getConfigurator().apply(driveConfig);
   }
 
   @Override
-  public void setSteerGains(Gains gains, MotionProfileGains motionProfileGains) {
-    steerConfig.Slot0.kP = gains.kP();
-    steerConfig.Slot0.kI = gains.kI();
-    steerConfig.Slot0.kD = gains.kD();
-    steerConfig.Slot0.kS = gains.kS();
-    steerConfig.Slot0.kV = gains.kV();
-    steerConfig.Slot0.kA = gains.kA();
-    steerConfig.MotionMagic.MotionMagicCruiseVelocity = motionProfileGains.cruiseVelocity();
-    steerConfig.MotionMagic.MotionMagicAcceleration = motionProfileGains.acceleration();
-    steerConfig.MotionMagic.MotionMagicJerk = motionProfileGains.jerk();
+  public void setSteerSlot0(double kP, double kI, double kD, double kS, double kV, double kA) {
+    steerConfig.Slot0.kP = kP;
+    steerConfig.Slot0.kI = kI;
+    steerConfig.Slot0.kD = kD;
+    steerConfig.Slot0.kS = kS;
+    steerConfig.Slot0.kV = kV;
+    steerConfig.Slot0.kA = kA;
     steerTalon.getConfigurator().apply(steerConfig);
   }
 }
