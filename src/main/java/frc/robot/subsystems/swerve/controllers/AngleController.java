@@ -57,13 +57,13 @@ public ChassisSpeeds update(Rotation2d yaw) {
     return linearVelocity;
   }
 
-  public Translation2d calculateRotationalVelocity(Rotation2d currentYaw, double currentVelocity){
+  public double calculateRotationalVelocity(Rotation2d currentYaw, double currentVelocity){
     PIDController rotController = new PIDController(Math.toRadians(0.0179), 0, 0); //FIXME P is tuned for degrees not radians
     Translation2d rotationalVelocity = calculateLinearVelocity(controllerX, controllerY);
     TrapezoidProfile.State target = profile.calculate(0.2, 
         new TrapezoidProfile.State(currentYaw.getRadians(), currentVelocity), 
-        new TrapezoidProfile.State(targetAngle, 0));
-    return rotController.calculate(linearVelocity.get);
+        new TrapezoidProfile.State(targetRadians, 0));
+    return rotController.calculate(target.position);
   }
 }
 
