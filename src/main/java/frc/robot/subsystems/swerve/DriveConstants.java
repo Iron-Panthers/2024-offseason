@@ -68,15 +68,16 @@ public class DriveConstants {
   public static final ModuleConstants MODULE_CONSTANTS =
       switch (getRobotType()) {
         case COMP, SIM -> new ModuleConstants(
-            0, // steerkS
+            0.2, // steerkS
             0, // steerkV
             0, // steerkA
-            300, // steerkP
+            98, // steerkP90
+            3, // steer kI
             0, // steerkD
-            0, // drivekS
-            0, // drivekV
+            0.3, // drivekS0.3
+            0.63, // drivekV0.67
             0, // drivekA
-            1, // drivekP
+            2, // drivekP
             0, // drivekD
             5.357142857142857,
             21.428571428571427,
@@ -86,6 +87,7 @@ public class DriveConstants {
             0, // steerkV
             0, // steerkA
             11, // steerkP
+            0, // steer kI
             0, // steerkD
             0, // drivekS
             0, // drivekV
@@ -118,6 +120,7 @@ public class DriveConstants {
       double steerkV,
       double steerkA,
       double steerkP,
+      double steerkI,
       double steerkD,
       double drivekS,
       double drivekV,

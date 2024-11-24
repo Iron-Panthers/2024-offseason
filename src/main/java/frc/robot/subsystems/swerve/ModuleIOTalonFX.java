@@ -81,7 +81,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         MODULE_CONSTANTS.drivekA());
     setSteerSlot0(
         MODULE_CONSTANTS.steerkP(),
-        0,
+        MODULE_CONSTANTS.steerkI(),
         MODULE_CONSTANTS.steerkD(),
         MODULE_CONSTANTS.steerkS(),
         MODULE_CONSTANTS.steerkV(),
