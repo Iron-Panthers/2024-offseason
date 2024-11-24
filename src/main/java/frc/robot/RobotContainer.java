@@ -99,7 +99,8 @@ public class RobotContainer {
         swerve
             .run(
                 () -> {
-                  swerve.driveTeleopController(-0, -driverA.getLeftX(), -driverA.getRightX());
+                  swerve.driveTeleopController(
+                      -driverA.getLeftY(), -driverA.getLeftX(), -driverA.getRightX());
                 })
             .withName("Drive Teleop"));
 
