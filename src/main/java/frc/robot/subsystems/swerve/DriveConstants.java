@@ -68,9 +68,9 @@ public class DriveConstants {
   public static final ModuleConstants MODULE_CONSTANTS =
       switch (getRobotType()) {
         case COMP, SIM -> new ModuleConstants(
-            new Gains(0, 0, 0, 300, 0, 0),
-            new MotionProfileGains(0, 0, 0), // FIXME
-            new Gains(0, 0, 0, 1, 0, 0),
+            new Gains(0.25, 2.62, 0, 100, 0, 0), // revisit kP
+            new MotionProfileGains(4, 64, 640), // revisit all
+            new Gains(0.3, 0.63, 0, 2, 0, 0), // FIXME placeholder, to do
             5.357142857142857,
             21.428571428571427,
             3.125);
