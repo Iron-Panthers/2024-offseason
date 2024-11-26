@@ -68,32 +68,16 @@ public class DriveConstants {
   public static final ModuleConstants MODULE_CONSTANTS =
       switch (getRobotType()) {
         case COMP, SIM -> new ModuleConstants(
-            0.2, // steerkS
-            0, // steerkV
-            0, // steerkA
-            98, // steerkP90
-            3, // steer kI
-            0, // steerkD
-            0.3, // drivekS0.3
-            0.63, // drivekV0.67
-            0, // drivekA
-            2, // drivekP
-            0, // drivekD
+            new Gains(0, 0, 0, 300, 0, 0),
+            new MotionProfileGains(0, 0, 0), // FIXME
+            new Gains(0, 0, 0, 1, 0, 0),
             5.357142857142857,
             21.428571428571427,
             3.125);
         case DEV -> new ModuleConstants(
-            0, // steerkS
-            0, // steerkV
-            0, // steerkA
-            11, // steerkP
-            0, // steer kI
-            0, // steerkD
-            0, // drivekS
-            0, // drivekV
-            0, // drivekA
-            1.5, // drivekP
-            0, // drivekD
+            new Gains(0, 0, 0, 11, 0, 0),
+            new MotionProfileGains(0, 0, 0),
+            new Gains(0, 0, 0, 1.5, 0, 0),
             5.357142857142857,
             21.428571428571427,
             3.125);
@@ -116,22 +100,18 @@ public class DriveConstants {
       boolean driveInverted) {}
 
   public record ModuleConstants(
-      double steerkS,
-      double steerkV,
-      double steerkA,
-      double steerkP,
-      double steerkI,
-      double steerkD,
-      double drivekS,
-      double drivekV,
-      double drivekA,
-      double drivekP,
-      double drivekD,
+      Gains steerGains,
+      MotionProfileGains steerMotionGains,
+      Gains driveGains,
       double driveReduction,
       double steerReduction,
       double couplingGearReduction) {}
 
   public record TrajectoryFollowerConstants() {}
+
+  public record Gains(double kS, double kV, double kA, double kP, double kI, double kD) {}
+
+  public record MotionProfileGains(double cruiseVelocity, double acceleration, double jerk) {}
 
   private enum Mk4iReductions {
     MK4I_L3((50 / 14) * (16 / 28) * (45 / 15)),
