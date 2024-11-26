@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 
@@ -64,8 +65,8 @@ public class Drive extends SubsystemBase {
     }
 
     // pass odometry data to robotstate
-    SwerveDriveWheelPositions wheelPositions = new SwerveDriveWheelPositions(Arrays.stream(modules).map(module -> module.getModulePosition()).toArray());
-    RobotState.getInstance().addOdometryMeasurement(new RobotState.OdometryMeasurement(wheelPositions, inputs.)); // FIXME im going to bed
+    SwerveDriveWheelPositions wheelPositions = new SwerveDriveWheelPositions(Arrays.stream(modules).map(module -> module.getModulePosition()).toArray(SwerveModulePosition[]::new));
+    RobotState.getInstance().addOdometryMeasurement(new RobotState.OdometryMeasurement(wheelPositions, gyroInputs.yawPosition, Timer.getFPGATimestamp())); // FIXME im going to bed
 
     switch (driveMode) {
       case TELEOP -> {
