@@ -136,6 +136,15 @@ public class RobotContainer {
                   flywheels.setVelocityTarget(VelocityTarget.IDLE);
                 },
                 flywheels));
+
+    driverA
+        .start()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  swerve.zero();
+                },
+                swerve));
   }
 
   private void configureAutos() {}

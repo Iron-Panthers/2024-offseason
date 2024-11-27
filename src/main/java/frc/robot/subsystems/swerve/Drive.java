@@ -108,4 +108,8 @@ public class Drive extends SubsystemBase {
       driveMode = DriveModes.TRAJECTORY;
     }
   }
+
+  public void zero() {
+    gyroYawOffset = Rotation2d.fromDegrees(gyroInputs.yawPosition.getDegrees());
+  }
 }
