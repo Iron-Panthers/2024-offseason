@@ -48,7 +48,6 @@ public class Module {
     Logger.recordOutput(
         "Swerve/Module" + index + "/SteerError",
         targetState.angle.getRadians() - inputs.steerAbsolutePostion.getRadians());
-    Logger.recordOutput("Swerve/Module" + index + "/DriveVelocitySetpoint", driveVelocityRads);
     Logger.recordOutput("Swerve/Module" + index + "/DriveVelRadsScalar", driveVelocityRads);
   }
 

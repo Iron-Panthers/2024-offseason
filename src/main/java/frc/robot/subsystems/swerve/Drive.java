@@ -3,6 +3,7 @@ package frc.robot.subsystems.swerve;
 import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -90,12 +91,15 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Swerve/DriveMode", driveMode);
   }
 
-  public void driveTeleopController(double xAxis, double yAxis, double omega) {
+  public void driveTeleopController(
+      double xAxis, double yAxis, double leftTrigger, double rightTrigger) {
     if (DriverStation.isTeleopEnabled()) {
       if (driveMode != DriveModes.TELEOP) {
         driveMode = DriveModes.TELEOP;
       }
-      teleopController.acceptJoystickInput(xAxis, yAxis, omega);
+
+      double triggers = MathUtil.applyDeadband(leftTrigger + rightTrigger, 0.07);
+      teleopController.acceptJoystickInput(xAxis, yAxis, triggers);
     }
   }
 

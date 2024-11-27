@@ -100,7 +100,10 @@ public class RobotContainer {
             .run(
                 () -> {
                   swerve.driveTeleopController(
-                      -driverA.getLeftY(), -driverA.getLeftX(), -driverA.getRightX());
+                      -driverA.getLeftY(),
+                      -driverA.getLeftX(),
+                      driverA.getLeftTriggerAxis(),
+                      -driverA.getRightTriggerAxis());
                 })
             .withName("Drive Teleop"));
 
