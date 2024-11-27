@@ -47,7 +47,7 @@ public class RobotState {
 
   private RobotState() {}
 
-  /* update pose estimation based on odometry measurements */
+  /* update pose estimation based on odometry measurements, based on wpimath */
   public void addOdometryMeasurement(OdometryMeasurement measurement) {
     Twist2d twist =
         DriveConstants.KINEMATICS.toTwist2d(lastWheelPositions, measurement.wheelPositions());
