@@ -11,6 +11,7 @@ public interface ModuleIO {
     public boolean steerMotorConnected = true;
 
     public double drivePositionRads = 0;
+    public double drivePositionMeters = 0;
     public double driveVelocityRadsPerSec = 0;
     public double driveAppliedVolts = 0;
 

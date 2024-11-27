@@ -3,8 +3,6 @@ package frc.robot.subsystems.swerve;
 import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 
-import java.util.Arrays;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -16,7 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
-
+import java.util.Arrays;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -65,8 +63,15 @@ public class Drive extends SubsystemBase {
     }
 
     // pass odometry data to robotstate
-    SwerveDriveWheelPositions wheelPositions = new SwerveDriveWheelPositions(Arrays.stream(modules).map(module -> module.getModulePosition()).toArray(SwerveModulePosition[]::new));
-    RobotState.getInstance().addOdometryMeasurement(new RobotState.OdometryMeasurement(wheelPositions, gyroInputs.yawPosition, Timer.getFPGATimestamp())); // FIXME im going to bed
+    SwerveDriveWheelPositions wheelPositions =
+        new SwerveDriveWheelPositions(
+            Arrays.stream(modules)
+                .map(module -> module.getModulePosition())
+                .toArray(SwerveModulePosition[]::new));
+    RobotState.getInstance()
+        .addOdometryMeasurement(
+            new RobotState.OdometryMeasurement(
+                wheelPositions, gyroInputs.yawPosition, Timer.getFPGATimestamp()));
 
     switch (driveMode) {
       case TELEOP -> {

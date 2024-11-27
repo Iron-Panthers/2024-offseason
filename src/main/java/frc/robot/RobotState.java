@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -13,6 +11,7 @@ import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.subsystems.swerve.DriveConstants;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 /* based on wpimath/../PoseEstimator.java */
 public class RobotState {
