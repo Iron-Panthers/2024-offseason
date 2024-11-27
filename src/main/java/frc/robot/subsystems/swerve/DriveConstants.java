@@ -42,20 +42,20 @@ public class DriveConstants {
 
   public static final int GYRO_ID = 0;
 
-  // fl, fr, bl, br
+  // fl, fr, bl, br; negate offsets
   public static final ModuleConfig[] MODULE_CONFIGS =
       switch (getRobotType()) {
         case COMP -> new ModuleConfig[] {
-          new ModuleConfig(5, 6, 1, new Rotation2d(0), true, false),
-          new ModuleConfig(7, 8, 2, new Rotation2d(0), true, true),
-          new ModuleConfig(9, 10, 3, new Rotation2d(0), true, false),
-          new ModuleConfig(11, 12, 4, new Rotation2d(0), true, true)
+          new ModuleConfig(5, 6, 1, new Rotation2d(1.1397), true, false),
+          new ModuleConfig(7, 8, 2, new Rotation2d(0.8038), true, true),
+          new ModuleConfig(11, 12, 3, new Rotation2d(1.4327), true, false),
+          new ModuleConfig(9, 10, 4, new Rotation2d(-1.8208), true, true)
         };
         case DEV -> new ModuleConfig[] {
-          new ModuleConfig(2, 1, 27, new Rotation2d(1.954), true, false),
-          new ModuleConfig(13, 12, 26, new Rotation2d(1.465), true, true),
-          new ModuleConfig(4, 3, 24, new Rotation2d(2.612), true, false),
-          new ModuleConfig(11, 10, 25, new Rotation2d(-2.563), true, true)
+          new ModuleConfig(2, 1, 27, new Rotation2d(0), true, false),
+          new ModuleConfig(13, 12, 26, new Rotation2d(0), true, true),
+          new ModuleConfig(4, 3, 24, new Rotation2d(0), true, false),
+          new ModuleConfig(11, 10, 25, new Rotation2d(0), true, true)
         };
         case SIM -> new ModuleConfig[] {
           new ModuleConfig(0, 0, 0, new Rotation2d(0), true, false),
@@ -68,30 +68,16 @@ public class DriveConstants {
   public static final ModuleConstants MODULE_CONSTANTS =
       switch (getRobotType()) {
         case COMP, SIM -> new ModuleConstants(
-            0, // steerkS
-            0, // steerkV
-            0, // steerkA
-            0, // steerkP
-            0, // steerkD
-            0, // drivekS
-            0, // drivekV
-            0, // drivekA
-            0, // drivekP
-            0, // drivekD
+            new Gains(0.25, 2.62, 0, 100, 0, 0), // revisit kP
+            new MotionProfileGains(4, 64, 640), // revisit all
+            new Gains(0.3, 0.63, 0, 2, 0, 0), // FIXME placeholder, to do
             5.357142857142857,
             21.428571428571427,
             3.125);
         case DEV -> new ModuleConstants(
-            0, // steerkS
-            0, // steerkV
-            0, // steerkA
-            11, // steerkP
-            0, // steerkD
-            0, // drivekS
-            0, // drivekV
-            0, // drivekA
-            1.5, // drivekP
-            0, // drivekD
+            new Gains(0, 0, 0, 11, 0, 0),
+            new MotionProfileGains(0, 0, 0),
+            new Gains(0, 0, 0, 1.5, 0, 0),
             5.357142857142857,
             21.428571428571427,
             3.125);
@@ -114,21 +100,18 @@ public class DriveConstants {
       boolean driveInverted) {}
 
   public record ModuleConstants(
-      double steerkS,
-      double steerkV,
-      double steerkA,
-      double steerkP,
-      double steerkD,
-      double drivekS,
-      double drivekV,
-      double drivekA,
-      double drivekP,
-      double drivekD,
+      Gains steerGains,
+      MotionProfileGains steerMotionGains,
+      Gains driveGains,
       double driveReduction,
       double steerReduction,
       double couplingGearReduction) {}
 
   public record TrajectoryFollowerConstants() {}
+
+  public record Gains(double kS, double kV, double kA, double kP, double kI, double kD) {}
+
+  public record MotionProfileGains(double cruiseVelocity, double acceleration, double jerk) {}
 
   private enum Mk4iReductions {
     MK4I_L3((50 / 14) * (16 / 28) * (45 / 15)),

@@ -45,6 +45,10 @@ public class Module {
 
     moduleIO.runDriveVelocitySetpoint(driveVelocityRads);
 
+    Logger.recordOutput("Swerve/Module" + index + "/SteerSetpoint", targetState.angle.getRadians());
+    Logger.recordOutput(
+        "Swerve/Module" + index + "/SteerError",
+        targetState.angle.getRadians() - inputs.steerAbsolutePostion.getRadians());
     Logger.recordOutput("Swerve/Module" + index + "/DriveVelRadsScalar", driveVelocityRads);
   }
 
