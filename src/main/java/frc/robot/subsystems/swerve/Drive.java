@@ -3,12 +3,12 @@ package frc.robot.subsystems.swerve;
 import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerve.controllers.TeleopController;
@@ -91,15 +91,13 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Swerve/DriveMode", driveMode);
   }
 
-  public void driveTeleopController(
-      double xAxis, double yAxis, double leftTrigger, double rightTrigger) {
+  public void driveTeleopController(double xAxis, double yAxis, double omega) {
     if (DriverStation.isTeleopEnabled()) {
       if (driveMode != DriveModes.TELEOP) {
         driveMode = DriveModes.TELEOP;
       }
 
-      double triggers = MathUtil.applyDeadband(leftTrigger + rightTrigger, 0.07);
-      teleopController.acceptJoystickInput(xAxis, yAxis, triggers);
+      teleopController.acceptJoystickInput(xAxis, yAxis, omega);
     }
   }
 
@@ -109,7 +107,11 @@ public class Drive extends SubsystemBase {
     }
   }
 
-  public void zero() {
-    gyroYawOffset = Rotation2d.fromDegrees(gyroInputs.yawPosition.getDegrees());
+  private void zeroGyro() {
+    gyroYawOffset = gyroInputs.yawPosition;
+  }
+
+  public Command zeroGyroCommand() {
+    return this.runOnce(() -> zeroGyro());
   }
 }

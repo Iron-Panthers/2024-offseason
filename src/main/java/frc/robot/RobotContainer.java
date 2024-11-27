@@ -4,14 +4,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
-import frc.robot.subsystems.flywheels.Flywheels.VelocityTarget;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
 import frc.robot.subsystems.rollers.Rollers;
-import frc.robot.subsystems.rollers.Rollers.RollerState;
 import frc.robot.subsystems.rollers.intake.Intake;
 import frc.robot.subsystems.rollers.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
@@ -102,49 +99,16 @@ public class RobotContainer {
                   swerve.driveTeleopController(
                       -driverA.getLeftY(),
                       -driverA.getLeftX(),
-                      driverA.getLeftTriggerAxis(),
-                      -driverA.getRightTriggerAxis());
+                      driverA.getLeftTriggerAxis() - driverA.getRightTriggerAxis());
                 })
             .withName("Drive Teleop"));
 
+    driverA.start().onTrue(swerve.zeroGyroCommand());
+
     // -----Intake Controls-----
-    driverA.x().whileTrue(rollers.setTargetCommand(RollerState.INTAKE));
 
     // -----Flywheel Controls-----
-    //
-    driverA
-        .y()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.SHOOT);
-                },
-                flywheels));
-    driverA
-        .b()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.SLOW);
-                },
-                flywheels));
-    driverA
-        .a()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  flywheels.setVelocityTarget(VelocityTarget.IDLE);
-                },
-                flywheels));
 
-    driverA
-        .start()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  swerve.zero();
-                },
-                swerve));
   }
 
   private void configureAutos() {}
