@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
@@ -96,10 +97,10 @@ public class RobotContainer {
         swerve
             .run(
                 () -> {
-                  swerve.driveTeleopController(
+                  swerve.driveHeadingChangeController(
                       -driverA.getLeftY(),
                       -driverA.getLeftX(),
-                      driverA.getLeftTriggerAxis() - driverA.getRightTriggerAxis());
+                      MathUtil.applyDeadband(driverA.getLeftTriggerAxis() - driverA.getRightTriggerAxis(), 0.07));
                 })
             .withName("Drive Teleop"));
 

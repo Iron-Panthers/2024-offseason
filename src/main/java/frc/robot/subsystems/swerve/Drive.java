@@ -3,6 +3,7 @@ package frc.robot.subsystems.swerve;
 import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.swerve.controllers.HeadingController;
 import frc.robot.subsystems.swerve.controllers.TeleopController;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -37,6 +39,8 @@ public class Drive extends SubsystemBase {
 
   private final TeleopController teleopController;
 
+  private HeadingController headingController;
+
   public Drive(GyroIO gyroIO, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
     this.gyroIO = gyroIO;
 
@@ -46,6 +50,7 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(br, 3);
 
     teleopController = new TeleopController();
+    headingController = new HeadingController(new Rotation2d());
   }
 
   @Override
@@ -64,7 +69,11 @@ public class Drive extends SubsystemBase {
 
     switch (driveMode) {
       case TELEOP -> {
-        targetSpeeds = teleopController.update(arbitraryYaw);
+        if (headingController != null){
+          targetSpeeds = headingController.update(arbitraryYaw, gyroInputs.yawVelocityRadPerSec);
+        }else{
+          targetSpeeds = teleopController.update(arbitraryYaw);
+        }
       }
       case TRAJECTORY -> {}
     }
@@ -96,8 +105,37 @@ public class Drive extends SubsystemBase {
       if (driveMode != DriveModes.TELEOP) {
         driveMode = DriveModes.TELEOP;
       }
+      if (headingController != null){
+        headingController = null;
+      }
 
       teleopController.acceptJoystickInput(xAxis, yAxis, omega);
+    }
+  }
+  /*radians*/
+  public void driveHeadingController(double xAxis, double yAxis, Rotation2d omega){
+    if (DriverStation.isTeleopEnabled()) {
+      if (driveMode != DriveModes.TELEOP) {
+        driveMode = DriveModes.TELEOP;
+      }
+      if (headingController == null){
+        headingController = new HeadingController(omega);
+      }
+      headingController.setTarget(omega);
+      headingController.acceptJoystickInput(xAxis, yAxis);
+    }
+  }
+  /*radians*/
+  public void driveHeadingChangeController(double xAxis, double yAxis, double deltaOmega){
+    if (DriverStation.isTeleopEnabled()) {
+      if (driveMode != DriveModes.TELEOP) {
+        driveMode = DriveModes.TELEOP;
+      }
+      if (headingController == null){
+        headingController = new HeadingController(new Rotation2d());
+      }
+      headingController.changeTarget(deltaOmega);
+      headingController.acceptJoystickInput(xAxis, yAxis);
     }
   }
 
@@ -109,6 +147,9 @@ public class Drive extends SubsystemBase {
 
   private void zeroGyro() {
     gyroYawOffset = gyroInputs.yawPosition;
+    if (headingController != null){
+      headingController.setTarget(new Rotation2d());
+    }
   }
 
   public Command zeroGyroCommand() {

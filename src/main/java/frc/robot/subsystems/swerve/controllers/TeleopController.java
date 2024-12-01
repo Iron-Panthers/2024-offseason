@@ -22,11 +22,13 @@ public class TeleopController {
     this.controllerOmega = controllerOmega;
   }
 
-  /* update controller with current desired state */
+  /* update controller with current desired state 
+   * does not deadband
+  */
   public ChassisSpeeds update(Rotation2d yaw) {
     Translation2d linearVelocity = calculateLinearVelocity(controllerX, controllerY);
 
-    double omega = MathUtil.applyDeadband(controllerOmega, 0.1);
+    double omega = controllerOmega;
     omega = Math.copySign(Math.pow(Math.abs(omega), 1.5), omega);
 
     // eventaully run off of pose estimation?

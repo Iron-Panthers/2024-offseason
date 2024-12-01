@@ -17,7 +17,8 @@ public class DriveConstants {
             Units.inchesToMeters(38.5),
             Units.inchesToMeters(33),
             5, // FIXME
-            5);
+            5,
+            0); //FIXME
         case DEV -> new DrivebaseConfig(
             Units.inchesToMeters(2),
             Units.inchesToMeters(22.5),
@@ -26,7 +27,8 @@ public class DriveConstants {
             // 5.4764, // FIXME
             // 6.7759);
             4,
-            4);
+            4,
+            0); //FIXME
       };
 
   public static final Translation2d[] MODULE_TRANSLATIONS =
@@ -89,7 +91,8 @@ public class DriveConstants {
       double bumperWidthX,
       double bumperWidthY,
       double maxLinearVelocity,
-      double maxAngularVelocity) {}
+      double maxAngularVelocity,
+      double maxAngularAcceleration) {}
 
   public record ModuleConfig(
       int driveID,
