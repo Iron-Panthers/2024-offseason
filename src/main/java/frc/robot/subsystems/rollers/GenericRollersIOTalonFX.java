@@ -9,14 +9,18 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 
 public abstract class GenericRollersIOTalonFX implements GenericRollersIO {
   private final TalonFX talon;
 
-  private final StatusSignal<Double> position;
-  private final StatusSignal<Double> velocity;
-  private final StatusSignal<Double> appliedVolts;
-  private final StatusSignal<Double> supplyCurrent;
+  private final StatusSignal<Angle> position;
+  private final StatusSignal<AngularVelocity> velocity;
+  private final StatusSignal<Voltage> appliedVolts;
+  private final StatusSignal<Current> supplyCurrent;
 
   private final VoltageOut voltageOutput = new VoltageOut(0).withUpdateFreqHz(0);
   private final NeutralOut neutralOutput = new NeutralOut();

@@ -14,6 +14,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.swerve.DriveConstants.Gains;
 import frc.robot.subsystems.swerve.DriveConstants.ModuleConfig;
 import frc.robot.subsystems.swerve.DriveConstants.MotionProfileGains;
@@ -24,18 +28,18 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final TalonFX steerTalon;
   private final CANcoder encoder;
 
-  private final StatusSignal<Double> drivePosition;
-  private final StatusSignal<Double> driveVelocity;
-  private final StatusSignal<Double> driveAppliedVolts;
-  private final StatusSignal<Double> driveSupplyCurrent;
-  private final StatusSignal<Double> driveStatorCurrent;
+  private final StatusSignal<Angle> drivePosition;
+  private final StatusSignal<AngularVelocity> driveVelocity;
+  private final StatusSignal<Voltage> driveAppliedVolts;
+  private final StatusSignal<Current> driveSupplyCurrent;
+  private final StatusSignal<Current> driveStatorCurrent;
 
   private final Supplier<Rotation2d> steerAbsolutePosition;
-  private final StatusSignal<Double> steerPosition;
-  private final StatusSignal<Double> steerVelocity;
-  private final StatusSignal<Double> steerAppliedVolts;
-  private final StatusSignal<Double> steerSupplyCurrent;
-  private final StatusSignal<Double> steerStatorCurrent;
+  private final StatusSignal<Angle> steerPosition;
+  private final StatusSignal<AngularVelocity> steerVelocity;
+  private final StatusSignal<Voltage> steerAppliedVolts;
+  private final StatusSignal<Current> steerSupplyCurrent;
+  private final StatusSignal<Current> steerStatorCurrent;
 
   private final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
   private final TalonFXConfiguration steerConfig = new TalonFXConfiguration();
