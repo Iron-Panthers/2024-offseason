@@ -100,7 +100,8 @@ public class RobotContainer {
                   swerve.driveHeadingChangeController(
                       -driverA.getLeftY(),
                       -driverA.getLeftX(),
-                      MathUtil.applyDeadband(driverA.getLeftTriggerAxis() - driverA.getRightTriggerAxis(), 0.07));
+                      MathUtil.applyDeadband(
+                          driverA.getLeftTriggerAxis() - driverA.getRightTriggerAxis(), 0.07));
                 })
             .withName("Drive Teleop"));
 

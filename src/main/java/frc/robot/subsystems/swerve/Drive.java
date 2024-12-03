@@ -3,7 +3,6 @@ package frc.robot.subsystems.swerve;
 import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -69,9 +68,9 @@ public class Drive extends SubsystemBase {
 
     switch (driveMode) {
       case TELEOP -> {
-        if (headingController != null){
+        if (headingController != null) {
           targetSpeeds = headingController.update(arbitraryYaw, gyroInputs.yawVelocityRadPerSec);
-        }else{
+        } else {
           targetSpeeds = teleopController.update(arbitraryYaw);
         }
       }
@@ -105,7 +104,7 @@ public class Drive extends SubsystemBase {
       if (driveMode != DriveModes.TELEOP) {
         driveMode = DriveModes.TELEOP;
       }
-      if (headingController != null){
+      if (headingController != null) {
         headingController = null;
       }
 
@@ -113,12 +112,12 @@ public class Drive extends SubsystemBase {
     }
   }
   /*radians*/
-  public void driveHeadingController(double xAxis, double yAxis, Rotation2d omega){
+  public void driveHeadingController(double xAxis, double yAxis, Rotation2d omega) {
     if (DriverStation.isTeleopEnabled()) {
       if (driveMode != DriveModes.TELEOP) {
         driveMode = DriveModes.TELEOP;
       }
-      if (headingController == null){
+      if (headingController == null) {
         headingController = new HeadingController(omega);
       }
       headingController.setTarget(omega);
@@ -126,12 +125,12 @@ public class Drive extends SubsystemBase {
     }
   }
   /*radians*/
-  public void driveHeadingChangeController(double xAxis, double yAxis, double deltaOmega){
+  public void driveHeadingChangeController(double xAxis, double yAxis, double deltaOmega) {
     if (DriverStation.isTeleopEnabled()) {
       if (driveMode != DriveModes.TELEOP) {
         driveMode = DriveModes.TELEOP;
       }
-      if (headingController == null){
+      if (headingController == null) {
         headingController = new HeadingController(new Rotation2d());
       }
       headingController.changeTarget(deltaOmega);
@@ -147,7 +146,7 @@ public class Drive extends SubsystemBase {
 
   private void zeroGyro() {
     gyroYawOffset = gyroInputs.yawPosition;
-    if (headingController != null){
+    if (headingController != null) {
       headingController.setTarget(new Rotation2d());
     }
   }
