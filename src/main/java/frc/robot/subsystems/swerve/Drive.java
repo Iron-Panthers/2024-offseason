@@ -68,10 +68,10 @@ public class Drive extends SubsystemBase {
 
     switch (driveMode) {
       case TELEOP -> {
+        targetSpeeds = teleopController.update(arbitraryYaw);
         if (headingController != null) {
-          targetSpeeds = headingController.update(arbitraryYaw, gyroInputs.yawVelocityRadPerSec);
-        } else {
-          targetSpeeds = teleopController.update(arbitraryYaw);
+          targetSpeeds.omegaRadiansPerSecond =
+              headingController.update(arbitraryYaw, gyroInputs.yawVelocityRadPerSec).getRadians();
         }
       }
       case TRAJECTORY -> {}
@@ -121,7 +121,7 @@ public class Drive extends SubsystemBase {
         headingController = new HeadingController(omega);
       }
       headingController.setTarget(omega);
-      headingController.acceptJoystickInput(xAxis, yAxis);
+      teleopController.acceptJoystickInput(xAxis, yAxis, 0);
     }
   }
   /*radians*/
@@ -134,7 +134,7 @@ public class Drive extends SubsystemBase {
         headingController = new HeadingController(new Rotation2d());
       }
       headingController.changeTarget(deltaOmega);
-      headingController.acceptJoystickInput(xAxis, yAxis);
+      teleopController.acceptJoystickInput(xAxis, yAxis, 0);
     }
   }
 
