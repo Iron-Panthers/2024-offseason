@@ -82,6 +82,9 @@ public class Drive extends SubsystemBase {
     /* use kinematics to get desired module states */
     ChassisSpeeds discretizedSpeeds =
         ChassisSpeeds.discretize(targetSpeeds, Constants.PERIODIC_LOOP_SEC);
+    /* ChassisSpeeds discretizedSpeeds = targetSpeeds; // FIXME
+    discretizedSpeeds.discretize(Constants.PERIODIC_LOOP_SEC); */
+
     SwerveModuleState[] moduleTargetStates = KINEMATICS.toSwerveModuleStates(discretizedSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         moduleTargetStates, DRIVE_CONFIG.maxLinearVelocity());
@@ -89,8 +92,8 @@ public class Drive extends SubsystemBase {
     SwerveModuleState[] optimizedTargetStates = new SwerveModuleState[4];
 
     for (int i = 0; i < modules.length; i++) {
-      optimizedTargetStates[i] =
-          SwerveModuleState.optimize(moduleTargetStates[i], modules[i].getSteerHeading());
+      optimizedTargetStates[i] = moduleTargetStates[i];
+      optimizedTargetStates[i].optimize(modules[i].getSteerHeading());
       modules[i].runToSetpoint(optimizedTargetStates[i]);
     }
 

@@ -37,6 +37,16 @@ public class TeleopController {
         linearVelocity.getY() * DRIVE_CONFIG.maxLinearVelocity(),
         omega * DRIVE_CONFIG.maxAngularVelocity(),
         yaw);
+
+    /* ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            linearVelocity.getX() * DRIVE_CONFIG.maxLinearVelocity(),
+            linearVelocity.getY() * DRIVE_CONFIG.maxLinearVelocity(),
+            omega * DRIVE_CONFIG.maxAngularVelocity());
+    // eventually run off of pose estimation?
+    speeds.toRobotRelativeSpeeds(yaw);
+
+    return speeds; */
   }
 
   public Translation2d calculateLinearVelocity(double x, double y) {
