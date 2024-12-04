@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.subsystems.swerve.DriveConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class HeadingController {
 
@@ -13,7 +14,7 @@ public class HeadingController {
   public HeadingController(Rotation2d tRotation2d) {
     controller =
         new ProfiledPIDController(
-            1,
+            4,
             0,
             0,
             new TrapezoidProfile.Constraints(
@@ -31,6 +32,7 @@ public class HeadingController {
   }
 
   public Rotation2d update(Rotation2d yaw, double currentRotationalVelocity) {
+    Logger.recordOutput("Swerve/TargetHeading", normalizeRadians(targetRotation2d.getRadians()));
 
     return new Rotation2d(
         controller.calculate(

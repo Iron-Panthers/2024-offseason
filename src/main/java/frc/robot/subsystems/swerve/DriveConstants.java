@@ -17,8 +17,8 @@ public class DriveConstants {
             Units.inchesToMeters(38.5),
             Units.inchesToMeters(33),
             5, // FIXME
-            5,
-            0); // FIXME
+            9,
+            19); // FIXME
         case DEV -> new DrivebaseConfig(
             Units.inchesToMeters(2),
             Units.inchesToMeters(22.5),
