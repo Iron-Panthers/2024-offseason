@@ -133,12 +133,16 @@ public class RobotContainer {
         swerve
             .run(
                 () -> {
-                  swerve.driveTeleopController(-driverA.getLeftY(), -driverA.getLeftX());
+                  swerve.driveTeleopController(
+                      -driverA.getLeftY(),
+                      -driverA.getLeftX(),
+                      driverA.getLeftTriggerAxis() - driverA.getRightTriggerAxis());
                 })
             .withName("Drive Teleop"));
 
-    DoubleSupplier rotationAbsolute =
-        () -> driverA.getRightTriggerAxis() - driverA.getLeftTriggerAxis();
+    driverA.start().onTrue(swerve.zeroGyroCommand());
+
+    // -----Intake Controls-----
 
     new Trigger(() -> Math.abs(rotationAbsolute.getAsDouble()) > 0.07)
         .whileTrue(

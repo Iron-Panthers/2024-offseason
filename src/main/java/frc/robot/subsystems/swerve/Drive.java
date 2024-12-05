@@ -10,9 +10,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Util;
 import frc.robot.Constants;
+import frc.robot.subsystems.swerve.controllers.TeleopController;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -38,8 +40,9 @@ public class Drive extends SubsystemBase {
   @AutoLogOutput(key = "Swerve/YawOffset")
   private Rotation2d gyroYawOffset = new Rotation2d();
 
-  private ChassisSpeeds teleopTargetSpeeds = new ChassisSpeeds();
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
+
+  private final TeleopController teleopController;
 
   public Drive(GyroIO gyroIO, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
     this.gyroIO = gyroIO;
@@ -49,10 +52,7 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(bl, 2);
     modules[3] = new Module(br, 3);
 
-    rotController = new PIDController(0.01, 0, 0);
-    rotController.setTolerance(1);
-    rotController.setSetpoint(0);
-    rotController.setTolerance(1);
+    teleopController = new TeleopController();
   }
 
   @Override
@@ -71,7 +71,7 @@ public class Drive extends SubsystemBase {
 
     switch (driveMode) {
       case TELEOP -> {
-        targetSpeeds = teleopTargetSpeeds;
+        targetSpeeds = teleopController.update(arbitraryYaw);
       }
       case TRAJECTORY -> {}
       case ANGLE -> {
@@ -84,15 +84,18 @@ public class Drive extends SubsystemBase {
     /* use kinematics to get desired module states */
     ChassisSpeeds discretizedSpeeds =
         ChassisSpeeds.discretize(targetSpeeds, Constants.PERIODIC_LOOP_SEC);
-    SwerveModuleState[] moduleTargetStates = KINEMATICS.toSwerveModuleStates(targetSpeeds);
+    /* ChassisSpeeds discretizedSpeeds = targetSpeeds; // FIXME
+    discretizedSpeeds.discretize(Constants.PERIODIC_LOOP_SEC); */
+
+    SwerveModuleState[] moduleTargetStates = KINEMATICS.toSwerveModuleStates(discretizedSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         moduleTargetStates, DRIVE_CONFIG.maxLinearVelocity());
 
     SwerveModuleState[] optimizedTargetStates = new SwerveModuleState[4];
 
     for (int i = 0; i < modules.length; i++) {
-      optimizedTargetStates[i] =
-          SwerveModuleState.optimize(moduleTargetStates[i], modules[i].getSteerHeading());
+      optimizedTargetStates[i] = moduleTargetStates[i];
+      optimizedTargetStates[i].optimize(modules[i].getSteerHeading());
       modules[i].runToSetpoint(optimizedTargetStates[i]);
     }
 
@@ -101,56 +104,25 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Swerve/DriveMode", driveMode);
   }
 
-  public void driveTeleopController(double xAxis, double yAxis) {
-    
-    driveAnglePeriodic(xAxis, yAxis, targetAngle);
-  }
+  public void driveTeleopController(double xAxis, double yAxis, double omega) {
+    if (DriverStation.isTeleopEnabled()) {
+      if (driveMode != DriveModes.TELEOP) {
+        driveMode = DriveModes.TELEOP;
+      }
 
-  public void setTrajectoryFollower(ChassisSpeeds trajectorySpeeds) {
-    if (DriverStation.isAutonomousEnabled()) {
-      driveMode = DriveModes.TRAJECTORY;
+      teleopController.acceptJoystickInput(xAxis, yAxis, omega);
     }
-  }
-
-  public void zero() {
-    gyroYawOffset = Rotation2d.fromDegrees(gyroInputs.yawPosition.getDegrees());
-    targetAngle = 0;
-  }
-
-  public void driveAnglePeriodic(double xAxis, double yAxis, double targetAngle) {
-    this.targetAngle = targetAngle;
-    double angularDifference = getAngularError(targetAngle);
-    
-    double rotationValue = rotController.calculate(angularDifference);
-
-    // we are treating this like a joystick, so -1 and 1 are its lower and upper bound
-    rotationValue = MathUtil.clamp(rotationValue, -1, 1);
-
-    // this value makes our unit-less [-1, 1] into [-max angular, max angular]
-    double omegaRadiansPerSecond =
-        rotationValue * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
-
-    double xVelocity =
-        MathUtil.applyDeadband(Math.copySign(xAxis * xAxis, xAxis), 0.07)
-            * DRIVE_CONFIG.maxLinearVelocity();
-    double yVelocity =
-        MathUtil.applyDeadband(Math.copySign(yAxis * yAxis, yAxis), 0.07)
-            * DRIVE_CONFIG.maxLinearVelocity();
-
-    // initialize chassis speeds but add our desired angle
-    teleopTargetSpeeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            xVelocity, yVelocity, omegaRadiansPerSecond, arbitraryYaw);
-    Logger.recordOutput("Swerve/Teleop/xVelocity", xVelocity);
-    Logger.recordOutput("Swerve/Teleop/yVelocity", yVelocity);
-    Logger.recordOutput("Swerve/Teleop/radianVelocity", 0);
   }
 
   public double getAngularError(double targetAngle) {
     return -Util.relativeAngularDifference(arbitraryYaw.times(-1), targetAngle);
   }
 
-  public double getTargetAngle() {
-    return targetAngle;
+  private void zeroGyro() {
+    gyroYawOffset = gyroInputs.yawPosition;
+  }
+
+  public Command zeroGyroCommand() {
+    return this.runOnce(() -> zeroGyro());
   }
 }
