@@ -144,24 +144,6 @@ public class RobotContainer {
 
     // -----Intake Controls-----
 
-    new Trigger(() -> Math.abs(rotationAbsolute.getAsDouble()) > 0.07)
-        .whileTrue(
-            new FunctionalCommand(
-                () -> {},
-                () ->
-                    swerve.driveAnglePeriodic(
-                        -driverA.getLeftY(),
-                        -driverA.getLeftX(),
-                        swerve.getTargetAngle()
-                            + 5
-                                * Math.copySign(
-                                    rotationAbsolute.getAsDouble()
-                                        * Math.pow(Math.abs(rotationAbsolute.getAsDouble()), 1),
-                                    rotationAbsolute.getAsDouble())),
-                interrupted -> {},
-                () -> false,
-                swerve));
-
     // intake note and then outtake for a little time
     driverA
         .leftBumper()
@@ -408,28 +390,7 @@ public class RobotContainer {
     //               flywheels.setVelocityTarget(VelocityTarget.IDLE);
     //             },
     //             flywheels));
-    // zeroing
-    driverA
-        .start()
-        .onTrue(
-            new FunctionalCommand(
-                    () -> {
-                      swerve.zero();
-                      //   superstructure.setTargetState(SuperstructureState.ZERO);
-                    },
-                    () -> {},
-                    interrupted -> {},
-                    () ->
-                        // superstructure.getElevatorSupplyCurrentAmps() > 4
-                        //     && superstructure.getPivotSupplyCurrentAmps() > 4
-                        true,
-                    swerve,
-                    superstructure)
-                .andThen(
-                    new InstantCommand(
-                        () -> superstructure.setTargetState(SuperstructureState.STOW),
-                        superstructure)));
-
+    
     // cancel everything
     driverB
         .x()
@@ -462,59 +423,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.STOW)));
     driverB
         .povUp()
-        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.AMP)));
-
-    // turning setpoints
-    // source
-    driverA
-        .povUp()
-        .onTrue(
-            new FunctionalCommand(
-                () -> {},
-                () ->
-                    swerve.driveAnglePeriodic(
-                        driverA.getLeftX(),
-                        driverA.getLeftY(),
-                        DriverStation.getAlliance().get().equals(Alliance.Red) ? -39 : 39),
-                interrupted -> {},
-                () -> true));
-    // amp
-    driverA
-        .povLeft()
-        .onTrue(
-            new FunctionalCommand(
-                () -> {},
-                () ->
-                    swerve.driveAnglePeriodic(
-                        driverA.getLeftX(),
-                        driverA.getLeftY(),
-                        DriverStation.getAlliance().get().equals(Alliance.Red) ? -90 : 90),
-                interrupted -> {},
-                () -> true));
-    // shuttle
-    driverA
-        .povRight()
-        .onTrue(
-            new FunctionalCommand(
-                () -> {},
-                () -> {
-                  swerve.driveAnglePeriodic(
-                      driverA.getLeftX(),
-                      driverA.getLeftY(),
-                      DriverStation.getAlliance().get().equals(Alliance.Red) ? -50 : 50);
-                  superstructure.setTargetState(SuperstructureState.SHUTTLE);
-                },
-                interrupted -> {},
-                () -> true));
-    // speaker
-    driverA
-        .povDown()
-        .onTrue(
-            new FunctionalCommand(
-                () -> {},
-                () -> swerve.driveAnglePeriodic(driverA.getLeftX(), driverA.getLeftY(), 0),
-                interrupted -> {},
-                () -> true));
+        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.AMP)));    
   }
 
   private void configureAutos() {}
