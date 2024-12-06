@@ -11,21 +11,25 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Voltage;
 import java.util.Optional;
 
 public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
   private final TalonFX talon;
 
-  private final StatusSignal<Double> positionRotations;
-  private final StatusSignal<Double> velocityRPS;
-  private final StatusSignal<Double> appliedVolts;
-  private final StatusSignal<Double> supplyCurrent;
-  private final StatusSignal<Double> temp;
+  private final StatusSignal<Angle> positionRotations;
+  private final StatusSignal<AngularVelocity> velocityRPS;
+  private final StatusSignal<Voltage> appliedVolts;
+  private final StatusSignal<Current> supplyCurrent;
+  private final StatusSignal<Temperature> temp;
 
   private final VoltageOut voltageOutput = new VoltageOut(0).withUpdateFreqHz(0);
   private final NeutralOut neutralOutput = new NeutralOut();
@@ -61,7 +65,6 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
               new CANcoderConfiguration()
                   .withMagnetSensor(
                       new MagnetSensorConfigs()
-                          .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
                           .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
                           .withMagnetOffset(0)));
 
@@ -73,7 +76,7 @@ public class GenericSuperstructureIOTalonFX implements GenericSuperstructureIO {
     talon.setPosition(0);
     talon.setNeutralMode(NeutralModeValue.Brake);
 
-    velocityRPS = talon.getClosedLoopError();
+    velocityRPS = talon.getVelocity();
     appliedVolts = talon.getMotorVoltage();
     supplyCurrent = talon.getSupplyCurrent();
     temp = talon.getDeviceTemp();

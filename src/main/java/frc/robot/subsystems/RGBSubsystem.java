@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class RGBSubsystem extends SubsystemBase {
   public static final class Lights {
     public static final int CANDLE_ID = 34;
-    public static final int NUM_LEDS = 227; // 8 in candle
+    public static final int NUM_LEDS = 226; // 8 in candle
 
     public static final class Colors {
       public static final RGBColor YELLOW = new RGBColor(255, 107, 0);
@@ -194,7 +194,7 @@ public class RGBSubsystem extends SubsystemBase {
   }
 
   private void showRainbow() {
-    candle.animate(new RainbowAnimation(0.3, 0.5, Lights.NUM_LEDS));
+    candle.animate(new RainbowAnimation(1, 0.5, Lights.NUM_LEDS));
     lastAppliedAnimation = Optional.of(CurrentAnimationTypes.RAINBOW);
     lastAppliedColor = Optional.empty();
   }

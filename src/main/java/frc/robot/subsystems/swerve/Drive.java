@@ -3,7 +3,6 @@ package frc.robot.subsystems.swerve;
 import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -12,8 +11,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Util;
 import frc.robot.Constants;
+import frc.robot.Util;
 import frc.robot.subsystems.swerve.controllers.TeleopController;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -74,9 +73,6 @@ public class Drive extends SubsystemBase {
         targetSpeeds = teleopController.update(arbitraryYaw);
       }
       case TRAJECTORY -> {}
-      case ANGLE -> {
-        targetSpeeds = teleopTargetSpeeds;
-      }
     }
 
     // run modules

@@ -4,13 +4,10 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.RGBSubsystem;
 import frc.robot.subsystems.flywheels.Flywheels;
@@ -37,7 +34,6 @@ import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.ModuleIO;
 import frc.robot.subsystems.swerve.ModuleIOTalonFX;
-import java.util.function.DoubleSupplier;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -157,13 +153,6 @@ public class RobotContainer {
                         () -> rollers.serializerDetected(),
                         rollers))
                 .andThen(
-                    new InstantCommand(
-                        () ->
-                            rgbSubsystem.showMessage(
-                                RGBSubsystem.Lights.Colors.RED,
-                                RGBSubsystem.PatternTypes.STROBE,
-                                RGBSubsystem.MessagePriority.F_NOTE_IN_ROBOT)))
-                .andThen(
                     new InstantCommand(() -> rollers.setTargetState(RollerState.AMP_EJECT), rollers)
                         .withTimeout(0.6))
                 .andThen(
@@ -186,13 +175,6 @@ public class RobotContainer {
                         interrupted -> rollers.setTargetState(RollerState.IDLE),
                         () -> rollers.serializerDetected(),
                         rollers))
-                .andThen(
-                    new InstantCommand(
-                        () ->
-                            rgbSubsystem.showMessage(
-                                RGBSubsystem.Lights.Colors.RED,
-                                RGBSubsystem.PatternTypes.STROBE,
-                                RGBSubsystem.MessagePriority.F_NOTE_IN_ROBOT)))
                 .andThen(
                     new InstantCommand(() -> rollers.setTargetState(RollerState.AMP_EJECT), rollers)
                         .withTimeout(0.6))
@@ -240,8 +222,7 @@ public class RobotContainer {
                             flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE);
                             superstructure.setTargetState(SuperstructureState.STOW);
                           }
-                        }))
-                .andThen(new InstantCommand(() -> rgbSubsystem.expireCurrent())));
+                        })));
     driverB
         .rightBumper()
         .onTrue(
@@ -264,9 +245,7 @@ public class RobotContainer {
                             flywheels.setVelocityTarget(Flywheels.VelocityTarget.IDLE);
                             superstructure.setTargetState(SuperstructureState.STOW);
                           }
-                        }))
-                .andThen(new InstantCommand(() -> rgbSubsystem.expireCurrent())));
-
+                        })));
     // transfer note to shooter
     driverB
         .b()
@@ -390,7 +369,7 @@ public class RobotContainer {
     //               flywheels.setVelocityTarget(VelocityTarget.IDLE);
     //             },
     //             flywheels));
-    
+
     // cancel everything
     driverB
         .x()
@@ -423,7 +402,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.STOW)));
     driverB
         .povUp()
-        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.AMP)));    
+        .onTrue(new InstantCommand(() -> superstructure.setTargetState(SuperstructureState.AMP)));
   }
 
   private void configureAutos() {}
