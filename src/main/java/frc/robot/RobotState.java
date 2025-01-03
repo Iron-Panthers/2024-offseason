@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
-import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import frc.robot.subsystems.swerve.DriveConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -16,7 +15,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 /* based on wpimath/../PoseEstimator.java */
 public class RobotState {
   public record OdometryMeasurement(
-      SwerveDriveWheelPositions wheelPositions, Rotation2d gyroAngle, double timestamp) {}
+      SwerveModulePosition[] wheelPositions, Rotation2d gyroAngle, double timestamp) {}
 
   public record VisionMeasurement(Pose2d visionPose, double timestamp) {}
 
@@ -28,14 +27,13 @@ public class RobotState {
   private Pose2d odometryPose = new Pose2d(); // motion sensors
   private Pose2d estimatedPose = new Pose2d(); // odometry + vision
 
-  private SwerveDriveWheelPositions lastWheelPositions =
-      new SwerveDriveWheelPositions(
-          new SwerveModulePosition[] {
-            new SwerveModulePosition(),
-            new SwerveModulePosition(),
-            new SwerveModulePosition(),
-            new SwerveModulePosition()
-          });
+  private SwerveModulePosition[] lastWheelPositions =
+      new SwerveModulePosition[] {
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition()
+      };
   private Rotation2d lastGyroAngle = new Rotation2d();
 
   private static RobotState instance;
