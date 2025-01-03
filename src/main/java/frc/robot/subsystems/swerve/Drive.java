@@ -6,7 +6,6 @@ import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -68,11 +67,10 @@ public class Drive extends SubsystemBase {
     }
 
     // pass odometry data to robotstate
-    SwerveDriveWheelPositions wheelPositions =
-        new SwerveDriveWheelPositions(
-            Arrays.stream(modules)
-                .map(module -> module.getModulePosition())
-                .toArray(SwerveModulePosition[]::new));
+    SwerveModulePosition[] wheelPositions =
+        Arrays.stream(modules)
+            .map(module -> module.getModulePosition())
+            .toArray(SwerveModulePosition[]::new);
     RobotState.getInstance()
         .addOdometryMeasurement(
             new RobotState.OdometryMeasurement(
