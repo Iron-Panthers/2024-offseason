@@ -83,6 +83,9 @@ public class DriveConstants {
             3.125);
       };
 
+  public static final TrajectoryFollowerConstants TRAJECTORY_CONFIG =
+      new TrajectoryFollowerConstants(0, 0, 0, 0); // FIXME
+
   public record DrivebaseConfig(
       double wheelRadius,
       double trackWidth,
@@ -107,7 +110,8 @@ public class DriveConstants {
       double steerReduction,
       double couplingGearReduction) {}
 
-  public record TrajectoryFollowerConstants() {}
+  public record TrajectoryFollowerConstants(
+      double linearKP, double linearKD, double rotationKP, double rotationKD) {}
 
   public record Gains(double kS, double kV, double kA, double kP, double kI, double kD) {}
 
