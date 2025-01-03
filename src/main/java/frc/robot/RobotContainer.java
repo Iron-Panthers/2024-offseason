@@ -7,9 +7,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.flywheels.Flywheels;
+import frc.robot.subsystems.flywheels.FlywheelsIO;
 import frc.robot.subsystems.flywheels.FlywheelsIOTalonFX;
 import frc.robot.subsystems.rollers.Rollers;
 import frc.robot.subsystems.rollers.intake.Intake;
+import frc.robot.subsystems.rollers.intake.IntakeIO;
 import frc.robot.subsystems.rollers.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.swerve.Drive;
 import frc.robot.subsystems.swerve.DriveConstants;
@@ -25,6 +27,7 @@ import frc.robot.subsystems.swerve.ModuleIOTalonFX;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private final RobotState robotState = RobotState.getInstance();
 
   private final CommandXboxController driverA = new CommandXboxController(0);
   private final CommandXboxController driverB = new CommandXboxController(1);
@@ -82,6 +85,12 @@ public class RobotContainer {
               new ModuleIO() {},
               new ModuleIO() {},
               new ModuleIO() {});
+    }
+    if (flywheels == null) {
+      flywheels = new Flywheels(new FlywheelsIO() {});
+    }
+    if (intake == null) {
+      intake = new Intake(new IntakeIO() {});
     }
 
     rollers = new Rollers(intake);
