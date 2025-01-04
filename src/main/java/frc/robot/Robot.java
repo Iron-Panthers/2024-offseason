@@ -77,6 +77,7 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
+
     CommandScheduler.getInstance().run();
   }
 
