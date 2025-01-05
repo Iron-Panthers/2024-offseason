@@ -146,4 +146,16 @@ public class Drive extends SubsystemBase {
   public Command zeroGyroCommand() {
     return this.runOnce(() -> zeroGyro());
   }
+
+  @AutoLogOutput(key = "Swerve/ModuleStates")
+  public SwerveModuleState[] getModuleStates() {
+    return Arrays.stream(modules)
+        .map(module -> module.getModuleState())
+        .toArray(SwerveModuleState[]::new);
+  }
+
+  @AutoLogOutput(key = "Swerve/RobotSpeeds")
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return KINEMATICS.toChassisSpeeds(getModuleStates());
+  }
 }
