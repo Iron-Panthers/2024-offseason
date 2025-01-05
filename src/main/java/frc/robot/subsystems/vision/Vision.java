@@ -25,7 +25,12 @@ public class Vision extends SubsystemBase {
     }
 
     for (int i = 0; i < io.length; ++i) {
-      if (inputs[i].ambiguity > AMBIGUITY_CUTOFF || inputs[i].ambiguity == -1) continue;
+      var observations = inputs[i].observations;
+      for (var observation : observations) {
+        if (observation.ambiguity() > AMBIGUITY_CUTOFF || observation.ambiguity() == -1) continue;
+      }
+
+
     }
   }
 }
