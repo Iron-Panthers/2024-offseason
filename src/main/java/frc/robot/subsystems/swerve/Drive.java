@@ -6,13 +6,17 @@ import static frc.robot.subsystems.swerve.DriveConstants.KINEMATICS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerve.controllers.HeadingController;
+import frc.robot.RobotState;
 import frc.robot.subsystems.swerve.controllers.TeleopController;
+import java.util.Arrays;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -65,6 +69,16 @@ public class Drive extends SubsystemBase {
     for (Module module : modules) {
       module.updateInputs();
     }
+
+    // pass odometry data to robotstate
+    SwerveModulePosition[] wheelPositions =
+        Arrays.stream(modules)
+            .map(module -> module.getModulePosition())
+            .toArray(SwerveModulePosition[]::new);
+    RobotState.getInstance()
+        .addOdometryMeasurement(
+            new RobotState.OdometryMeasurement(
+                wheelPositions, gyroInputs.yawPosition, Timer.getFPGATimestamp()));
 
     switch (driveMode) {
       case TELEOP -> {

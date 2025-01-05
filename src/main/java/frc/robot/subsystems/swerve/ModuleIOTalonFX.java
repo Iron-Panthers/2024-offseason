@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import static frc.robot.subsystems.swerve.DriveConstants.DRIVE_CONFIG;
 import static frc.robot.subsystems.swerve.DriveConstants.MODULE_CONSTANTS;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -133,6 +134,8 @@ public class ModuleIOTalonFX implements ModuleIO {
                 driveStatorCurrent)
             .isOK();
     inputs.drivePositionRads = Units.rotationsToRadians(drivePosition.getValueAsDouble());
+    inputs.drivePositionMeters =
+        Units.rotationsToRadians(drivePosition.getValueAsDouble()) * DRIVE_CONFIG.wheelRadius();
     inputs.driveVelocityRadsPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
     inputs.driveSupplyCurrent = driveSupplyCurrent.getValueAsDouble();

@@ -18,7 +18,7 @@ public class GyroIOPigeon2 implements GyroIO {
     pigeon = new Pigeon2(DriveConstants.GYRO_ID);
 
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
-    pigeon.setYaw(0);
+    pigeon.setYaw(0, 1.0);
 
     yaw = pigeon.getYaw();
     yawVelocity = pigeon.getAngularVelocityZWorld();
