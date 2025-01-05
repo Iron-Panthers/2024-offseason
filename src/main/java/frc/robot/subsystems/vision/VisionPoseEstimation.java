@@ -2,6 +2,8 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -9,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import java.util.ArrayList;
 import java.util.Optional;
+
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -17,6 +21,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 public class VisionPoseEstimation extends SubsystemBase {
   private ArrayList<PhotonCamera> cameras;
+
 
   private static final Transform3d CAMERA1_TO_CENTER =
       new Transform3d( // FIXME
@@ -56,12 +61,7 @@ public class VisionPoseEstimation extends SubsystemBase {
       if (cameras.get(i).getAllUnreadResults().size() > 0) {
         PhotonPipelineResult result = cameras.get(i).getAllUnreadResults().get(0);
         optionalEstimatedPose = poseEstimators.get(i).update(result);
-      } else {
-        optionalEstimatedPose = Optional.empty();
-      }
-
-      if (optionalEstimatedPose.isPresent()) {
-        final EstimatedRobotPose estimatedPose = optionalEstimatedPose.get();
+        EstimatedRobotPose estimatedPose = optionalEstimatedPose.get();
         RobotState.getInstance().addVisionMeasurement(estimatedPose);
       }
     }
