@@ -2,7 +2,6 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Transform3d;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -28,9 +27,10 @@ public class VisionIOPhotonvision implements VisionIO {
   public void updateInputs(VisionIOInputs inputs) {
     inputs.connected = camera.isConnected();
     List<PhotonPipelineResult> results = camera.getAllUnreadResults();
-    List<PoseObservation> observations = new ArrayList<PoseObservation>();
+    PoseObservation[] observations = new PoseObservation[results.size()];
 
-    for (PhotonPipelineResult frame : results) {
+    for (int frameIndex = 0; frameIndex < results.size(); ++frameIndex) {
+      var frame = results.get(frameIndex);
       if (!frame.hasTargets()) return;
 
       Optional<EstimatedRobotPose> optEstimation = estimator.update(frame);
@@ -56,9 +56,8 @@ public class VisionIOPhotonvision implements VisionIO {
               estimation.estimatedPose,
               frame.getMultiTagResult().get().estimatedPose.ambiguity,
               tagIDs.length,
-              totalDistance / tagIDs.length, // FIXME check if valid
-              tagIDs);
-      observations.add(observation);
+              totalDistance / tagIDs.length);
+      observations[frameIndex] = observation;
     }
 
     inputs.observations = observations;

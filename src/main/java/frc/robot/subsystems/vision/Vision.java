@@ -29,8 +29,6 @@ public class Vision extends SubsystemBase {
       for (var observation : observations) {
         if (observation.ambiguity() > AMBIGUITY_CUTOFF || observation.ambiguity() == -1) continue;
       }
-
-
     }
   }
 }
