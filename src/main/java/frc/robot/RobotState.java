@@ -4,13 +4,19 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swerve.DriveConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.photonvision.EstimatedRobotPose;
 
 /* based on wpimath/../PoseEstimator.java */
 public class RobotState {
@@ -18,6 +24,14 @@ public class RobotState {
       SwerveModulePosition[] wheelPositions, Rotation2d gyroAngle, double timestamp) {}
 
   private static final double poseBufferSizeSeconds = 2; // shorter?
+
+  private static final Vector<N3> STATE_STDS =
+      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+
+  private static final Vector<N3> VISION_STDS =
+      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+
+  private SwerveDrivePoseEstimator poseEstimator;
 
   private TimeInterpolatableBuffer<Pose2d> poseBuffer =
       TimeInterpolatableBuffer.createBuffer(poseBufferSizeSeconds);
@@ -41,7 +55,17 @@ public class RobotState {
     return instance;
   }
 
-  private RobotState() {}
+  private RobotState() {
+
+    poseEstimator =
+        new SwerveDrivePoseEstimator(
+            DriveConstants.KINEMATICS,
+            lastGyroAngle,
+            lastWheelPositions,
+            new Pose2d(0, 0, lastGyroAngle),
+            STATE_STDS,
+            VISION_STDS);
+  }
 
   /* update pose estimation based on odometry measurements, based on wpimath */
   public void addOdometryMeasurement(OdometryMeasurement measurement) {
@@ -60,12 +84,14 @@ public class RobotState {
   }
 
   // FIXME TO DO
-  public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
+  public void addVisionMeasurement(EstimatedRobotPose pose) {
     // if measurement is old enough to be outside buffer timespan, skip
     if (poseBuffer.getInternalBuffer().isEmpty()
         || poseBuffer.getInternalBuffer().lastKey() < poseBufferSizeSeconds) {
       return;
     }
+    poseBuffer.addSample(pose.timestampSeconds, pose.estimatedPose.toPose2d());
+    poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
   }
 
   public void resetPose(Pose2d pose) {

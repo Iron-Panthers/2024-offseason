@@ -19,6 +19,7 @@ import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.ModuleIO;
 import frc.robot.subsystems.swerve.ModuleIOTalonFX;
+import frc.robot.subsystems.vision.VisionPoseEstimation;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,8 +36,10 @@ public class RobotContainer {
   private Drive swerve; // FIXME make final, implement other robot types
   private Rollers rollers;
   private Flywheels flywheels;
+  private VisionPoseEstimation visionPoseEstimation;
 
   public RobotContainer() {
+    visionPoseEstimation = new VisionPoseEstimation();
     Intake intake = null;
 
     if (Constants.getRobotMode() != Mode.REPLAY) {
