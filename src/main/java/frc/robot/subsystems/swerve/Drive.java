@@ -88,8 +88,6 @@ public class Drive extends SubsystemBase {
     /* use kinematics to get desired module states */
     ChassisSpeeds discretizedSpeeds =
         ChassisSpeeds.discretize(targetSpeeds, Constants.PERIODIC_LOOP_SEC);
-    /* ChassisSpeeds discretizedSpeeds = targetSpeeds; // FIXME
-    discretizedSpeeds.discretize(Constants.PERIODIC_LOOP_SEC); */
 
     SwerveModuleState[] moduleTargetStates = KINEMATICS.toSwerveModuleStates(discretizedSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
