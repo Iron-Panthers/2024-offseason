@@ -90,8 +90,9 @@ public class RobotState {
         || poseBuffer.getInternalBuffer().lastKey() < poseBufferSizeSeconds) {
       return;
     }
-    poseBuffer.addSample(pose.timestampSeconds, pose.estimatedPose.toPose2d());
+    // poseBuffer.addSample(pose.timestampSeconds, pose.estimatedPose.toPose2d()); 
     poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+
   }
 
   public void resetPose(Pose2d pose) {
@@ -109,4 +110,5 @@ public class RobotState {
   public Pose2d getEstimatedPose() {
     return estimatedPose;
   }
+
 }
