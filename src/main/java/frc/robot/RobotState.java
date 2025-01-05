@@ -17,8 +17,6 @@ public class RobotState {
   public record OdometryMeasurement(
       SwerveModulePosition[] wheelPositions, Rotation2d gyroAngle, double timestamp) {}
 
-  public record VisionMeasurement(Pose2d visionPose, double timestamp) {}
-
   private static final double poseBufferSizeSeconds = 2; // shorter?
 
   private TimeInterpolatableBuffer<Pose2d> poseBuffer =
@@ -62,7 +60,7 @@ public class RobotState {
   }
 
   // FIXME TO DO
-  public void addVisionMeasurement(VisionMeasurement measurement) {
+  public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
     // if measurement is old enough to be outside buffer timespan, skip
     if (poseBuffer.getInternalBuffer().isEmpty()
         || poseBuffer.getInternalBuffer().lastKey() < poseBufferSizeSeconds) {
