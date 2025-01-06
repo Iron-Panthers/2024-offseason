@@ -11,7 +11,7 @@ public class DriveConstants {
   // measures in meters (per sec) and radians (per sec)
   public static final DrivebaseConfig DRIVE_CONFIG =
       switch (getRobotType()) {
-        case COMP, SIM -> new DrivebaseConfig(
+        case COMP, SIM, PROGRAMMING -> new DrivebaseConfig(
             Units.inchesToMeters(2),
             Units.inchesToMeters(22.5),
             Units.inchesToMeters(38.5),
@@ -51,6 +51,12 @@ public class DriveConstants {
           new ModuleConfig(11, 12, 3, new Rotation2d(1.4327), true, false),
           new ModuleConfig(9, 10, 4, new Rotation2d(-1.8208), true, true)
         };
+        case PROGRAMMING -> new ModuleConfig[] {
+          new ModuleConfig(5, 6, 1, new Rotation2d(-2.2656), false, true),
+          new ModuleConfig(7, 8, 2, new Rotation2d(-0.1794), false, true),
+          new ModuleConfig(11, 12, 3, new Rotation2d(2.9406), false, true),
+          new ModuleConfig(9, 10, 4, new Rotation2d(-0.1365), false, true)
+        };
         case DEV -> new ModuleConfig[] {
           new ModuleConfig(2, 1, 27, new Rotation2d(0), true, false),
           new ModuleConfig(13, 12, 26, new Rotation2d(0), true, true),
@@ -71,6 +77,13 @@ public class DriveConstants {
             new Gains(0.25, 2.62, 0, 100, 0, 0), // revisit kP
             new MotionProfileGains(4, 64, 640), // revisit all
             new Gains(0.3, 0.63, 0, 2, 0, 0), // FIXME placeholder, to do
+            5.357142857142857,
+            21.428571428571427,
+            3.125);
+        case PROGRAMMING -> new ModuleConstants(
+            new Gains(0.4, 0.6, 0, 11, 0, 0),
+            new MotionProfileGains(4, 64, 640),
+            new Gains(0.3, 0.11, 0, 1.5, 0, 0),
             5.357142857142857,
             21.428571428571427,
             3.125);

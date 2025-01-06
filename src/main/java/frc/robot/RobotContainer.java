@@ -52,6 +52,17 @@ public class RobotContainer {
           intake = new Intake(new IntakeIOTalonFX());
           flywheels = new Flywheels(new FlywheelsIOTalonFX());
         }
+        case PROGRAMMING -> {
+          swerve =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[0]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[1]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[2]),
+                  new ModuleIOTalonFX(DriveConstants.MODULE_CONFIGS[3]));
+          intake = new Intake(new IntakeIOTalonFX());
+          // flywheels = new Flywheels(new FlywheelsIOTalonFX());
+        }
         case DEV -> {
           swerve =
               new Drive(
