@@ -155,7 +155,7 @@ public class Drive extends SubsystemBase {
   }
 
   @AutoLogOutput(key = "Swerve/RobotSpeeds")
-  public ChassisSpeeds getRobotRelativeSpeeds() {
+  public ChassisSpeeds getRobotSpeeds() {
     return KINEMATICS.toChassisSpeeds(getModuleStates());
   }
 }
